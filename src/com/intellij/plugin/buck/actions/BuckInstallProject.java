@@ -2,8 +2,6 @@ package com.intellij.plugin.buck.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.plugin.buck.ui.ChooseProjectDialog;
 
@@ -15,10 +13,6 @@ public class BuckInstallProject extends AnAction {
         if (project == null) {
             return;
         }
-        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-        if (editor == null) {
-            return;
-        }
-        new ChooseProjectDialog(project, editor).show();
+        new ChooseProjectDialog(project).show();
     }
 }

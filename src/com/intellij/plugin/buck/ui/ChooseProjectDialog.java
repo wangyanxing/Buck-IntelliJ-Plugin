@@ -1,24 +1,28 @@
 package com.intellij.plugin.buck.ui;
 
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.plugin.buck.storage.BuckSettingsStorage;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class ChooseProjectDialog extends DialogWrapper {
     private JTextField myField;
-    private final Editor myEditor;
 
-    public ChooseProjectDialog(Project project, Editor editor){
+    public ChooseProjectDialog(Project project){
         super(project, true);
-        myEditor = editor;
         setTitle("Choose Project");
         init();
     }
 
     protected void doOKAction(){
+        String text = myField.getText();
+
+        if (!text.isEmpty()) {
+            BuckSettingsStorage.addHistory(text);
+        }
+
         super.doOKAction();
     }
 
