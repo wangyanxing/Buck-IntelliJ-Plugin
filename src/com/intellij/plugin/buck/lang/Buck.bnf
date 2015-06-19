@@ -1,0 +1,98 @@
+{
+  parserClass="com.intellij.plugin.buck.lang.BuckParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Buck"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.intellij.plugin.buck.lang.psi"
+  psiImplPackage="com.intellij.plugin.buck.lang.psi.impl"
+
+  elementTypeHolderClass="com.intellij.plugin.buck.lang.psi.BuckTypes"
+  elementTypeClass="com.intellij.plugin.buck.lang.psi.BuckElementType"
+  tokenTypeClass="com.intellij.plugin.buck.lang.psi.BuckTokenType"
+}
+
+buckFile ::= item_*
+
+private item_ ::= (rule_block | property | COMMENT | CRLF)
+
+property ::= ((IDENTIFIER | keywords) '=' value) | value
+value ::= VALUE_STRING | VALUE_BOOLEAN | IDENTIFIER | value_array | rule_block
+
+value_array ::= '[' (CRLF | WHITE_SPACE)* array_elements ']'
+array_elements ::= (
+  value |
+  "," |
+  CRLF |
+  WHITE_SPACE
+)*
+
+rule_name ::= "genrule"|
+              "remote_file"|
+              "android_aar"|
+              "android_binary"|
+              "android_build_config"|
+              "android_library"|
+              "android_manifest"|
+              "android_prebuilt_aar"|
+              "android_resource"|
+              "apk_genrule"|
+              "cxx_library"|
+              "gen_aidl"|
+              "ndk_library"|
+              "prebuilt_jar"|
+              "prebuilt_native_library"|
+              "project_config"|
+              "cxx_binary"|
+              "cxx_library"|
+              "cxx_test"|
+              "prebuilt_native_library"|
+              "d_binary"|
+              "d_library"|
+              "d_test"|
+              "cxx_library"|
+              "java_binary"|
+              "java_library"|
+              "java_test"|
+              "prebuilt_jar"|
+              "prebuilt_native_library"|
+              "prebuilt_python_library"|
+              "python_binary"|
+              "python_library"|
+              "python_test"|
+              "glob"|
+              "include_defs"|
+              "robolectric_test"
+
+rule_block ::= rule_name '(' (CRLF | WHITE_SPACE)* rule_body ')'
+rule_body ::= (
+  property  |
+  "," |
+  CRLF |
+  WHITE_SPACE
+)*
+
+braces ::= '(' | ')' | '{' | '}' | '[' | ']'
+comma ::= ','
+semicolon ::= ';'
+equal ::= '='
+keywords ::= "name" |
+             "res" |
+             "binary_jar" |
+             "srcs" |
+             "deps" |
+             "manifest" |
+             "package_type" |
+             "keystore" |
+             "glob" |
+             "visibility" |
+             "aar" |
+             "src_target" |
+             "src_roots" |
+             "java7_support" |
+             "source_under_test" |
+             "test_library_project_dir" |
+             "contacts" |
+             "exported_deps" |
+             "excludes"

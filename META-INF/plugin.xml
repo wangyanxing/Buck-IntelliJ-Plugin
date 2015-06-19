@@ -1,0 +1,62 @@
+<idea-plugin version="2">
+  <id>com.yourcompany.unique.plugin.id</id>
+  <name>Buck for IDEA</name>
+  <version>1.0</version>
+  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <category>Custom Languages</category>
+
+  <description><![CDATA[
+      Enter short description for your plugin here.<br>
+      <em>most HTML tags may be used</em>
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>
+    ]]>
+  </change-notes>
+
+  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="131"/>
+
+  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  -->
+
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <fileTypeFactory implementation="com.intellij.plugin.buck.file.BuckFileTypeFactory"/>
+    <lang.parserDefinition language="Buck" implementationClass="com.intellij.plugin.buck.lang.BuckParserDefinition"/>
+    <lang.syntaxHighlighterFactory key="Buck" implementationClass="com.intellij.plugin.buck.highlight.BuckSyntaxHighlighterFactory"/>
+    <completion.contributor language="Buck" implementationClass="com.intellij.plugin.buck.completion.BuckCompletionContributor"/>
+    <gotoDeclarationHandler implementation="com.intellij.plugin.buck.navigation.BuckGotoProvider" order="FIRST"/>
+  </extensions>
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <actions>
+    <group id="buck.BuckActions">
+      <action id="buck.GoToBuckFile" class="com.intellij.plugin.buck.actions.GoToBuckFile" text="Go to Buck file"
+            description="Go to Buck file for this source file."/>
+      <separator/>
+    </group>
+
+    <group id="buck.Menu" popup="true" text="Buck">
+      <reference ref="buck.BuckActions"/>
+      <separator/>
+      <add-to-group anchor="first" group-id="BuildMenu"/>
+      <add-to-group anchor="first" group-id="EditorPopupMenu"/>
+    </group>
+  </actions>
+
+</idea-plugin>
