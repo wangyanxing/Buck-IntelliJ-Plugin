@@ -1,3 +1,4 @@
+package com.intellij.plugin.buck.command;
 /**
  * Created by longma on 6/18/15.
  */

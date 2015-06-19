@@ -1,3 +1,4 @@
+package com.intellij.plugin.buck.command;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,7 +47,10 @@ public class BuckCommandUtils {
     public static String getNumJobDone(String src) {
         Matcher m = Pattern.compile("\\(([^)]+)\\)").matcher(src);
         while(m.find()) {
-            return m.group(1);
+            if(contains(m.group(1), "JOBS")) {
+                return m.group(1);
+            }
+            return null;
         }
         return null;
     }

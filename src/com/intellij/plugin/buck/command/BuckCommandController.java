@@ -1,3 +1,4 @@
+package com.intellij.plugin.buck.command;
 import java.io.*;
 
 /**
@@ -81,9 +82,7 @@ public class BuckCommandController {
                     case PARSING_BUCK_FILES_FINISHED:
                         String numJobDone = BuckCommandUtils.getNumJobDone(output);
                         if (numJobDone != null) {
-                            if(BuckCommandUtils.contains(numJobDone,"JOBS")) {
-                                System.out.println(numJobDone + " DONE!");
-                            }
+                            System.out.println(numJobDone + " DONE!");
                         }
                         break;
                     case BUILDING_FINISHED:
