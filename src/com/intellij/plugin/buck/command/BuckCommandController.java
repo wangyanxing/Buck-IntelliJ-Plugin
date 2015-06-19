@@ -69,11 +69,11 @@ public class BuckCommandController {
         _currentStatus = BuckCommandUtils.ProcessStatus.STARTED;
         try {
             Process p = Runtime.getRuntime().exec(command, null, envDir);
-            System.out.println("buck install...");
+            BuckCommandUtils.outputLog("buck install...");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             String output;
             while ((output = bufferedReader.readLine()) != null) {
-                //System.out.println(output);
+                //BuckCommandUtils.outputLog(output);
                 //check status
                 updateStatus(output, commandProcessMonitor);
                 switch (_currentStatus) {
@@ -82,13 +82,13 @@ public class BuckCommandController {
                     case PARSING_BUCK_FILES_FINISHED:
                         String numJobDone = BuckCommandUtils.getNumJobDone(output);
                         if (numJobDone != null) {
-                            System.out.println(numJobDone + " DONE!");
+                            BuckCommandUtils.outputLog(numJobDone + " DONE!");
                         }
                         break;
                     case BUILDING_FINISHED:
                         break;
                     case INSTALLING_FINISHED:
-                        System.out.println("buck install finished!");
+                        BuckCommandUtils.outputLog("buck install finished!");
                         //kill monitor
                         commandProcessMonitor.stopBoadcast();
                         break;
@@ -108,14 +108,14 @@ public class BuckCommandController {
         monitor.start();
         try {
             Process p = Runtime.getRuntime().exec(command, null, envDir);
-            System.out.println("buck build...");
+            BuckCommandUtils.outputLog("buck build...");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             String output;
             while ((output = bufferedReader.readLine()) != null) {
-                System.out.println(output);
+                BuckCommandUtils.outputLog(output);
             }
             bufferedReader.close();
-            System.out.println("buck build finshed!");
+            BuckCommandUtils.outputLog("buck build finshed!");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -127,14 +127,14 @@ public class BuckCommandController {
         monitor.start();
         try {
             Process p = Runtime.getRuntime().exec(command, null, envDir);
-            System.out.println("buck test...");
+            BuckCommandUtils.outputLog("buck test...");
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             String output;
             while ((output = bufferedReader.readLine()) != null) {
-                System.out.println(output);
+                BuckCommandUtils.outputLog(output);
             }
             bufferedReader.close();
-            System.out.println("buck test finshed!");
+            BuckCommandUtils.outputLog("buck test finshed!");
         } catch (IOException e) {
             e.printStackTrace();
         }

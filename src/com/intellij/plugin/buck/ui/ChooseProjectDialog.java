@@ -2,6 +2,8 @@ package com.intellij.plugin.buck.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.plugin.buck.command.BuckCommandController;
+import com.intellij.plugin.buck.command.BuckCommandUtils;
 import com.intellij.plugin.buck.storage.BuckSettingsStorage;
 
 import javax.swing.*;
@@ -9,9 +11,13 @@ import java.awt.*;
 
 public class ChooseProjectDialog extends DialogWrapper {
     private JTextField myField;
+    private BuckCommandUtils.COMMAND_TYPE commandType;
 
-    public ChooseProjectDialog(Project project){
+    static public BuckCommandController COMMAND_CONTROLLER = new BuckCommandController();
+
+    public ChooseProjectDialog(Project project, BuckCommandUtils.COMMAND_TYPE type){
         super(project, true);
+        commandType = type;
         setTitle("Choose Project");
         init();
     }
@@ -21,6 +27,8 @@ public class ChooseProjectDialog extends DialogWrapper {
 
         if (!text.isEmpty()) {
             BuckSettingsStorage.addHistory(text);
+
+            //COMMAND_CONTROLLER.executeBuckCommand(commandType);
         }
 
         super.doOKAction();

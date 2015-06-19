@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.plugin.buck.command.BuckCommandUtils;
 import com.intellij.plugin.buck.ui.ChooseProjectDialog;
 
-public class BuckInstallProject extends AnAction {
+public class BuckUninstallProject extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
@@ -14,6 +14,6 @@ public class BuckInstallProject extends AnAction {
         if (project == null) {
             return;
         }
-        new ChooseProjectDialog(project, BuckCommandUtils.COMMAND_TYPE.COMMAND_INSTALL).show();
+        new ChooseProjectDialog(project, BuckCommandUtils.COMMAND_TYPE.COMMAND_UNINSTALL).show();
     }
 }

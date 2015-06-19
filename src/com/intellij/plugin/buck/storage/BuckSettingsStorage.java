@@ -23,7 +23,7 @@ import java.util.Queue;
 public class BuckSettingsStorage extends AbstractProjectComponent implements PersistentStateComponent<Element> {
 
     public static Queue<String> HISTORICAL_PROJECT_NAMES = new LinkedList<String>();
-    public static final int MAX_HISTORIES = 3;
+    public static final int MAX_HISTORIES = 1;
 
     public static void addHistory(String project) {
         if (HISTORICAL_PROJECT_NAMES.contains(project)) {

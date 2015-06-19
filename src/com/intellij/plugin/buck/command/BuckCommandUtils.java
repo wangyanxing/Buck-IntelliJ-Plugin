@@ -20,6 +20,7 @@ public class BuckCommandUtils {
     public static enum COMMAND_TYPE{
         COMMAND_BUILD,
         COMMAND_INSTALL,
+        COMMAND_UNINSTALL,
         COMMAND_TEST
     }
 
@@ -27,6 +28,8 @@ public class BuckCommandUtils {
         switch (type) {
             case COMMAND_INSTALL:
                 return new String[]{"buck", "install", projectName};
+            case COMMAND_UNINSTALL:
+                return new String[]{"buck", "uninstall", projectName};
             case COMMAND_BUILD:
                 return new String[]{"buck", "build", projectName};
             case COMMAND_TEST:
@@ -53,5 +56,8 @@ public class BuckCommandUtils {
             return null;
         }
         return null;
+    }
+
+    public static void outputLog(String msg) {
     }
 }

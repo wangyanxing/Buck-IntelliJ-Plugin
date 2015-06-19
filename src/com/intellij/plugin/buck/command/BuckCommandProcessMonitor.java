@@ -16,7 +16,7 @@ class BuckCommandProcessMonitor extends Thread{
     }
 
     public void run() {
-        System.out.println("Monitor Started");
+        BuckCommandUtils.outputLog("Monitor Started");
         int currentTime = 0;
         for (int i = 0; i < 10; i++) {
             currentTime = i * 5;
@@ -24,7 +24,7 @@ class BuckCommandProcessMonitor extends Thread{
                 if (_shouldStop) {
                     break;
                 }
-                System.out.println(_commandType + " still in process... " +
+                BuckCommandUtils.outputLog(_commandType + " still in process... " +
                         currentTime + " seconds passed (" +
                         _strStatus + ")");
             }
@@ -38,7 +38,7 @@ class BuckCommandProcessMonitor extends Thread{
 
     public void stopBoadcast() {
         this._shouldStop = true;
-        System.out.println("Monitor Stopped ("  +
+        BuckCommandUtils.outputLog("Monitor Stopped (" +
                 _strStatus + ")");
     }
 
