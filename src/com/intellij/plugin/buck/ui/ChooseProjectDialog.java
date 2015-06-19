@@ -1,5 +1,6 @@
 package com.intellij.plugin.buck.ui;
 
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.plugin.buck.command.BuckCommandController;
@@ -27,6 +28,8 @@ public class ChooseProjectDialog extends DialogWrapper {
 
         if (!text.isEmpty()) {
             BuckSettingsStorage.addHistory(text);
+
+            FileDocumentManager.getInstance().saveAllDocuments();
 
             //COMMAND_CONTROLLER.executeBuckCommand(commandType);
         }

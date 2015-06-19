@@ -11,11 +11,6 @@ public class BuckUninstall extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        final Project project = e.getProject();
-        if (project == null) {
-            return;
-        }
-        new ChooseProjectDialog(project, BuckCommandUtils.COMMAND_TYPE.COMMAND_UNINSTALL).show();
     }
 
     @Override
