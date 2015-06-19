@@ -45,18 +45,16 @@
   </project-components>
 
   <actions>
-    <group id="buck.BuckActions">
-      <action id="buck.GoToBuckFile" class="com.intellij.plugin.buck.actions.GoToBuckFile" text="Go to Buck file"
-            description="Go to Buck file for this source file."/>
-      <separator/>
-    </group>
-
     <group id="buck.Menu" popup="true" text="Buck">
-      <reference ref="buck.BuckActions"/>
+      <action id="buck.GoToBuckFile" class="com.intellij.plugin.buck.actions.GoToBuckFile" text="Go to Buck file"
+              description="Go to Buck file for this source file."/>
       <separator/>
+      <action id="buck.InstallProject" class="com.intellij.plugin.buck.actions.BuckInstallProject" text="Buck install..."
+              description="Run buck install."/>
       <add-to-group anchor="first" group-id="BuildMenu"/>
       <add-to-group anchor="first" group-id="EditorPopupMenu"/>
     </group>
+
   </actions>
 
 </idea-plugin>
