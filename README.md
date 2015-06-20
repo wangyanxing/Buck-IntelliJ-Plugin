@@ -1,10 +1,10 @@
-# Buck plugin for IntelliJ
+# Buck Plugin for IntelliJ
 
 ### Facebook 2015 Summer Intern Hackathon Project
 
-Buck build system (http://buckbuild.com/) is widely used as a fast build tool especially for Android development. Unfortunately IntelliJ still has no plugin for it, therefore we plan to hack a Buck plugin for all JetBrains IDEs and raise our working efficiency.
+An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 
-<a href="https://www.flickr.com/photos/128908106@N06/18978890005" title="Screen Shot 2015-06-20 at 1.01.48 AM by Yanxing Wang, on Flickr"><img src="https://c1.staticflickr.com/1/401/18978890005_b92d0b3d75_o.png" width="1047" height="639" alt="Screen Shot 2015-06-20 at 1.01.48 AM"></a>
+<a href="https://www.flickr.com/photos/128908106@N06/18951653786" title="Screen Shot 2015-06-20 at 12.12.26 AM by Yanxing Wang, on Flickr"><img src="https://c1.staticflickr.com/1/332/18951653786_82b87867fd_c.jpg" width="800" height="538" alt="Screen Shot 2015-06-20 at 12.12.26 AM"></a>
 
 ## Features
 
