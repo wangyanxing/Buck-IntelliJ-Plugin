@@ -14,6 +14,9 @@ Buck build system (http://buckbuild.com/) is widely used as a fast build tool es
 * Go to to paths of dependencies with one click
 * Shortcuts for buck commands, e.g. buck install/build/test (still under development)
 
+![Plugin in action](http://i.giphy.com/l41lMLZvdIovJ1Ztu.gif)
+
+
 ## Feedbacks
 
 All bug reporting and other feedbacks are super welcome!
