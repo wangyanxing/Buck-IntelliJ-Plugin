@@ -2,12 +2,17 @@ package com.intellij.plugin.buck.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.plugin.buck.command.BuckCommandController;
+import com.intellij.plugin.buck.command.BuckCommandUtils;
 import com.intellij.plugin.buck.storage.BuckSettingsStorage;
 
 public class BuckInstall extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
+        BuckCommandUtils.sProject = e.getProject();
+        new BuckCommandController("/Users/cjlm/fbandroid-hg", BuckSettingsStorage.peekHistory()).executeBuckCommand(
+                BuckCommandUtils.COMMAND_TYPE.COMMAND_INSTALL);
     }
 
     @Override
