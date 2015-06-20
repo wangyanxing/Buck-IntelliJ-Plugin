@@ -1,9 +1,9 @@
-<idea-plugin version="2">
-  <id>com.yourcompany.unique.plugin.id</id>
+<idea-plugin version="0.1">
+  <id>intellij.buck.plugin</id>
   <name>Buck for IDEA</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
-  <category>Custom Languages</category>
+  <vendor email="demiwangya@gmail.com" url="https://github.com/wangyanxing/buck_idea_plugin">Yanxing Wang</vendor>
+  <category>Build</category>
 
   <description><![CDATA[
       Enter short description for your plugin here.<br>
