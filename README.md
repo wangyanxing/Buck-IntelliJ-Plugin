@@ -18,9 +18,9 @@ An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 
 ## Installation
 
-  - Download the [Buck.jar v1.1](https://github.com/wangyanxing/buck_idea_plugin/releases/download/1.1/Buck.jar)  of this repo and install it via <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
-  
-Restart your IDE.
+Download the [Buck.jar v1.1](https://github.com/wangyanxing/buck_idea_plugin/releases/download/1.1/Buck.jar)  of this repo and install it via <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
+
+Your can also download from [IntelliJ Plugin Repository](https://plugins.jetbrains.com/plugin/7826).
 
 ## Contributors
 
