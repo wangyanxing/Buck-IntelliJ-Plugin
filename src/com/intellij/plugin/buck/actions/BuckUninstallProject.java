@@ -14,6 +14,6 @@ public class BuckUninstallProject extends AnAction {
         if (project == null) {
             return;
         }
-        new ChooseProjectDialog(project, BuckCommandUtils.COMMAND_TYPE.COMMAND_UNINSTALL).show();
+        new ChooseProjectDialog(project, BuckCommandUtils.CommandType.COMMAND_UNINSTALL).show();
     }
 }

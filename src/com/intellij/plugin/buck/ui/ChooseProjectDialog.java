@@ -12,28 +12,30 @@ import java.awt.*;
 
 public class ChooseProjectDialog extends DialogWrapper {
     private JTextField myField;
-    private BuckCommandUtils.COMMAND_TYPE commandType;
+    private BuckCommandUtils.CommandType commandType;
     private Project project;
 
-    public ChooseProjectDialog(Project project, BuckCommandUtils.COMMAND_TYPE type){
+    public ChooseProjectDialog(Project project, BuckCommandUtils.CommandType type){
         super(project, true);
 
         this.project = project;
         commandType = type;
-        setTitle("Choose Project");
+
+        setTitle("Choose Project " + BuckCommandUtils.getPorjectDir(project));
         init();
     }
 
     protected void doOKAction(){
-        String text = myField.getText();
+        String projectName = myField.getText();
 
-        if (!text.isEmpty()) {
-            BuckSettingsStorage.addHistory(text);
+        if (!projectName.isEmpty()) {
+            BuckSettingsStorage.addHistory(projectName);
 
             FileDocumentManager.getInstance().saveAllDocuments();
 
             BuckCommandUtils.sProject = project;
-            new BuckCommandController("/Users/cjlm/fbandroid-hg", text).executeBuckCommand(commandType);
+            new BuckCommandController(BuckCommandUtils.getPorjectDir(project), projectName)
+                    .executeBuckCommand(commandType);
         }
 
         super.doOKAction();

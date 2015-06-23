@@ -11,8 +11,9 @@ public class BuckInstall extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         BuckCommandUtils.sProject = e.getProject();
-        new BuckCommandController("/Users/cjlm/fbandroid-hg", BuckSettingsStorage.peekHistory()).executeBuckCommand(
-                BuckCommandUtils.COMMAND_TYPE.COMMAND_INSTALL);
+        new BuckCommandController(BuckCommandUtils.getPorjectDir(e.getProject()),
+                BuckSettingsStorage.peekHistory()).executeBuckCommand(
+                BuckCommandUtils.CommandType.COMMAND_INSTALL);
     }
 
     @Override

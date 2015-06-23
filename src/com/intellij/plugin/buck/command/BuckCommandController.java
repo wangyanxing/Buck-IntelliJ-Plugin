@@ -9,15 +9,10 @@ public class BuckCommandController {
     private String _projectName;
     private BuckCommandUtils.ProcessStatus _currentStatus;
 
-    public BuckCommandController() {
-        _envDir = new File(BuckCommandUtils.ENV_DIR);
-        _projectName = BuckCommandUtils.PROJECT_NAME;
-        _currentStatus = BuckCommandUtils.ProcessStatus.NONE;
-    }
-
     public BuckCommandController(String envDir, String projectName) {
         this._envDir = new File(envDir);
         this._projectName = projectName;
+        _currentStatus = BuckCommandUtils.ProcessStatus.NONE;
     }
 
     public void setEnvDir(File newDir) {
@@ -46,7 +41,7 @@ public class BuckCommandController {
     }
 
 
-    public void executeBuckCommand(BuckCommandUtils.COMMAND_TYPE type){
+    public void executeBuckCommand(BuckCommandUtils.CommandType type){
         String[] command = BuckCommandUtils.getCommand(type, this._projectName);
         switch (type) {
             case COMMAND_INSTALL:
@@ -73,7 +68,7 @@ public class BuckCommandController {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             String output;
             while ((output = bufferedReader.readLine()) != null) {
-                //BuckCommandUtils.outputLog(output);
+                BuckCommandUtils.outputLog(output);
                 //check status
                 updateStatus(output, commandProcessMonitor);
                 switch (_currentStatus) {

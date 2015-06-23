@@ -1,0 +1,42 @@
+{
+  parserClass="com.intellij.plugin.buck.lang.BuckParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Buck"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.intellij.plugin.buck.lang.psi"
+  psiImplPackage="com.intellij.plugin.buck.lang.psi.impl"
+
+  elementTypeHolderClass="com.intellij.plugin.buck.lang.psi.BuckTypes"
+  elementTypeClass="com.intellij.plugin.buck.lang.psi.BuckElementType"
+  tokenTypeClass="com.intellij.plugin.buck.lang.psi.BuckTokenType"
+}
+
+buckFile ::= item_*
+
+private item_ ::= (rule_block | property | COMMENT | CRLF)
+
+property ::= ((IDENTIFIER | MACROS | KEYWORDS) '=' value) | value
+value ::= VALUE_STRING | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | rule_block
+
+value_array ::= '[' (CRLF | WHITE_SPACE)* array_elements ']'
+array_elements ::= (
+  value |
+  "," |
+  CRLF |
+  WHITE_SPACE
+)*
+
+rule_block ::= (RULE_NAMES | GENERIC_RULE_NAMES | IDENTIFIER) '(' (CRLF | WHITE_SPACE)* rule_body ')'
+rule_body ::= (
+  property  |
+  "," |
+  CRLF |
+  WHITE_SPACE
+)*
+
+braces ::= '(' | ')' | '{' | '}' | '[' | ']'
+comma ::= ','
+semicolon ::= ';'
+equal ::= '='

@@ -59,7 +59,6 @@
     <group id="buck.Menu" popup="true" text="Buck">
       <action id="buck.GoToBuckFile" class="com.intellij.plugin.buck.actions.GoToBuckFile" text="Go to Buck file"
               description="Go to Buck file for this source file."/>
-        <!--
         <separator/>
         <action id="buck.Install" class="com.intellij.plugin.buck.actions.BuckInstall" text="Buck install"
                 description="Run buck install."/>
@@ -74,7 +73,6 @@
                 description="Run buck uninstall with a specific project."/>
         <action id="buck.BuildProject" class="com.intellij.plugin.buck.actions.BuckBuildProject" text="Buck build..."
                 description="Run buck build with a specific project."/>
-        -->
         <add-to-group anchor="first" group-id="BuildMenu"/>
         <add-to-group anchor="first" group-id="EditorPopupMenu"/>
 

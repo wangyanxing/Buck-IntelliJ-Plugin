@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
  * Created by longma on 6/18/15.
  */
 public class BuckCommandUtils {
-    public static String ENV_DIR = "//Users//longma//fbandroid-hg";
-    public static String PROJECT_NAME = "fb4a";
     public static Project sProject;
 
     public static enum ProcessStatus {
@@ -22,14 +20,14 @@ public class BuckCommandUtils {
         INSTALLING_FINISHED,
     }
 
-    public static enum COMMAND_TYPE{
+    public static enum CommandType {
         COMMAND_BUILD,
         COMMAND_INSTALL,
         COMMAND_UNINSTALL,
         COMMAND_TEST
     }
 
-    public static String[] getCommand(COMMAND_TYPE type, String projectName){
+    public static String[] getCommand(CommandType type, String projectName){
         switch (type) {
             case COMMAND_INSTALL:
                 return new String[]{"buck", "install", projectName};
@@ -65,5 +63,10 @@ public class BuckCommandUtils {
 
     public static void outputLog(String msg) {
         EventLogger.showOverChangesView(sProject, msg, MessageType.ERROR);
+    }
+
+    public static String getPorjectDir(Project project){
+        String path = project.getBaseDir() + "";
+        return path.substring(7); //remove "file://" at the beginning
     }
 }
