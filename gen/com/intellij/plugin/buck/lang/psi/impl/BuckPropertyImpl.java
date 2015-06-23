@@ -23,12 +23,6 @@ public class BuckPropertyImpl extends ASTWrapperPsiElement implements BuckProper
   }
 
   @Override
-  @Nullable
-  public BuckKeywords getKeywords() {
-    return findChildByClass(BuckKeywords.class);
-  }
-
-  @Override
   @NotNull
   public BuckValue getValue() {
     return findNotNullChildByClass(BuckValue.class);

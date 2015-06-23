@@ -34,9 +34,6 @@ public class BuckParser implements PsiParser {
     else if (t == EQUAL) {
       r = equal(b, 0);
     }
-    else if (t == KEYWORDS) {
-      r = keywords(b, 0);
-    }
     else if (t == PROPERTY) {
       r = property(b, 0);
     }
@@ -45,9 +42,6 @@ public class BuckParser implements PsiParser {
     }
     else if (t == RULE_BODY) {
       r = rule_body(b, 0);
-    }
-    else if (t == RULE_NAME) {
-      r = rule_name(b, 0);
     }
     else if (t == SEMICOLON) {
       r = semicolon(b, 0);
@@ -170,52 +164,7 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // "name" |
-  //              "res" |
-  //              "binary_jar" |
-  //              "srcs" |
-  //              "deps" |
-  //              "manifest" |
-  //              "package_type" |
-  //              "keystore" |
-  //              "glob" |
-  //              "visibility" |
-  //              "aar" |
-  //              "src_target" |
-  //              "src_roots" |
-  //              "java7_support" |
-  //              "source_under_test" |
-  //              "test_library_project_dir" |
-  //              "contacts" |
-  //              "exported_deps"
-  public static boolean keywords(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "keywords")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<keywords>");
-    r = consumeToken(b, "name");
-    if (!r) r = consumeToken(b, "res");
-    if (!r) r = consumeToken(b, "binary_jar");
-    if (!r) r = consumeToken(b, "srcs");
-    if (!r) r = consumeToken(b, "deps");
-    if (!r) r = consumeToken(b, "manifest");
-    if (!r) r = consumeToken(b, "package_type");
-    if (!r) r = consumeToken(b, "keystore");
-    if (!r) r = consumeToken(b, "glob");
-    if (!r) r = consumeToken(b, "visibility");
-    if (!r) r = consumeToken(b, "aar");
-    if (!r) r = consumeToken(b, "src_target");
-    if (!r) r = consumeToken(b, "src_roots");
-    if (!r) r = consumeToken(b, "java7_support");
-    if (!r) r = consumeToken(b, "source_under_test");
-    if (!r) r = consumeToken(b, "test_library_project_dir");
-    if (!r) r = consumeToken(b, "contacts");
-    if (!r) r = consumeToken(b, "exported_deps");
-    exit_section_(b, l, m, KEYWORDS, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // ((IDENTIFIER | keywords) '=' value) | value
+  // ((IDENTIFIER | KEYWORDS) '=' value) | value
   public static boolean property(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property")) return false;
     boolean r;
@@ -226,7 +175,7 @@ public class BuckParser implements PsiParser {
     return r;
   }
 
-  // (IDENTIFIER | keywords) '=' value
+  // (IDENTIFIER | KEYWORDS) '=' value
   private static boolean property_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_0")) return false;
     boolean r;
@@ -238,29 +187,41 @@ public class BuckParser implements PsiParser {
     return r;
   }
 
-  // IDENTIFIER | keywords
+  // IDENTIFIER | KEYWORDS
   private static boolean property_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, IDENTIFIER);
-    if (!r) r = keywords(b, l + 1);
+    if (!r) r = consumeToken(b, KEYWORDS);
     exit_section_(b, m, null, r);
     return r;
   }
 
   /* ********************************************************** */
-  // rule_name '(' (CRLF | WHITE_SPACE)* rule_body ')'
+  // (RULE_NAMES | GENERIC_RULE_NAMES | IDENTIFIER) '(' (CRLF | WHITE_SPACE)* rule_body ')'
   public static boolean rule_block(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "rule_block")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<rule block>");
-    r = rule_name(b, l + 1);
+    r = rule_block_0(b, l + 1);
     r = r && consumeToken(b, "(");
     r = r && rule_block_2(b, l + 1);
     r = r && rule_body(b, l + 1);
     r = r && consumeToken(b, ")");
     exit_section_(b, l, m, RULE_BLOCK, r, false, null);
+    return r;
+  }
+
+  // RULE_NAMES | GENERIC_RULE_NAMES | IDENTIFIER
+  private static boolean rule_block_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rule_block_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, RULE_NAMES);
+    if (!r) r = consumeToken(b, GENERIC_RULE_NAMES);
+    if (!r) r = consumeToken(b, IDENTIFIER);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -320,87 +281,6 @@ public class BuckParser implements PsiParser {
     if (!r) r = consumeToken(b, CRLF);
     if (!r) r = consumeToken(b, WHITE_SPACE);
     exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // "genrule"|
-  //               "remote_file"|
-  //               "android_aar"|
-  //               "android_binary"|
-  //               "android_build_config"|
-  //               "android_library"|
-  //               "android_manifest"|
-  //               "android_prebuilt_aar"|
-  //               "android_resource"|
-  //               "apk_genrule"|
-  //               "cxx_library"|
-  //               "gen_aidl"|
-  //               "ndk_library"|
-  //               "prebuilt_jar"|
-  //               "prebuilt_native_library"|
-  //               "project_config"|
-  //               "cxx_binary"|
-  //               "cxx_library"|
-  //               "cxx_test"|
-  //               "prebuilt_native_library"|
-  //               "d_binary"|
-  //               "d_library"|
-  //               "d_test"|
-  //               "cxx_library"|
-  //               "java_binary"|
-  //               "java_library"|
-  //               "java_test"|
-  //               "prebuilt_jar"|
-  //               "prebuilt_native_library"|
-  //               "prebuilt_python_library"|
-  //               "python_binary"|
-  //               "python_library"|
-  //               "python_test"|
-  //               "glob"|
-  //               "include_defs"|
-  //               "robolectric_test"
-  public static boolean rule_name(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "rule_name")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<rule name>");
-    r = consumeToken(b, "genrule");
-    if (!r) r = consumeToken(b, "remote_file");
-    if (!r) r = consumeToken(b, "android_aar");
-    if (!r) r = consumeToken(b, "android_binary");
-    if (!r) r = consumeToken(b, "android_build_config");
-    if (!r) r = consumeToken(b, "android_library");
-    if (!r) r = consumeToken(b, "android_manifest");
-    if (!r) r = consumeToken(b, "android_prebuilt_aar");
-    if (!r) r = consumeToken(b, "android_resource");
-    if (!r) r = consumeToken(b, "apk_genrule");
-    if (!r) r = consumeToken(b, "cxx_library");
-    if (!r) r = consumeToken(b, "gen_aidl");
-    if (!r) r = consumeToken(b, "ndk_library");
-    if (!r) r = consumeToken(b, "prebuilt_jar");
-    if (!r) r = consumeToken(b, "prebuilt_native_library");
-    if (!r) r = consumeToken(b, "project_config");
-    if (!r) r = consumeToken(b, "cxx_binary");
-    if (!r) r = consumeToken(b, "cxx_library");
-    if (!r) r = consumeToken(b, "cxx_test");
-    if (!r) r = consumeToken(b, "prebuilt_native_library");
-    if (!r) r = consumeToken(b, "d_binary");
-    if (!r) r = consumeToken(b, "d_library");
-    if (!r) r = consumeToken(b, "d_test");
-    if (!r) r = consumeToken(b, "cxx_library");
-    if (!r) r = consumeToken(b, "java_binary");
-    if (!r) r = consumeToken(b, "java_library");
-    if (!r) r = consumeToken(b, "java_test");
-    if (!r) r = consumeToken(b, "prebuilt_jar");
-    if (!r) r = consumeToken(b, "prebuilt_native_library");
-    if (!r) r = consumeToken(b, "prebuilt_python_library");
-    if (!r) r = consumeToken(b, "python_binary");
-    if (!r) r = consumeToken(b, "python_library");
-    if (!r) r = consumeToken(b, "python_test");
-    if (!r) r = consumeToken(b, "glob");
-    if (!r) r = consumeToken(b, "include_defs");
-    if (!r) r = consumeToken(b, "robolectric_test");
-    exit_section_(b, l, m, RULE_NAME, r, false, null);
     return r;
   }
 

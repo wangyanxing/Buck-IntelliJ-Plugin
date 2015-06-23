@@ -12,18 +12,19 @@ public interface BuckTypes {
   IElementType BRACES = new BuckElementType("BRACES");
   IElementType COMMA = new BuckElementType("COMMA");
   IElementType EQUAL = new BuckElementType("EQUAL");
-  IElementType KEYWORDS = new BuckElementType("KEYWORDS");
   IElementType PROPERTY = new BuckElementType("PROPERTY");
   IElementType RULE_BLOCK = new BuckElementType("RULE_BLOCK");
   IElementType RULE_BODY = new BuckElementType("RULE_BODY");
-  IElementType RULE_NAME = new BuckElementType("RULE_NAME");
   IElementType SEMICOLON = new BuckElementType("SEMICOLON");
   IElementType VALUE = new BuckElementType("VALUE");
   IElementType VALUE_ARRAY = new BuckElementType("VALUE_ARRAY");
 
   IElementType COMMENT = new BuckTokenType("COMMENT");
   IElementType CRLF = new BuckTokenType("CRLF");
+  IElementType GENERIC_RULE_NAMES = new BuckTokenType("GENERIC_RULE_NAMES");
   IElementType IDENTIFIER = new BuckTokenType("IDENTIFIER");
+  IElementType KEYWORDS = new BuckTokenType("KEYWORDS");
+  IElementType RULE_NAMES = new BuckTokenType("RULE_NAMES");
   IElementType VALUE_BOOLEAN = new BuckTokenType("VALUE_BOOLEAN");
   IElementType VALUE_STRING = new BuckTokenType("VALUE_STRING");
   IElementType WHITE_SPACE = new BuckTokenType("WHITE_SPACE");
@@ -43,9 +44,6 @@ public interface BuckTypes {
       else if (type == EQUAL) {
         return new BuckEqualImpl(node);
       }
-      else if (type == KEYWORDS) {
-        return new BuckKeywordsImpl(node);
-      }
       else if (type == PROPERTY) {
         return new BuckPropertyImpl(node);
       }
@@ -54,9 +52,6 @@ public interface BuckTypes {
       }
       else if (type == RULE_BODY) {
         return new BuckRuleBodyImpl(node);
-      }
-      else if (type == RULE_NAME) {
-        return new BuckRuleNameImpl(node);
       }
       else if (type == SEMICOLON) {
         return new BuckSemicolonImpl(node);

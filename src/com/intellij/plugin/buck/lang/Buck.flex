@@ -64,6 +64,8 @@ RULE_NAMES = "genrule"|
              "include_defs"|
              "robolectric_test"
 
+GENERIC_RULE_NAMES = [a-zA-Z0-9]+("_android_library") | [a-zA-Z0-9]+("_android_library")
+
 KEYWORDS =  "name" |
             "res" |
             "binary_jar" |
@@ -82,7 +84,12 @@ KEYWORDS =  "name" |
             "test_library_project_dir" |
             "contacts" |
             "exported_deps" |
-            "excludes"
+            "excludes" |
+            "main" |
+            "resources" |
+            "javadoc_url" |
+            "store" |
+            "properties"
 
 DIGIT = [0-9]
 LETTER = [:letter:]|"_"
@@ -108,7 +115,9 @@ EQUAL = "="
 
 {WHITE_SPACE}+          { return TokenType.WHITE_SPACE; }
 
-{RULE_NAMES}            { return RULE_NAME; }
+{RULE_NAMES}            { return RULE_NAMES; }
+
+{GENERIC_RULE_NAMES}    { return RULE_NAMES; }
 
 {STRING_SINGLE_QUOTED}  { return VALUE_STRING; }
 

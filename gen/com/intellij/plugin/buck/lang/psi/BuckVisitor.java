@@ -23,10 +23,6 @@ public class BuckVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitKeywords(@NotNull BuckKeywords o) {
-    visitPsiElement(o);
-  }
-
   public void visitProperty(@NotNull BuckProperty o) {
     visitPsiElement(o);
   }
@@ -36,10 +32,6 @@ public class BuckVisitor extends PsiElementVisitor {
   }
 
   public void visitRuleBody(@NotNull BuckRuleBody o) {
-    visitPsiElement(o);
-  }
-
-  public void visitRuleName(@NotNull BuckRuleName o) {
     visitPsiElement(o);
   }
 

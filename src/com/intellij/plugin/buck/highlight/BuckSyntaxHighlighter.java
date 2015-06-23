@@ -67,7 +67,7 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
             return KEY_KEYS;
         } else if (tokenType.equals(BuckTypes.VALUE)) {
             return VALUE_KEYS;
-        } else if (tokenType.equals(BuckTypes.RULE_NAME)) {
+        } else if (tokenType.equals(BuckTypes.RULE_NAMES)) {
             return RULE_NAME_KEYS;
         } else if (tokenType.equals(BuckTypes.VALUE_STRING)) {
             return STRING_KEYS;

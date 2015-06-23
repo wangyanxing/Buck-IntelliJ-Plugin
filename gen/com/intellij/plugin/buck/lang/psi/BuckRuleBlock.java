@@ -10,7 +10,4 @@ public interface BuckRuleBlock extends PsiElement {
   @NotNull
   BuckRuleBody getRuleBody();
 
-  @NotNull
-  BuckRuleName getRuleName();
-
 }
