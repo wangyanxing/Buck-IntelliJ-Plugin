@@ -37,6 +37,8 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
             "BUCK_SEMICOLON", DefaultLanguageHighlighterColors.SEMICOLON);
     public static final TextAttributesKey BUCK_EQUAL = createTextAttributesKey(
             "BUCK_EQUAL", DefaultLanguageHighlighterColors.OPERATION_SIGN);
+    public static final TextAttributesKey BUCK_MACRO = createTextAttributesKey(
+            "BUCK_MACRO", DefaultLanguageHighlighterColors.STATIC_FIELD);
 
     static final TextAttributesKey BAD_CHARACTER = createTextAttributesKey("BUCK_BAD_CHARACTER",
             new TextAttributes(Color.RED, null, null, null, Font.BOLD));
@@ -52,6 +54,7 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] COMMA_KEYS = new TextAttributesKey[]{BUCK_COMMA};
     private static final TextAttributesKey[] SEMICOLON_KEYS = new TextAttributesKey[]{BUCK_SEMICOLON};
     private static final TextAttributesKey[] EQUAL_KEYS = new TextAttributesKey[]{BUCK_EQUAL};
+    private static final TextAttributesKey[] MACROS_KEYS = new TextAttributesKey[]{BUCK_MACRO};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
     @NotNull
@@ -83,6 +86,8 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
             return EQUAL_KEYS;
         } else if (tokenType.equals(BuckTypes.COMMENT)) {
             return COMMENT_KEYS;
+        } else if (tokenType.equals(BuckTypes.MACROS)) {
+            return MACROS_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
         } else {

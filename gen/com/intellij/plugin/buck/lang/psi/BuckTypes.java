@@ -24,6 +24,7 @@ public interface BuckTypes {
   IElementType GENERIC_RULE_NAMES = new BuckTokenType("GENERIC_RULE_NAMES");
   IElementType IDENTIFIER = new BuckTokenType("IDENTIFIER");
   IElementType KEYWORDS = new BuckTokenType("KEYWORDS");
+  IElementType MACROS = new BuckTokenType("MACROS");
   IElementType RULE_NAMES = new BuckTokenType("RULE_NAMES");
   IElementType VALUE_BOOLEAN = new BuckTokenType("VALUE_BOOLEAN");
   IElementType VALUE_STRING = new BuckTokenType("VALUE_STRING");

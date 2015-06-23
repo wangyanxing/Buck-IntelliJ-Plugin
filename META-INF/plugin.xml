@@ -1,25 +1,25 @@
-<idea-plugin version="0.2">
+<idea-plugin version="0.1">
   <id>intellij.buck.plugin</id>
   <name>Buck for IDEA</name>
-  <version>1.0</version>
+  <version>1.1</version>
   <vendor email="demiwangya@gmail.com" url="https://github.com/wangyanxing/buck_idea_plugin">Yanxing Wang</vendor>
   <category>Build</category>
 
   <description><![CDATA[
       An IntelliJ plugin for Buck build system.<br>
-      <h3>Features</h3>:
+      <h3>Features:</h3>
       <ul>
         <li>Syntax highlighting for BUCK file</li>
         <li>Keywords auto completion</li>
         <li>Go to buck file with one click</li>
         <li>Go to to paths of dependencies with one click</li>
       </ul>
-      <em>most HTML tags may be used</em>
     ]]></description>
 
   <change-notes><![CDATA[
       1. BNF and flex file revised.<br>
       2. **_android_binary rule name supported.<br>
+      3. Macro type added.<br>
     ]]>
   </change-notes>
 

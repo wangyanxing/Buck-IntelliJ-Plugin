@@ -164,7 +164,7 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // ((IDENTIFIER | KEYWORDS) '=' value) | value
+  // ((IDENTIFIER | MACROS | KEYWORDS) '=' value) | value
   public static boolean property(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property")) return false;
     boolean r;
@@ -175,7 +175,7 @@ public class BuckParser implements PsiParser {
     return r;
   }
 
-  // (IDENTIFIER | KEYWORDS) '=' value
+  // (IDENTIFIER | MACROS | KEYWORDS) '=' value
   private static boolean property_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_0")) return false;
     boolean r;
@@ -187,12 +187,13 @@ public class BuckParser implements PsiParser {
     return r;
   }
 
-  // IDENTIFIER | KEYWORDS
+  // IDENTIFIER | MACROS | KEYWORDS
   private static boolean property_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, IDENTIFIER);
+    if (!r) r = consumeToken(b, MACROS);
     if (!r) r = consumeToken(b, KEYWORDS);
     exit_section_(b, m, null, r);
     return r;
@@ -296,13 +297,14 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // VALUE_STRING | VALUE_BOOLEAN | IDENTIFIER | value_array | rule_block
+  // VALUE_STRING | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | rule_block
   public static boolean value(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "value")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<value>");
     r = consumeToken(b, VALUE_STRING);
     if (!r) r = consumeToken(b, VALUE_BOOLEAN);
+    if (!r) r = consumeToken(b, MACROS);
     if (!r) r = consumeToken(b, IDENTIFIER);
     if (!r) r = value_array(b, l + 1);
     if (!r) r = rule_block(b, l + 1);

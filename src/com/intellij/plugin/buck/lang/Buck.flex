@@ -89,15 +89,19 @@ KEYWORDS =  "name" |
             "resources" |
             "javadoc_url" |
             "store" |
-            "properties"
+            "properties" |
+            "assets" |
+            "package"
+
+MACROS = ([A-Z0-9] | ("_"))+
 
 DIGIT = [0-9]
 LETTER = [:letter:]|"_"
 IDENTIFIER = ({LETTER})({LETTER}|{DIGIT})*
 VALUE_BOOLEAN = "True" | "False" | "true" | "false" | "TRUE" | "FALSE"
 
-STRING_SINGLE_QUOTED=\'([^\\\'\r\n]|{CRLF})*(\'|\\)? | \'\'\' ( (\'(\')?)? [^\'] )* \'\'\'
-STRING_DOUBLE_QUOTED=\"([^\\\"\r\n]|{CRLF})*(\"|\\)? | \"\"\" ( (\"(\")?)? [^\"] )* \"\"\"
+STRING_SINGLE_QUOTED = \'([^\\\'\r\n]|{CRLF})*(\'|\\)? | \'\'\' ( (\'(\')?)? [^\'] )* \'\'\'
+STRING_DOUBLE_QUOTED = \"([^\\\"\r\n]|{CRLF})*(\"|\\)? | \"\"\" ( (\"(\")?)? [^\"] )* \"\"\"
 STRING = {STRING_SINGLE_QUOTED} | {STRING_DOUBLE_QUOTED}
 
 BRACES = "(" | ")" | "{" | "}" | "[" | "]"
@@ -134,6 +138,8 @@ EQUAL = "="
 {VALUE_BOOLEAN}         { return VALUE_BOOLEAN; }
 
 {KEYWORDS}              { return KEYWORDS; }
+
+{MACROS}                { return MACROS; }
 
 {IDENTIFIER}            { return IDENTIFIER; }
 
