@@ -4,7 +4,7 @@
 
 An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 
-<a href="https://www.flickr.com/photos/128908106@N06/18951653786" title="Screen Shot 2015-06-20 at 12.12.26 AM by Yanxing Wang, on Flickr"><img src="https://c1.staticflickr.com/1/332/18951653786_82b87867fd_c.jpg" width="800" height="538" alt="Screen Shot 2015-06-20 at 12.12.26 AM"></a>
+<a href="https://www.flickr.com/photos/128908106@N06/18453647543" title="Screen Shot 2015-06-22 at 10.27.09 PM by Yanxing Wang, on Flickr"><img src="https://c1.staticflickr.com/1/394/18453647543_f3cc6227f3_c.jpg" width="800" height="580" alt="Screen Shot 2015-06-22 at 10.27.09 PM"></a>
 
 ## Features
 
