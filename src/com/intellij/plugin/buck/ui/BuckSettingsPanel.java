@@ -6,21 +6,21 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class BuckSettingsPanel {
-    private JPanel myWholePanel;
-    private BuckOptionsProvider myOptionsProvider;
+  private JPanel myWholePanel;
+  private BuckOptionsProvider myOptionsProvider;
 
-    public JComponent createPanel(@NotNull BuckOptionsProvider provider) {
-        myOptionsProvider = provider;
-        return myWholePanel;
-    }
+  public JComponent createPanel(@NotNull BuckOptionsProvider provider) {
+    myOptionsProvider = provider;
+    return myWholePanel;
+  }
 
-    public boolean isModified() {
-        return false;
-    }
+  public boolean isModified() {
+    return false;
+  }
 
-    public void apply() {
-    }
+  public void apply() {
+  }
 
-    public void reset() {
-    }
+  public void reset() {
+  }
 }

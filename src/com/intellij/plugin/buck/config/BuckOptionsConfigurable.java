@@ -14,69 +14,69 @@ import javax.swing.*;
 
 public class BuckOptionsConfigurable implements SearchableConfigurable, Configurable.NoScroll, Disposable {
 
-    public static final String TERMINAL_SETTINGS_HELP_REFERENCE = "reference.settings.terminal";
+  public static final String TERMINAL_SETTINGS_HELP_REFERENCE = "reference.settings.terminal";
 
-    private BuckSettingsPanel myPanel;
+  private BuckSettingsPanel myPanel;
 
-    private final BuckOptionsProvider myOptionsProvider;
-    private Project myProject;
+  private final BuckOptionsProvider myOptionsProvider;
+  private Project myProject;
 
-    public BuckOptionsConfigurable(Project project) {
-        myOptionsProvider = BuckOptionsProvider.getInstance();
-        myProject = project;
-    }
+  public BuckOptionsConfigurable(Project project) {
+    myOptionsProvider = BuckOptionsProvider.getInstance();
+    myProject = project;
+  }
 
-    @NotNull
-    @Override
-    public String getId() {
-        return "buck";
-    }
+  @NotNull
+  @Override
+  public String getId() {
+    return "buck";
+  }
 
-    @Override
-    public Runnable enableSearch(String option) {
-        return null;
-    }
+  @Override
+  public Runnable enableSearch(String option) {
+    return null;
+  }
 
 
-    @Nls
-    @Override
-    public String getDisplayName() {
-        return "Buck";
-    }
+  @Nls
+  @Override
+  public String getDisplayName() {
+    return "Buck";
+  }
 
-    @Override
-    public String getHelpTopic() {
-        return TERMINAL_SETTINGS_HELP_REFERENCE;
-    }
+  @Override
+  public String getHelpTopic() {
+    return TERMINAL_SETTINGS_HELP_REFERENCE;
+  }
 
-    @Override
-    public JComponent createComponent() {
-        myPanel = new BuckSettingsPanel();
-        return myPanel.createPanel(myOptionsProvider);
-    }
+  @Override
+  public JComponent createComponent() {
+    myPanel = new BuckSettingsPanel();
+    return myPanel.createPanel(myOptionsProvider);
+  }
 
-    @Override
-    public boolean isModified() {
-        return myPanel.isModified();
-    }
+  @Override
+  public boolean isModified() {
+    return myPanel.isModified();
+  }
 
-    @Override
-    public void apply() throws ConfigurationException {
-        myPanel.apply();
-    }
+  @Override
+  public void apply() throws ConfigurationException {
+    myPanel.apply();
+  }
 
-    @Override
-    public void reset() {
-        myPanel.reset();
-    }
+  @Override
+  public void reset() {
+    myPanel.reset();
+  }
 
-    @Override
-    public void disposeUIResources() {
-        Disposer.dispose(this);
-    }
+  @Override
+  public void disposeUIResources() {
+    Disposer.dispose(this);
+  }
 
-    @Override
-    public void dispose() {
-        myPanel = null;
-    }
+  @Override
+  public void dispose() {
+    myPanel = null;
+  }
 }

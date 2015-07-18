@@ -19,53 +19,53 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Reader;
 
 public class BuckParserDefinition implements ParserDefinition {
-    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(BuckTypes.COMMENT);
+  public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
+  public static final TokenSet COMMENTS = TokenSet.create(BuckTypes.COMMENT);
 
-    public static final IFileElementType FILE = new IFileElementType(
-            Language.<BuckLanguage>findInstance(BuckLanguage.class));
+  public static final IFileElementType FILE = new IFileElementType(
+      Language.<BuckLanguage>findInstance(BuckLanguage.class));
 
-    @NotNull
-    @Override
-    public Lexer createLexer(Project project) {
-        return new FlexAdapter(new _BuckLexer((Reader) null));
-    }
+  @NotNull
+  @Override
+  public Lexer createLexer(Project project) {
+    return new FlexAdapter(new _BuckLexer((Reader) null));
+  }
 
-    @NotNull
-    public TokenSet getWhitespaceTokens() {
-        return WHITE_SPACES;
-    }
+  @NotNull
+  public TokenSet getWhitespaceTokens() {
+    return WHITE_SPACES;
+  }
 
-    @NotNull
-    public TokenSet getCommentTokens() {
-        return COMMENTS;
-    }
+  @NotNull
+  public TokenSet getCommentTokens() {
+    return COMMENTS;
+  }
 
-    @NotNull
-    public TokenSet getStringLiteralElements() {
-        return TokenSet.EMPTY;
-    }
+  @NotNull
+  public TokenSet getStringLiteralElements() {
+    return TokenSet.EMPTY;
+  }
 
-    @NotNull
-    public PsiParser createParser(final Project project) {
-        return new BuckParser();
-    }
+  @NotNull
+  public PsiParser createParser(final Project project) {
+    return new BuckParser();
+  }
 
-    @Override
-    public IFileElementType getFileNodeType() {
-        return FILE;
-    }
+  @Override
+  public IFileElementType getFileNodeType() {
+    return FILE;
+  }
 
-    public PsiFile createFile(FileViewProvider viewProvider) {
-        return new BuckFile(viewProvider);
-    }
+  public PsiFile createFile(FileViewProvider viewProvider) {
+    return new BuckFile(viewProvider);
+  }
 
-    public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
-        return SpaceRequirements.MAY;
-    }
+  public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
+    return SpaceRequirements.MAY;
+  }
 
-    @NotNull
-    public PsiElement createElement(ASTNode node) {
-        return BuckTypes.Factory.createElement(node);
-    }
+  @NotNull
+  public PsiElement createElement(ASTNode node) {
+    return BuckTypes.Factory.createElement(node);
+  }
 }

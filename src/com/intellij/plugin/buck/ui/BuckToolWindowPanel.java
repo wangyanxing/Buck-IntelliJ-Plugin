@@ -7,26 +7,26 @@ import javax.swing.*;
 
 public class BuckToolWindowPanel {
 
-    public BuckToolWindowPanel(Project project) {
-        this.myProject = project;
-    }
+  public BuckToolWindowPanel(Project project) {
+    this.myProject = project;
+  }
 
-    private JPanel myWholePanel;
-    private JComboBox targetList;
-    private JCheckBox runAfterInstallCheckBox;
-    private JCheckBox uninstallBeforeInstallCheckBox;
-    private JButton addTargetButton;
-    private JPanel consolePanel;
+  private JPanel myWholePanel;
+  private JComboBox targetList;
+  private JCheckBox runAfterInstallCheckBox;
+  private JCheckBox uninstallBeforeInstallCheckBox;
+  private JButton addTargetButton;
+  private JPanel consolePanel;
 
-    private final Project myProject;
+  private final Project myProject;
 
-    public JComponent createPanel() {
-        return myWholePanel;
-    }
+  public JComponent createPanel() {
+    return myWholePanel;
+  }
 
-    private void createUIComponents() {
-        //consolePanel = new JPanel();
-        //consolePanel.add(new JButton("fuck"));
-        consolePanel = new ConsoleViewImpl(myProject, false);
-    }
+  private void createUIComponents() {
+    //consolePanel = new JPanel();
+    //consolePanel.add(new JButton("fuck"));
+    consolePanel = new ConsoleViewImpl(myProject, false);
+  }
 }

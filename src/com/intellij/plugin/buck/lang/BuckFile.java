@@ -9,27 +9,27 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class BuckFile extends PsiFileBase {
-    public BuckFile(@NotNull FileViewProvider viewProvider) {
-        super(viewProvider, BuckLanguage.INSTANCE);
-    }
+  public BuckFile(@NotNull FileViewProvider viewProvider) {
+    super(viewProvider, BuckLanguage.INSTANCE);
+  }
 
-    public static BuckFile create(@NotNull FileViewProvider viewProvider) {
-        return new BuckFile(viewProvider);
-    }
+  public static BuckFile create(@NotNull FileViewProvider viewProvider) {
+    return new BuckFile(viewProvider);
+  }
 
-    @NotNull
-    @Override
-    public FileType getFileType() {
-        return BuckFileType.INSTANCE;
-    }
+  @NotNull
+  @Override
+  public FileType getFileType() {
+    return BuckFileType.INSTANCE;
+  }
 
-    @Override
-    public String toString() {
-        return "Buck File";
-    }
+  @Override
+  public String toString() {
+    return "Buck File";
+  }
 
-    @Override
-    public Icon getIcon(int flags) {
-        return super.getIcon(flags);
-    }
+  @Override
+  public Icon getIcon(int flags) {
+    return super.getIcon(flags);
+  }
 }

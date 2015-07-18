@@ -6,7 +6,7 @@ import com.intellij.plugin.buck.lang.psi.BuckNamedElement;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BuckNamedElementImpl extends ASTWrapperPsiElement implements BuckNamedElement {
-    public BuckNamedElementImpl(@NotNull ASTNode node) {
-        super(node);
-    }
+  public BuckNamedElementImpl(@NotNull ASTNode node) {
+    super(node);
+  }
 }

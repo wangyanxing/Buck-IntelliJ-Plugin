@@ -1,10 +1,10 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.plugin.buck.lang.psi;
 
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.plugin.buck.lang.psi.impl.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 
 public interface BuckTypes {
 
@@ -33,34 +33,25 @@ public interface BuckTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == ARRAY_ELEMENTS) {
+      if (type == ARRAY_ELEMENTS) {
         return new BuckArrayElementsImpl(node);
-      }
-      else if (type == BRACES) {
+      } else if (type == BRACES) {
         return new BuckBracesImpl(node);
-      }
-      else if (type == COMMA) {
+      } else if (type == COMMA) {
         return new BuckCommaImpl(node);
-      }
-      else if (type == EQUAL) {
+      } else if (type == EQUAL) {
         return new BuckEqualImpl(node);
-      }
-      else if (type == PROPERTY) {
+      } else if (type == PROPERTY) {
         return new BuckPropertyImpl(node);
-      }
-      else if (type == RULE_BLOCK) {
+      } else if (type == RULE_BLOCK) {
         return new BuckRuleBlockImpl(node);
-      }
-      else if (type == RULE_BODY) {
+      } else if (type == RULE_BODY) {
         return new BuckRuleBodyImpl(node);
-      }
-      else if (type == SEMICOLON) {
+      } else if (type == SEMICOLON) {
         return new BuckSemicolonImpl(node);
-      }
-      else if (type == VALUE) {
+      } else if (type == VALUE) {
         return new BuckValueImpl(node);
-      }
-      else if (type == VALUE_ARRAY) {
+      } else if (type == VALUE_ARRAY) {
         return new BuckValueArrayImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);

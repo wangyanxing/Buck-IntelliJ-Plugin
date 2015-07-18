@@ -8,12 +8,12 @@ import com.intellij.plugin.buck.ui.ChooseProjectDialog;
 
 public class BuckUninstallProject extends AnAction {
 
-    @Override
-    public void actionPerformed(AnActionEvent e) {
-        final Project project = e.getProject();
-        if (project == null) {
-            return;
-        }
-        new ChooseProjectDialog(project, BuckCommandUtils.CommandType.COMMAND_UNINSTALL).show();
+  @Override
+  public void actionPerformed(AnActionEvent e) {
+    final Project project = e.getProject();
+    if (project == null) {
+      return;
     }
+    new ChooseProjectDialog(project, BuckCommandUtils.CommandType.COMMAND_UNINSTALL).show();
+  }
 }

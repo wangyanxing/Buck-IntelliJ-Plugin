@@ -6,12 +6,12 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public class BuckTokenType extends IElementType {
-    public BuckTokenType(@NotNull @NonNls String debugName) {
-        super(debugName, BuckLanguage.INSTANCE);
-    }
+  public BuckTokenType(@NotNull @NonNls String debugName) {
+    super(debugName, BuckLanguage.INSTANCE);
+  }
 
-    @Override
-    public String toString() {
-        return "BuckTokenType." + super.toString();
-    }
+  @Override
+  public String toString() {
+    return "BuckTokenType." + super.toString();
+  }
 }

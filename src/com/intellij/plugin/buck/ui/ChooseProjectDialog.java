@@ -5,80 +5,83 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.plugin.buck.command.BuckCommandController;
 import com.intellij.plugin.buck.command.BuckCommandUtils;
-import com.intellij.plugin.buck.storage.BuckSettingsStorage;
 
 import javax.swing.*;
 import java.awt.*;
 
+//import com.intellij.plugin.buck.settings.BuckSettingsStorage;
+
+//import com.intellij.plugin.buck.settings.BuckSettingsStorage;
+
 public class ChooseProjectDialog extends DialogWrapper {
-    private JTextField myField;
-    private BuckCommandUtils.CommandType commandType;
-    private Project project;
+  private JTextField myField;
+  private BuckCommandUtils.CommandType commandType;
+  private Project project;
 
-    public ChooseProjectDialog(Project project, BuckCommandUtils.CommandType type){
-        super(project, true);
+  public ChooseProjectDialog(Project project, BuckCommandUtils.CommandType type) {
+    super(project, true);
 
-        this.project = project;
-        commandType = type;
+    this.project = project;
+    commandType = type;
 
-        setTitle("Choose Project " + BuckCommandUtils.getPorjectDir(project));
-        init();
+    setTitle("Choose Project " + BuckCommandUtils.getPorjectDir(project));
+    init();
+  }
+
+  protected void doOKAction() {
+    String projectName = myField.getText();
+
+    if (!projectName.isEmpty()) {
+      //BuckSettingsStorage.addHistory(projectName);
+
+      FileDocumentManager.getInstance().saveAllDocuments();
+
+      BuckCommandUtils.sProject = project;
+      new BuckCommandController(BuckCommandUtils.getPorjectDir(project), projectName)
+          .executeBuckCommand(commandType);
     }
 
-    protected void doOKAction(){
-        String projectName = myField.getText();
+    super.doOKAction();
+  }
 
-        if (!projectName.isEmpty()) {
-            BuckSettingsStorage.addHistory(projectName);
+  public JComponent getPreferredFocusedComponent() {
+    return myField;
+  }
 
-            FileDocumentManager.getInstance().saveAllDocuments();
+  protected JComponent createCenterPanel() {
+    return null;
+  }
 
-            BuckCommandUtils.sProject = project;
-            new BuckCommandController(BuckCommandUtils.getPorjectDir(project), projectName)
-                    .executeBuckCommand(commandType);
-        }
+  protected JComponent createNorthPanel() {
+    class MyTextField extends JTextField {
+      public MyTextField() {
+        super("");
+      }
 
-        super.doOKAction();
+      public Dimension getPreferredSize() {
+        Dimension d = super.getPreferredSize();
+        return new Dimension(200, d.height);
+      }
     }
 
-    public JComponent getPreferredFocusedComponent() {
-        return myField;
-    }
+    JPanel panel = new JPanel(new GridBagLayout());
+    GridBagConstraints gbConstraints = new GridBagConstraints();
 
-    protected JComponent createCenterPanel() {
-        return null;
-    }
+    gbConstraints.insets = new Insets(4, 0, 8, 8);
+    gbConstraints.fill = GridBagConstraints.VERTICAL;
+    gbConstraints.weightx = 0;
+    gbConstraints.weighty = 1;
+    gbConstraints.anchor = GridBagConstraints.EAST;
 
-    protected JComponent createNorthPanel() {
-        class MyTextField extends JTextField {
-            public MyTextField() {
-                super("");
-            }
+    JLabel label = new JLabel("Project Alias");
+    panel.add(label, gbConstraints);
 
-            public Dimension getPreferredSize() {
-                Dimension d = super.getPreferredSize();
-                return new Dimension(200, d.height);
-            }
-        }
+    gbConstraints.fill = GridBagConstraints.BOTH;
+    gbConstraints.weightx = 1;
+    myField = new MyTextField();
+    panel.add(myField, gbConstraints);
+    myField.setToolTipText("Input the project name or alias here");
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbConstraints = new GridBagConstraints();
-
-        gbConstraints.insets = new Insets(4, 0, 8, 8);
-        gbConstraints.fill = GridBagConstraints.VERTICAL;
-        gbConstraints.weightx = 0;
-        gbConstraints.weighty = 1;
-        gbConstraints.anchor = GridBagConstraints.EAST;
-
-        JLabel label = new JLabel("Project Alias");
-        panel.add(label, gbConstraints);
-
-        gbConstraints.fill = GridBagConstraints.BOTH;
-        gbConstraints.weightx = 1;
-        myField = new MyTextField();
-        panel.add(myField, gbConstraints);
-        myField.setToolTipText("Input the project name or alias here");
-
-        return panel;
-    }
+    return panel;
+  }
 }

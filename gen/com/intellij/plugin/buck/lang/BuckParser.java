@@ -1,14 +1,14 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.plugin.buck.lang;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class BuckParser implements PsiParser {
@@ -24,35 +24,25 @@ public class BuckParser implements PsiParser {
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
     if (t == ARRAY_ELEMENTS) {
       r = array_elements(b, 0);
-    }
-    else if (t == BRACES) {
+    } else if (t == BRACES) {
       r = braces(b, 0);
-    }
-    else if (t == COMMA) {
+    } else if (t == COMMA) {
       r = comma(b, 0);
-    }
-    else if (t == EQUAL) {
+    } else if (t == EQUAL) {
       r = equal(b, 0);
-    }
-    else if (t == PROPERTY) {
+    } else if (t == PROPERTY) {
       r = property(b, 0);
-    }
-    else if (t == RULE_BLOCK) {
+    } else if (t == RULE_BLOCK) {
       r = rule_block(b, 0);
-    }
-    else if (t == RULE_BODY) {
+    } else if (t == RULE_BODY) {
       r = rule_body(b, 0);
-    }
-    else if (t == SEMICOLON) {
+    } else if (t == SEMICOLON) {
       r = semicolon(b, 0);
-    }
-    else if (t == VALUE) {
+    } else if (t == VALUE) {
       r = value(b, 0);
-    }
-    else if (t == VALUE_ARRAY) {
+    } else if (t == VALUE_ARRAY) {
       r = value_array(b, 0);
-    }
-    else {
+    } else {
       r = parse_root_(t, b, 0);
     }
     exit_section_(b, 0, m, t, r, true, TRUE_CONDITION);
