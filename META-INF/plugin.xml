@@ -82,17 +82,10 @@
 
   <extensions defaultExtensionNs="com.intellij">
       <toolWindow id="Buck" anchor="bottom" icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
-                  factoryClass="com.intellij.plugin.buck.toolwindow.BuckToolWindowFactory" secondary="false"/>
+                  factoryClass="com.intellij.plugin.buck.toolwindow.BuckToolWindowFactory" />
       <projectConfigurable groupId="tools" groupWeight="130" displayName="Buck" id="buck"
                            instance="com.intellij.plugin.buck.config.BuckOptionsConfigurable"/>
   </extensions>
-
-    <project-components>
-        <component>
-            <interface-class>com.intellij.plugin.buck.toolwindow.BuckView</interface-class>
-            <implementation-class>com.intellij.plugin.buck.toolwindow.BuckView</implementation-class>
-        </component>
-    </project-components>
 
     <application-components>
         <component>
