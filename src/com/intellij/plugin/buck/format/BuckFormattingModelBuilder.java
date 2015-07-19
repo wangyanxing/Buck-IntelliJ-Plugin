@@ -14,6 +14,8 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilder {
   @NotNull
   @Override
   public FormattingModel createModel(PsiElement element, CodeStyleSettings settings) {
+    OrderOptimizer.optimzeDeps(element.getContainingFile());
+
     return FormattingModelProvider.createFormattingModelForPsiFile(element.getContainingFile(),
         new BuckBlock(
             element.getNode(),

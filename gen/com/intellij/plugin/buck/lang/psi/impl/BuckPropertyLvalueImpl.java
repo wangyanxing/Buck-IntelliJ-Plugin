@@ -11,27 +11,15 @@ import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.plugin.buck.lang.psi.*;
 
-public class BuckPropertyImpl extends ASTWrapperPsiElement implements BuckProperty {
+public class BuckPropertyLvalueImpl extends ASTWrapperPsiElement implements BuckPropertyLvalue {
 
-  public BuckPropertyImpl(ASTNode node) {
+  public BuckPropertyLvalueImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitProperty(this);
+    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitPropertyLvalue(this);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public BuckPropertyLvalue getPropertyLvalue() {
-    return findChildByClass(BuckPropertyLvalue.class);
-  }
-
-  @Override
-  @NotNull
-  public BuckValue getValue() {
-    return findNotNullChildByClass(BuckValue.class);
   }
 
 }
