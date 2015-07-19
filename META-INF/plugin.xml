@@ -43,6 +43,8 @@
                                implementationClass="com.intellij.plugin.buck.lang.BuckParserDefinition"/>
         <lang.syntaxHighlighterFactory key="Buck"
                                        implementationClass="com.intellij.plugin.buck.highlight.BuckSyntaxHighlighterFactory"/>
+
+        <lang.formatter language="Buck" implementationClass="com.intellij.plugin.buck.format.BuckFormattingModelBuilder"/>
         <completion.contributor language="Buck"
                                 implementationClass="com.intellij.plugin.buck.completion.BuckCompletionContributor"/>
         <gotoDeclarationHandler
