@@ -1,6 +1,7 @@
 package com.intellij.plugin.buck.format;
 
 import com.intellij.plugin.buck.lang.psi.*;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,10 @@ public class OrderOptimizer {
         node.accept(visitor);
       }
     });
+
+    // Commit modifications
+    final PsiDocumentManager manager = PsiDocumentManager.getInstance(file.getProject());
+    manager.doPostponedOperationsAndUnblockDocument(manager.getDocument(file));
   }
 
   private static class PropertyVisitor extends BuckVisitor {
@@ -38,11 +43,11 @@ public class OrderOptimizer {
       BuckArrayElements arrayElements = array.getArrayElements();
       PsiElement[] arrayValues = arrayElements.getChildren();
       Arrays.sort(arrayValues, new Comparator<PsiElement>() {
-            @Override
-            public int compare(PsiElement e1, PsiElement e2) {
-              return e1.getText().compareTo(e2.getText());
-            }
+          @Override
+          public int compare(PsiElement e1, PsiElement e2) {
+            return e1.getText().compareTo(e2.getText());
           }
+        }
       );
       PsiElement[] oldValues = new PsiElement[arrayValues.length];
       for (int i = 0 ; i < arrayValues.length; ++i) {
