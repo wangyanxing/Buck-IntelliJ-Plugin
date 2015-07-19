@@ -1,14 +1,14 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.plugin.buck.lang;
 
-import com.intellij.lang.ASTNode;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.tree.IElementType;
-
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
+import com.intellij.lang.PsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class BuckParser implements PsiParser {
@@ -24,25 +24,35 @@ public class BuckParser implements PsiParser {
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
     if (t == ARRAY_ELEMENTS) {
       r = array_elements(b, 0);
-    } else if (t == BRACES) {
+    }
+    else if (t == BRACES) {
       r = braces(b, 0);
-    } else if (t == COMMA) {
+    }
+    else if (t == COMMA) {
       r = comma(b, 0);
-    } else if (t == EQUAL) {
+    }
+    else if (t == EQUAL) {
       r = equal(b, 0);
-    } else if (t == PROPERTY) {
+    }
+    else if (t == PROPERTY) {
       r = property(b, 0);
-    } else if (t == RULE_BLOCK) {
+    }
+    else if (t == RULE_BLOCK) {
       r = rule_block(b, 0);
-    } else if (t == RULE_BODY) {
+    }
+    else if (t == RULE_BODY) {
       r = rule_body(b, 0);
-    } else if (t == SEMICOLON) {
+    }
+    else if (t == SEMICOLON) {
       r = semicolon(b, 0);
-    } else if (t == VALUE) {
+    }
+    else if (t == VALUE) {
       r = value(b, 0);
-    } else if (t == VALUE_ARRAY) {
+    }
+    else if (t == VALUE_ARRAY) {
       r = value_array(b, 0);
-    } else {
+    }
+    else {
       r = parse_root_(t, b, 0);
     }
     exit_section_(b, 0, m, t, r, true, TRUE_CONDITION);
@@ -56,7 +66,6 @@ public class BuckParser implements PsiParser {
   // (
   //   value |
   //   "," |
-  //   CRLF |
   //   WHITE_SPACE
   // )*
   public static boolean array_elements(PsiBuilder b, int l) {
@@ -74,7 +83,6 @@ public class BuckParser implements PsiParser {
 
   // value |
   //   "," |
-  //   CRLF |
   //   WHITE_SPACE
   private static boolean array_elements_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "array_elements_0")) return false;
@@ -82,7 +90,6 @@ public class BuckParser implements PsiParser {
     Marker m = enter_section_(b);
     r = value(b, l + 1);
     if (!r) r = consumeToken(b, ",");
-    if (!r) r = consumeToken(b, CRLF);
     if (!r) r = consumeToken(b, WHITE_SPACE);
     exit_section_(b, m, null, r);
     return r;
@@ -140,7 +147,7 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // rule_block | property | COMMENT | CRLF
+  // rule_block | property | COMMENT | WHITE_SPACE
   static boolean item_(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "item_")) return false;
     boolean r;
@@ -148,7 +155,7 @@ public class BuckParser implements PsiParser {
     r = rule_block(b, l + 1);
     if (!r) r = property(b, l + 1);
     if (!r) r = consumeToken(b, COMMENT);
-    if (!r) r = consumeToken(b, CRLF);
+    if (!r) r = consumeToken(b, WHITE_SPACE);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -190,7 +197,7 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // (RULE_NAMES | GENERIC_RULE_NAMES | IDENTIFIER) '(' (CRLF | WHITE_SPACE)* rule_body ')'
+  // (RULE_NAMES | GENERIC_RULE_NAMES | IDENTIFIER) '(' (WHITE_SPACE)* rule_body ')'
   public static boolean rule_block(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "rule_block")) return false;
     boolean r;
@@ -216,34 +223,22 @@ public class BuckParser implements PsiParser {
     return r;
   }
 
-  // (CRLF | WHITE_SPACE)*
+  // (WHITE_SPACE)*
   private static boolean rule_block_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "rule_block_2")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!rule_block_2_0(b, l + 1)) break;
+      if (!consumeToken(b, WHITE_SPACE)) break;
       if (!empty_element_parsed_guard_(b, "rule_block_2", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
-  // CRLF | WHITE_SPACE
-  private static boolean rule_block_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "rule_block_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, CRLF);
-    if (!r) r = consumeToken(b, WHITE_SPACE);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
   /* ********************************************************** */
   // (
   //   property  |
   //   "," |
-  //   CRLF |
   //   WHITE_SPACE
   // )*
   public static boolean rule_body(PsiBuilder b, int l) {
@@ -261,7 +256,6 @@ public class BuckParser implements PsiParser {
 
   // property  |
   //   "," |
-  //   CRLF |
   //   WHITE_SPACE
   private static boolean rule_body_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "rule_body_0")) return false;
@@ -269,7 +263,6 @@ public class BuckParser implements PsiParser {
     Marker m = enter_section_(b);
     r = property(b, l + 1);
     if (!r) r = consumeToken(b, ",");
-    if (!r) r = consumeToken(b, CRLF);
     if (!r) r = consumeToken(b, WHITE_SPACE);
     exit_section_(b, m, null, r);
     return r;
@@ -303,7 +296,7 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // '[' (CRLF | WHITE_SPACE)* array_elements ']'
+  // '[' (WHITE_SPACE)* array_elements ']'
   public static boolean value_array(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "value_array")) return false;
     boolean r;
@@ -316,27 +309,16 @@ public class BuckParser implements PsiParser {
     return r;
   }
 
-  // (CRLF | WHITE_SPACE)*
+  // (WHITE_SPACE)*
   private static boolean value_array_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "value_array_1")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!value_array_1_0(b, l + 1)) break;
+      if (!consumeToken(b, WHITE_SPACE)) break;
       if (!empty_element_parsed_guard_(b, "value_array_1", c)) break;
       c = current_position_(b);
     }
     return true;
-  }
-
-  // CRLF | WHITE_SPACE
-  private static boolean value_array_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "value_array_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, CRLF);
-    if (!r) r = consumeToken(b, WHITE_SPACE);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
 }

@@ -15,24 +15,22 @@
 
 buckFile ::= item_*
 
-private item_ ::= (rule_block | property | COMMENT | CRLF)
+private item_ ::= (rule_block | property | COMMENT | WHITE_SPACE)
 
 property ::= ((IDENTIFIER | MACROS | KEYWORDS) '=' value) | value
 value ::= VALUE_STRING | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | rule_block
 
-value_array ::= '[' (CRLF | WHITE_SPACE)* array_elements ']'
+value_array ::= '[' (WHITE_SPACE)* array_elements ']'
 array_elements ::= (
   value |
   "," |
-  CRLF |
   WHITE_SPACE
 )*
 
-rule_block ::= (RULE_NAMES | GENERIC_RULE_NAMES | IDENTIFIER) '(' (CRLF | WHITE_SPACE)* rule_body ')'
+rule_block ::= (RULE_NAMES | GENERIC_RULE_NAMES | IDENTIFIER) '(' (WHITE_SPACE)* rule_body ')'
 rule_body ::= (
-  property  |knfgfvtvirivlgdrvkfnhlrrblidlggr
+  property  |
   "," |
-  CRLF |
   WHITE_SPACE
 )*
 

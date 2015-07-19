@@ -97,8 +97,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   private volatile ActionCallback myCurrentWorker = ActionCallback.DONE;
   private int myPopupActualWidth;
   private Map<String, String> myConfigurables = new HashMap<String, String>();
-  private FileEditor myFileEditor;
-  private PsiFile myFile;
   private Component myFocusOwner;
   private Component myContextComponent;
   private AnActionEvent myActionEvent;
@@ -132,8 +130,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     myCurrentWorker = ActionCallback.DONE;
     if (e != null) {
       myEditor = e.getData(CommonDataKeys.EDITOR);
-      myFileEditor = e.getData(PlatformDataKeys.FILE_EDITOR);
-      myFile = e.getData(CommonDataKeys.PSI_FILE);
     }
     if (e == null && myFocusOwner != null) {
       e = new AnActionEvent(null, DataManager.getInstance().getDataContext(myFocusOwner),

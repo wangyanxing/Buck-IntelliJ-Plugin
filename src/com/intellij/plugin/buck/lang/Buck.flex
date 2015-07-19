@@ -20,13 +20,12 @@ import java.lang.String;
 %eof{  return;
 %eof}
 
-CRLF= \n|\r|\r\n
-WHITE_SPACE=[\ \t\f]
-FIRST_VALUE_CHARACTER=[^ \n\r\f\\] | "\\"{CRLF} | "\\".
-VALUE_CHARACTER=[^\n\r\f\\] | "\\"{CRLF} | "\\".
+WHITE_SPACE=[\ \t\f]|\n|\r|\r\n
+FIRST_VALUE_CHARACTER=[^ \n\r\f\\] | "\\"{WHITE_SPACE} | "\\".
+VALUE_CHARACTER=[^\n\r\f\\] | "\\"{WHITE_SPACE} | "\\".
 END_OF_LINE_COMMENT=("#")[^\r\n]*
 SEPARATOR="="
-KEY_CHARACTER=[^=\ \n\r\t\f\\] | "\\"{CRLF} | "\\".
+KEY_CHARACTER=[^=\ \n\r\t\f\\] | "\\"{WHITE_SPACE} | "\\".
 RULE_NAMES = "genrule"|
              "remote_file"|
              "android_aar"|
@@ -100,8 +99,8 @@ LETTER = [:letter:]|"_"
 IDENTIFIER = ({LETTER})({LETTER}|{DIGIT})*
 VALUE_BOOLEAN = "True" | "False" | "true" | "false" | "TRUE" | "FALSE"
 
-STRING_SINGLE_QUOTED = \'([^\\\'\r\n]|{CRLF})*(\'|\\)? | \'\'\' ( (\'(\')?)? [^\'] )* \'\'\'
-STRING_DOUBLE_QUOTED = \"([^\\\"\r\n]|{CRLF})*(\"|\\)? | \"\"\" ( (\"(\")?)? [^\"] )* \"\"\"
+STRING_SINGLE_QUOTED = \'([^\\\'\r\n]|{WHITE_SPACE})*(\'|\\)? | \'\'\' ( (\'(\')?)? [^\'] )* \'\'\'
+STRING_DOUBLE_QUOTED = \"([^\\\"\r\n]|{WHITE_SPACE})*(\"|\\)? | \"\"\" ( (\"(\")?)? [^\"] )* \"\"\"
 STRING = {STRING_SINGLE_QUOTED} | {STRING_DOUBLE_QUOTED}
 
 BRACES = "(" | ")" | "{" | "}" | "[" | "]"
@@ -114,8 +113,6 @@ EQUAL = "="
 %%
 
 {END_OF_LINE_COMMENT}   { return COMMENT; }
-
-{CRLF}                  { return CRLF; }
 
 {WHITE_SPACE}+          { return TokenType.WHITE_SPACE; }
 

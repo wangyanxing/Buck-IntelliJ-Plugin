@@ -11,24 +11,24 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BuckFormattingModelBuilder implements FormattingModelBuilder {
-    @NotNull
-    @Override
-    public FormattingModel createModel(PsiElement element, CodeStyleSettings settings) {
-        return FormattingModelProvider.createFormattingModelForPsiFile(element.getContainingFile(),
-                new BuckBlock(element.getNode(), Wrap.createWrap(WrapType.NORMAL, false),
-                        Alignment.createAlignment(), createSpaceBuilder(settings)), settings);
-    }
+  @NotNull
+  @Override
+  public FormattingModel createModel(PsiElement element, CodeStyleSettings settings) {
+    return FormattingModelProvider.createFormattingModelForPsiFile(element.getContainingFile(),
+        new BuckBlock(element.getNode(), Wrap.createWrap(WrapType.NORMAL, false),
+            Alignment.createAlignment(), createSpaceBuilder(settings)), settings);
+  }
 
-    private static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings) {
-        return new SpacingBuilder(settings).
-                around(BuckTypes.KEYWORDS).spaceIf(settings.SPACE_AROUND_ASSIGNMENT_OPERATORS).
-                before(BuckTypes.PROPERTY).none();
-    }
+  private static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings) {
+    return new SpacingBuilder(settings).
+        around(BuckTypes.KEYWORDS).spaceIf(settings.SPACE_AROUND_ASSIGNMENT_OPERATORS).
+        before(BuckTypes.PROPERTY).none();
+  }
 
-    @Nullable
-    @Override
-    public TextRange getRangeAffectingIndent(PsiFile file, int offset, ASTNode elementAtOffset) {
-        return null;
-    }
+  @Nullable
+  @Override
+  public TextRange getRangeAffectingIndent(PsiFile file, int offset, ASTNode elementAtOffset) {
+    return null;
+  }
+
 }
-
