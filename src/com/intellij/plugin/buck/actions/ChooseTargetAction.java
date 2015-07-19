@@ -3,26 +3,17 @@ package com.intellij.plugin.buck.actions;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.execution.Executor;
 import com.intellij.execution.ExecutorRegistry;
-import com.intellij.execution.actions.ChooseRunConfigurationPopup;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.featureStatistics.FeatureUsageTracker;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
-import com.intellij.ide.actions.ActivateToolWindowAction;
-import com.intellij.ide.ui.OptionsTopHitProvider;
 import com.intellij.ide.ui.laf.darcula.ui.DarculaTextBorder;
 import com.intellij.ide.ui.laf.darcula.ui.DarculaTextFieldUI;
-import com.intellij.ide.ui.search.BooleanOptionDescription;
-import com.intellij.ide.ui.search.OptionDescription;
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.ide.util.gotoByName.*;
-import com.intellij.navigation.ItemPresentation;
-import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.AnActionListener;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
-import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actions.TextComponentEditorAction;
@@ -36,11 +27,15 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.ComponentPopupBuilder;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.util.*;
+import com.intellij.openapi.util.ActionCallback;
+import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFilePathWrapper;
-import com.intellij.openapi.wm.*;
+import com.intellij.openapi.wm.IdeFocusManager;
+import com.intellij.openapi.wm.ToolWindowId;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.actions.renderer.BuckTargetPsiRenderer;
 import com.intellij.plugin.buck.targets.BuckTarget;
 import com.intellij.plugin.buck.targets.TargetAliasParser;
@@ -54,11 +49,11 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.border.CustomLineBorder;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.components.OnOffButton;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.ui.popup.AbstractPopup;
 import com.intellij.ui.popup.PopupPositionManager;
-import com.intellij.util.*;
+import com.intellij.util.Alarm;
+import com.intellij.util.ReflectionUtil;
 import com.intellij.util.text.Matcher;
 import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
@@ -91,10 +86,8 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   private HistoryItem myHistoryItem;
   private int myHistoryIndex = 0;
   private JBList myList;
-  private volatile GotoClassModel2 myClassModel;
   private boolean mySkipFocusGain = false;
   private Editor myEditor;
-  private Component myFocusComponent;
   private JBPopup myPopup;
   private CalcThread myCalcThread;
   private MyListRenderer myRenderer;
@@ -120,22 +113,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         onFocusLost();
       }
     });
-  }
-
-  private static boolean isActionValue(Object o) {
-    return o instanceof GotoActionModel.ActionWrapper || o instanceof AnAction;
-  }
-
-  private static boolean isSetting(Object o) {
-    return o instanceof OptionDescription;
-  }
-
-  private static boolean isRunConfiguration(Object o) {
-    return o instanceof ChooseRunConfigurationPopup.ItemWrapper;
-  }
-
-  private static boolean isVirtualFile(Object o) {
-    return o instanceof VirtualFile;
   }
 
   private static Font getTitleFont() {
@@ -274,7 +251,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       showPoint = new RelativePoint(
           parent,
           new Point((parent.getSize().width - panel.getPreferredSize().width) / 2,
-          (parent.getSize().height - panel.getPreferredSize().height) / 2));
+              (parent.getSize().height - panel.getPreferredSize().height) / 2));
     } else {
       showPoint = JBPopupFactory.getInstance().guessBestPopupLocation(e.getDataContext());
     }
@@ -402,9 +379,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         final Object lock = myCalcThread;
         if (lock != null) {
           synchronized (lock) {
-            myClassModel = null;
             myConfigurables.clear();
-            myFocusComponent = null;
             myContextComponent = null;
             myFocusOwner = null;
             myRenderer.myProject = null;
@@ -415,7 +390,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
             showAll.set(false);
             myCalcThread = null;
             myEditor = null;
-            myFileEditor = null;
           }
         }
       }
@@ -456,7 +430,10 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
           doNavigate(index);
         }
       }
-    }.registerCustomShortcutSet(CustomShortcutSet.fromString("ENTER", "shift ENTER"), editor, balloon);
+    }.registerCustomShortcutSet(
+        CustomShortcutSet.fromString("ENTER", "shift ENTER"),
+        editor,
+        balloon);
     new DumbAwareAction() {
       @Override
       public void actionPerformed(AnActionEvent e) {
@@ -528,7 +505,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         search.setText(text);
         search.getTextEditor().setForeground(UIUtil.getLabelForeground());
         editor.setColumns(SEARCH_FIELD_COLUMNS);
-        myFocusComponent = e.getOppositeComponent();
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
@@ -820,7 +796,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     }
 
     int[] getAll() {
-      return new int[] {
+      return new int[]{
           titleIndex.targets,
       };
     }
@@ -886,7 +862,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
 
       VirtualFile buckFile = ((BuckTarget) value).getVirtualFile();
       if (buckFile != null && myProject != null && ((buckFile.isDirectory() &&
-          (file = PsiManager.getInstance(myProject).findDirectory(buckFile)) != null ) ||
+          (file = PsiManager.getInstance(myProject).findDirectory(buckFile)) != null) ||
           (file = PsiManager.getInstance(myProject).findFile(buckFile)) != null)) {
         myTargetRenderer.setPatternMatcher(matcher);
         myTargetRenderer.setAlias(((BuckTarget) value).getAlias());
@@ -1007,7 +983,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
             myDone.setRejected();
           } catch (Exception e) {
             myDone.setRejected();
-          }finally {
+          } finally {
             if (!isCanceled()) {
               SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -1169,7 +1145,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
             updatePopupBounds();
             myPopup.show(
                 new RelativePoint(getField().getParent(),
-                new Point(0, getField().getParent().getHeight()))
+                    new Point(0, getField().getParent().getHeight()))
             );
 
             ActionManager.getInstance().addAnActionListener(new AnActionListener.Adapter() {
