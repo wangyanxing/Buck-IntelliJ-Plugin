@@ -23,10 +23,10 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, Cus
                                      @NotNull FormattingMode mode) {
     //OrderOptimizer.optimzeDeps(element.getContainingFile());
 
-    final BuckBlockContext context =
-        new BuckBlockContext(settings, createSpacingBuilder(settings), mode);
+    //final BuckBlockContext context =
+        //new BuckBlockContext(settings, createSpacingBuilder(settings), mode);
     final BuckBlock block =
-        new BuckBlock(null, element.getNode(), null, Indent.getNoneIndent(), null, context);
+        new BuckBlock(null, element.getNode(), null, Indent.getNoneIndent(), null);
 
     return FormattingModelProvider.createFormattingModelForPsiFile(
         element.getContainingFile(),
@@ -52,7 +52,9 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, Cus
   @Nullable
   @Override
   public TextRange getRangeAffectingIndent(PsiFile file, int offset, ASTNode elementAtOffset) {
-    return null;
+    final PsiElement element = elementAtOffset.getPsi();
+    final PsiElement container = element.getParent();
+    return container != null ? container.getTextRange() : null;
   }
 
   @Override

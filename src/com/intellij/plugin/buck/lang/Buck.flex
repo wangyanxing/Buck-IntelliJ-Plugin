@@ -72,7 +72,6 @@ KEYWORDS =  "name" |
             "deps" |
             "manifest" |
             "package_type" |
-            "keystore" |
             "glob" |
             "visibility" |
             "aar" |

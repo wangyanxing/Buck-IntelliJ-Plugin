@@ -3,6 +3,7 @@ package com.intellij.plugin.buck.format;
 import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.plugin.buck.lang.psi.BuckElementType;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.formatter.common.AbstractBlock;
@@ -21,7 +22,7 @@ public class BuckBlock implements ASTBlock {
   private final Indent myIndent;
   private final ASTNode myNode;
   private final Wrap myWrap;
-  private final BuckBlockContext myContext;
+  //private final BuckBlockContext myContext;
   private List<BuckBlock> mySubBlocks = null;
   private Alignment myChildAlignment;
   private final Alignment myDictAlignment;
@@ -32,14 +33,13 @@ public class BuckBlock implements ASTBlock {
                  final ASTNode node,
                  final Alignment alignment,
                  final Indent indent,
-                 final Wrap wrap,
-                 final BuckBlockContext context) {
+                 final Wrap wrap) {
     myParent = parent;
     myAlignment = alignment;
     myIndent = indent;
     myNode = node;
     myWrap = wrap;
-    myContext = context;
+    //myContext = context;
     //myEmptySequence = isEmptySequence(node);
 
     myDictAlignment = null;
@@ -83,20 +83,30 @@ public class BuckBlock implements ASTBlock {
   }
 
   private BuckBlock buildSubBlock(ASTNode child) {
-    final IElementType parentType = myNode.getElementType();
+    IElementType parentType = myNode.getElementType();
+    IElementType childType = child.getElementType();
+    IElementType grandparentType =
+        myNode.getTreeParent() == null ? null : myNode.getTreeParent().getElementType();
 
-    final ASTNode grandParentNode = myNode.getTreeParent();
-    final IElementType grandparentType =
-        grandParentNode == null ? null : grandParentNode.getElementType();
-
-    final IElementType childType = child.getElementType();
     Wrap wrap = null;
     Indent childIndent = Indent.getNoneIndent();
     Alignment childAlignment = null;
 
+    if (parentType == BuckTypes.PROPERTY && grandparentType == BuckTypes.RULE_BODY) {
+      childIndent = Indent.getNormalIndent();
+    }
 
+    if (parentType == BuckTypes.VALUE_ARRAY) {
+      childIndent = Indent.getNormalIndent();
+    }
+    if (childType == BuckTypes.ARRAY_ELEMENTS) {
+      childIndent = Indent.getNormalIndent();
+    }
 
-    return null;
+    if (childType == BuckTypes.VALUE_STRING && grandparentType == BuckTypes.ARRAY_ELEMENTS) {
+      childIndent = Indent.getNormalIndent();
+    }
+    return new BuckBlock(this, child, childAlignment, childIndent, wrap);
   }
 
   @Nullable
@@ -127,7 +137,7 @@ public class BuckBlock implements ASTBlock {
   @NotNull
   @Override
   public ChildAttributes getChildAttributes(int newChildIndex) {
-    return null;
+    return new ChildAttributes(Indent.getNormalIndent(), null);
   }
 
   @Override
@@ -139,5 +149,6 @@ public class BuckBlock implements ASTBlock {
   public boolean isLeaf() {
     return myNode.getFirstChildNode() == null;
   }
+
 }
 
