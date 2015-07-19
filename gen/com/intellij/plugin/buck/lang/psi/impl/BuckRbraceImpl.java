@@ -11,14 +11,14 @@ import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.plugin.buck.lang.psi.*;
 
-public class BuckBracesImpl extends ASTWrapperPsiElement implements BuckBraces {
+public class BuckRbraceImpl extends ASTWrapperPsiElement implements BuckRbrace {
 
-  public BuckBracesImpl(ASTNode node) {
+  public BuckRbraceImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitBraces(this);
+    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitRbrace(this);
     else super.accept(visitor);
   }
 

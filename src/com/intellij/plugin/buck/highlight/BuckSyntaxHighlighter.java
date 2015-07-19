@@ -75,7 +75,9 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
       return STRING_KEYS;
     } else if (tokenType.equals(BuckTypes.VALUE_BOOLEAN)) {
       return KEY_KEYS;
-    } else if (tokenType.equals(BuckTypes.BRACES)) {
+    } else if (tokenType.equals(BuckTypes.LBRACE)) {
+      return BRACES_KEYS;
+    } else if (tokenType.equals(BuckTypes.RBRACE)) {
       return BRACES_KEYS;
     } else if (tokenType.equals(BuckTypes.COMMA)) {
       return COMMA_KEYS;

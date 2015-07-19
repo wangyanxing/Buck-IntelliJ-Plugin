@@ -34,7 +34,8 @@ rule_body ::= (
   WHITE_SPACE
 )*
 
-braces ::= '(' | ')' | '{' | '}' | '[' | ']'
+lbrace ::= '(' | '{' | '['
+rbrace ::= ')' | '}' | ']'
 comma ::= ','
 semicolon ::= ';'
 equal ::= '='

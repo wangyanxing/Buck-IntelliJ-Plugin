@@ -9,10 +9,11 @@ import com.intellij.plugin.buck.lang.psi.impl.*;
 public interface BuckTypes {
 
   IElementType ARRAY_ELEMENTS = new BuckElementType("ARRAY_ELEMENTS");
-  IElementType BRACES = new BuckElementType("BRACES");
   IElementType COMMA = new BuckElementType("COMMA");
   IElementType EQUAL = new BuckElementType("EQUAL");
+  IElementType LBRACE = new BuckElementType("LBRACE");
   IElementType PROPERTY = new BuckElementType("PROPERTY");
+  IElementType RBRACE = new BuckElementType("RBRACE");
   IElementType RULE_BLOCK = new BuckElementType("RULE_BLOCK");
   IElementType RULE_BODY = new BuckElementType("RULE_BODY");
   IElementType SEMICOLON = new BuckElementType("SEMICOLON");
@@ -35,17 +36,20 @@ public interface BuckTypes {
        if (type == ARRAY_ELEMENTS) {
         return new BuckArrayElementsImpl(node);
       }
-      else if (type == BRACES) {
-        return new BuckBracesImpl(node);
-      }
       else if (type == COMMA) {
         return new BuckCommaImpl(node);
       }
       else if (type == EQUAL) {
         return new BuckEqualImpl(node);
       }
+      else if (type == LBRACE) {
+        return new BuckLbraceImpl(node);
+      }
       else if (type == PROPERTY) {
         return new BuckPropertyImpl(node);
+      }
+      else if (type == RBRACE) {
+        return new BuckRbraceImpl(node);
       }
       else if (type == RULE_BLOCK) {
         return new BuckRuleBlockImpl(node);

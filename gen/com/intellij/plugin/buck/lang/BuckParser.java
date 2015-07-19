@@ -25,17 +25,20 @@ public class BuckParser implements PsiParser {
     if (t == ARRAY_ELEMENTS) {
       r = array_elements(b, 0);
     }
-    else if (t == BRACES) {
-      r = braces(b, 0);
-    }
     else if (t == COMMA) {
       r = comma(b, 0);
     }
     else if (t == EQUAL) {
       r = equal(b, 0);
     }
+    else if (t == LBRACE) {
+      r = lbrace(b, 0);
+    }
     else if (t == PROPERTY) {
       r = property(b, 0);
+    }
+    else if (t == RBRACE) {
+      r = rbrace(b, 0);
     }
     else if (t == RULE_BLOCK) {
       r = rule_block(b, 0);
@@ -96,22 +99,6 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // '(' | ')' | '{' | '}' | '[' | ']'
-  public static boolean braces(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "braces")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<braces>");
-    r = consumeToken(b, "(");
-    if (!r) r = consumeToken(b, ")");
-    if (!r) r = consumeToken(b, "{");
-    if (!r) r = consumeToken(b, "}");
-    if (!r) r = consumeToken(b, "[");
-    if (!r) r = consumeToken(b, "]");
-    exit_section_(b, l, m, BRACES, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
   // item_*
   static boolean buckFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "buckFile")) return false;
@@ -161,6 +148,19 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
+  // '(' | '{' | '['
+  public static boolean lbrace(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "lbrace")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<lbrace>");
+    r = consumeToken(b, "(");
+    if (!r) r = consumeToken(b, "{");
+    if (!r) r = consumeToken(b, "[");
+    exit_section_(b, l, m, LBRACE, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // ((IDENTIFIER | MACROS | KEYWORDS) '=' value) | value
   public static boolean property(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property")) return false;
@@ -193,6 +193,19 @@ public class BuckParser implements PsiParser {
     if (!r) r = consumeToken(b, MACROS);
     if (!r) r = consumeToken(b, KEYWORDS);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ')' | '}' | ']'
+  public static boolean rbrace(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rbrace")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<rbrace>");
+    r = consumeToken(b, ")");
+    if (!r) r = consumeToken(b, "}");
+    if (!r) r = consumeToken(b, "]");
+    exit_section_(b, l, m, RBRACE, r, false, null);
     return r;
   }
 

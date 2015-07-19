@@ -103,7 +103,8 @@ STRING_SINGLE_QUOTED = \'([^\\\'\r\n]|{WHITE_SPACE})*(\'|\\)? | \'\'\' ( (\'(\')
 STRING_DOUBLE_QUOTED = \"([^\\\"\r\n]|{WHITE_SPACE})*(\"|\\)? | \"\"\" ( (\"(\")?)? [^\"] )* \"\"\"
 STRING = {STRING_SINGLE_QUOTED} | {STRING_DOUBLE_QUOTED}
 
-BRACES = "(" | ")" | "{" | "}" | "[" | "]"
+LBRACE = "(" | "{" | "["
+RBRACE = ")" | "}" | "]"
 COMMA = ","
 SEMICOLON = ";"
 EQUAL = "="
@@ -124,7 +125,9 @@ EQUAL = "="
 
 {STRING_DOUBLE_QUOTED}  { return VALUE_STRING; }
 
-{BRACES}                { return BRACES; }
+{LBRACE}                { return LBRACE; }
+
+{RBRACE}                { return RBRACE; }
 
 {COMMA}                 { return COMMA; }
 

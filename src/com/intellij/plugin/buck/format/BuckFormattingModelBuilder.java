@@ -15,14 +15,16 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilder {
   @Override
   public FormattingModel createModel(PsiElement element, CodeStyleSettings settings) {
     return FormattingModelProvider.createFormattingModelForPsiFile(element.getContainingFile(),
-        new BuckBlock(element.getNode(), Wrap.createWrap(WrapType.NORMAL, false),
-            Alignment.createAlignment(), createSpaceBuilder(settings)), settings);
+        new BuckBlock(
+            element.getNode(),
+            Wrap.createWrap(WrapType.NORMAL, false),
+            Alignment.createAlignment(),
+            createSpaceBuilder(settings)),
+        settings);
   }
 
   private static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings) {
-    return new SpacingBuilder(settings).
-        around(BuckTypes.KEYWORDS).spaceIf(settings.SPACE_AROUND_ASSIGNMENT_OPERATORS).
-        before(BuckTypes.PROPERTY).none();
+    return new SpacingBuilder(settings);
   }
 
   @Nullable

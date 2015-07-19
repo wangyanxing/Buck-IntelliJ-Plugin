@@ -11,10 +11,6 @@ public class BuckVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitBraces(@NotNull BuckBraces o) {
-    visitPsiElement(o);
-  }
-
   public void visitComma(@NotNull BuckComma o) {
     visitPsiElement(o);
   }
@@ -23,7 +19,15 @@ public class BuckVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitLbrace(@NotNull BuckLbrace o) {
+    visitPsiElement(o);
+  }
+
   public void visitProperty(@NotNull BuckProperty o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRbrace(@NotNull BuckRbrace o) {
     visitPsiElement(o);
   }
 
