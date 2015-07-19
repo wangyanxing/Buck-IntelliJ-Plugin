@@ -90,7 +90,12 @@ KEYWORDS =  "name" |
             "store" |
             "properties" |
             "assets" |
-            "package"
+            "package" |
+            "proguard_config" |
+            "source_jar" |
+            "aidl" |
+            "import_path"
+
 
 MACROS = ([A-Z0-9] | ("_"))+
 
