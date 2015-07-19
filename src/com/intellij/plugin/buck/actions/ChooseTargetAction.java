@@ -1,12 +1,10 @@
-package com.intellij.plugin.buck.toolwindow;
+package com.intellij.plugin.buck.actions;
 
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.execution.Executor;
 import com.intellij.execution.ExecutorRegistry;
-import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.actions.ChooseRunConfigurationPopup;
 import com.intellij.execution.executors.DefaultRunExecutor;
-import com.intellij.execution.impl.RunDialog;
 import com.intellij.featureStatistics.FeatureUsageTracker;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
@@ -17,8 +15,7 @@ import com.intellij.ide.ui.laf.darcula.ui.DarculaTextFieldUI;
 import com.intellij.ide.ui.search.BooleanOptionDescription;
 import com.intellij.ide.ui.search.OptionDescription;
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.ide.util.gotoByName.GotoActionModel;
-import com.intellij.ide.util.gotoByName.GotoClassModel2;
+import com.intellij.ide.util.gotoByName.*;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.Disposable;
@@ -30,8 +27,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actions.TextComponentEditorAction;
 import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.keymap.KeymapUtil;
-import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.util.ProgressIndicatorBase;
@@ -46,9 +41,13 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFilePathWrapper;
 import com.intellij.openapi.wm.*;
-import com.intellij.pom.Navigatable;
+import com.intellij.plugin.buck.actions.renderer.BuckTargetPsiRenderer;
+import com.intellij.plugin.buck.targets.BuckTarget;
+import com.intellij.plugin.buck.targets.TargetAliasParser;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.codeStyle.MinusculeMatcher;
 import com.intellij.psi.codeStyle.NameUtil;
 import com.intellij.ui.*;
 import com.intellij.ui.awt.RelativePoint;
@@ -59,13 +58,11 @@ import com.intellij.ui.components.OnOffButton;
 import com.intellij.ui.components.panels.NonOpaquePanel;
 import com.intellij.ui.popup.AbstractPopup;
 import com.intellij.ui.popup.PopupPositionManager;
-import com.intellij.util.Alarm;
-import com.intellij.util.Function;
-import com.intellij.util.IconUtil;
-import com.intellij.util.ReflectionUtil;
+import com.intellij.util.*;
 import com.intellij.util.text.Matcher;
 import com.intellij.util.ui.EmptyIcon;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.StatusText;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
@@ -81,12 +78,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ChooseTargetAction extends DumbAwareAction implements DataProvider {
 
   public static final String SE_HISTORY_KEY = "BuckTargetHistoryKey";
+
   public static final int SEARCH_FIELD_COLUMNS = 25;
   private static final int POPUP_MAX_WIDTH = 600;
+  private static final int MAX_RECENT_TARGETS = 10;
 
   private static AtomicBoolean ourShiftIsPressed = new AtomicBoolean(false);
   private static AtomicBoolean showAll = new AtomicBoolean(false);
 
+  private final Project myProject;
   private MySearchTextField myPopupField;
   private HistoryItem myHistoryItem;
   private int myHistoryIndex = 0;
@@ -99,7 +99,8 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   private CalcThread myCalcThread;
   private MyListRenderer myRenderer;
   private volatile JBPopup myBalloon;
-  private Alarm myAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, ApplicationManager.getApplication());
+  private Alarm myAlarm =
+      new Alarm(Alarm.ThreadToUse.SWING_THREAD, ApplicationManager.getApplication());
   private volatile ActionCallback myCurrentWorker = ActionCallback.DONE;
   private int myPopupActualWidth;
   private Map<String, String> myConfigurables = new HashMap<String, String>();
@@ -109,8 +110,9 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   private Component myContextComponent;
   private AnActionEvent myActionEvent;
 
-  public ChooseTargetAction() {
+  public ChooseTargetAction(Project project) {
     super("Choose target", "Choose build target", AllIcons.Actions.Preview);
+    myProject = project;
 
     updateComponents();
     SwingUtilities.invokeLater(new Runnable() {
@@ -142,6 +144,9 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
 
   @Override
   public void actionPerformed(AnActionEvent e) {
+    String path = e.getProject().getBasePath();
+    TargetAliasParser.parseAlias(path);
+
     if (myBalloon != null && myBalloon.isVisible()) {
       showAll.set(!showAll.get());
       rebuildList(myPopupField.getText());
@@ -202,6 +207,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         }
       }
     });
+
     initSearchField(myPopupField);
     myPopupField.setOpaque(false);
     final JTextField editor = myPopupField.getTextEditor();
@@ -215,6 +221,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         g.fillRect(0, 0, getWidth(), getHeight());
       }
     };
+
     final JLabel title = new JLabel("Choose Buck Target:");
     final JPanel topPanel = new NonOpaquePanel(new BorderLayout());
     title.setForeground(new JBColor(Gray._240, Gray._200));
@@ -261,14 +268,17 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         });
 
     Component parent = UIUtil.findUltimateParent(window);
-    registerDataProvider(panel, project);
+    registerDataProvider(panel);
     final RelativePoint showPoint;
     if (parent != null) {
-      showPoint = new RelativePoint(parent, new Point((parent.getSize().width - panel.getPreferredSize().width) / 2,
+      showPoint = new RelativePoint(
+          parent,
+          new Point((parent.getSize().width - panel.getPreferredSize().width) / 2,
           (parent.getSize().height - panel.getPreferredSize().height) / 2));
     } else {
       showPoint = JBPopupFactory.getInstance().guessBestPopupLocation(e.getDataContext());
     }
+
     myList.setFont(UIUtil.getListFont());
     myBalloon.show(showPoint);
     initSearchActions(myBalloon, myPopupField);
@@ -277,7 +287,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     FeatureUsageTracker.getInstance().triggerFeatureUsed(IdeActions.ACTION_SEARCH_EVERYWHERE);
   }
 
-  private void registerDataProvider(JPanel panel, final Project project) {
+  private void registerDataProvider(JPanel panel) {
     DataManager.registerDataProvider(panel, new DataProvider() {
       @Nullable
       @Override
@@ -287,34 +297,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
           return value;
         } else if (CommonDataKeys.VIRTUAL_FILE.is(dataId) && value instanceof VirtualFile) {
           return value;
-        } else if (CommonDataKeys.NAVIGATABLE.is(dataId)) {
-          if (value instanceof Navigatable) return value;
-          if (value instanceof ChooseRunConfigurationPopup.ItemWrapper) {
-            final Object config = ((ChooseRunConfigurationPopup.ItemWrapper) value).getValue();
-            if (config instanceof RunnerAndConfigurationSettings) {
-              return new Navigatable() {
-                @Override
-                public void navigate(boolean requestFocus) {
-                  RunDialog.editConfiguration(project, (RunnerAndConfigurationSettings) config,
-                      "Edit Configuration", getExecutor());
-                }
-
-                @Override
-                public boolean canNavigate() {
-                  return true;
-                }
-
-                @Override
-                public boolean canNavigateToSource() {
-                  return true;
-                }
-              };
-            }
-          }
         }
-//                else if (PlatformDataKeys.SEARCH_INPUT_TEXT.is(dataId)) {
-//                    return myPopupField == null ? null : myPopupField.getText();
-//                }
         return null;
       }
     });
@@ -344,7 +327,9 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         final JBScrollPane pane = new JBScrollPane();
         final int extraWidth = pane.getVerticalScrollBar().getWidth() + 1;
         final int extraHeight = pane.getHorizontalScrollBar().getHeight() + 1;
-        sz = new Dimension(Math.min(POPUP_MAX_WIDTH, Math.max(getField().getWidth(), sz.width + extraWidth)), Math.min(POPUP_MAX_WIDTH, sz.height + extraHeight));
+        sz = new Dimension(
+            Math.min(POPUP_MAX_WIDTH, Math.max(getField().getWidth(), sz.width + extraWidth)),
+            Math.min(POPUP_MAX_WIDTH, sz.height + extraHeight));
         sz.width += 20;
         sz.height += 2;
       } else {
@@ -375,7 +360,11 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     Point myRelativeOnScreen = myRelativeTo.getLocationOnScreen();
     Rectangle screen = ScreenUtil.getScreenRectangle(myRelativeOnScreen);
     Rectangle popupRect = null;
-    Rectangle r = new Rectangle(myRelativeOnScreen.x, myRelativeOnScreen.y + myRelativeTo.getHeight(), d.width, d.height);
+    Rectangle r = new Rectangle(
+        myRelativeOnScreen.x,
+        myRelativeOnScreen.y + myRelativeTo.getHeight(),
+        d.width,
+        d.height);
 
     if (screen.contains(r)) {
       popupRect = r;
@@ -536,13 +525,10 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
           text = myEditor.getSelectionModel().getSelectedText();
           text = text == null ? "" : text.trim();
         }
-
         search.setText(text);
         search.getTextEditor().setForeground(UIUtil.getLabelForeground());
-        //titleIndex = new TitleIndexes();
         editor.setColumns(SEARCH_FIELD_COLUMNS);
         myFocusComponent = e.getOppositeComponent();
-        //noinspection SSBasedInspection
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
@@ -566,33 +552,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     });
   }
 
-  private static String getSettingText(OptionDescription value) {
-    String hit = value.getHit();
-    if (hit == null) {
-      hit = value.getOption();
-    }
-    hit = StringUtil.unescapeXml(hit);
-    if (hit.length() > 60) {
-      hit = hit.substring(0, 60) + "...";
-    }
-    hit = hit.replace("  ", " "); //avoid extra spaces from mnemonics and xml conversion
-    String text = hit.trim();
-    if (text.endsWith(":")) {
-      text = text.substring(0, text.length() - 1);
-    }
-    return text;
-  }
-
-  private boolean isMoreItem(int index) {
-    final SearchListModel model = getModel();
-    return index == model.moreIndex.classes ||
-        index == model.moreIndex.files ||
-        index == model.moreIndex.settings ||
-        index == model.moreIndex.actions ||
-        index == model.moreIndex.symbols ||
-        index == model.moreIndex.runConfigurations;
-  }
-
   private void rebuildList(final String pattern) {
     assert EventQueue.isDispatchThread() : "Must be EDT";
     if (myCalcThread != null && !myCurrentWorker.isProcessed()) {
@@ -601,14 +560,16 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     if (myCalcThread != null && !myCalcThread.isCanceled()) {
       myCalcThread.cancel();
     }
-    final Project project = CommonDataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(getField().getTextEditor()));
+    final Project project =
+        CommonDataKeys.PROJECT.getData(
+            DataManager.getInstance().getDataContext(getField().getTextEditor()));
 
     assert project != null;
     myRenderer.myProject = project;
     final Runnable run = new Runnable() {
       @Override
       public void run() {
-        myCalcThread = new CalcThread(project, pattern, false);
+        myCalcThread = new CalcThread(pattern, false);
         myPopupActualWidth = 0;
         myCurrentWorker = myCalcThread.start();
       }
@@ -633,7 +594,8 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         } else {
           lastKnownHeight = size.height;
         }
-        return new Dimension(Math.max(myBalloon.getSize().width, Math.min(size.width - 2, POPUP_MAX_WIDTH)),
+        return new Dimension(Math.max(myBalloon.getSize().width,
+            Math.min(size.width - 2, POPUP_MAX_WIDTH)),
             myList.isEmpty() ? JBUI.scale(30) : size.height);
       }
 
@@ -660,7 +622,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         if (i != -1) {
           mySkipFocusGain = true;
           getField().requestFocus();
-          //noinspection SSBasedInspection
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -674,6 +635,12 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   }
 
   private void doNavigate(final int index) {
+    IdeFocusManager focusManager =
+        IdeFocusManager.findInstanceByComponent(getField().getTextEditor());
+    if (myPopup != null && myPopup.isVisible()) {
+      myPopup.cancel();
+    }
+    focusManager.requestDefaultFocus(true);
   }
 
   private static JComponent createTitle(String titleText) {
@@ -705,22 +672,22 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
 
   private ActionCallback onFocusLost() {
     final ActionCallback result = new ActionCallback();
-    //noinspection SSBasedInspection
     UIUtil.invokeLaterIfNeeded(new Runnable() {
       @Override
       public void run() {
         try {
           if (myCalcThread != null) {
             myCalcThread.cancel();
-            //myCalcThread = null;
           }
           myAlarm.cancelAllRequests();
-          if (myBalloon != null && !myBalloon.isDisposed() && myPopup != null && !myPopup.isDisposed()) {
+          if (myBalloon != null &&
+              !myBalloon.isDisposed() &&
+              myPopup != null &&
+              !myPopup.isDisposed()) {
             myBalloon.cancel();
             myPopup.cancel();
           }
 
-          //noinspection SSBasedInspection
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -741,7 +708,8 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     return null;
   }
 
-  private static class MySearchTextField extends SearchTextField implements DataProvider, Disposable {
+  private static class MySearchTextField extends SearchTextField
+      implements DataProvider, Disposable {
     public MySearchTextField() {
       super(false);
       getTextEditor().setOpaque(false);
@@ -813,105 +781,18 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     }
   }
 
-  static class MoreIndex {
-    volatile int classes = -1;
-    volatile int files = -1;
-    volatile int actions = -1;
-    volatile int settings = -1;
-    volatile int symbols = -1;
-    volatile int runConfigurations = -1;
-    volatile int structure = -1;
-
-    public void shift(int index, int shift) {
-      if (runConfigurations >= index) runConfigurations += shift;
-      if (classes >= index) classes += shift;
-      if (files >= index) files += shift;
-      if (symbols >= index) symbols += shift;
-      if (actions >= index) actions += shift;
-      if (settings >= index) settings += shift;
-      if (structure >= index) structure += shift;
-    }
-  }
-
   static class TitleIndex {
-    volatile int topHit = -1;
-    volatile int recentFiles = -1;
-    volatile int runConfigurations = -1;
-    volatile int classes = -1;
-    volatile int structure = -1;
-    volatile int files = -1;
-    volatile int actions = -1;
-    volatile int settings = -1;
-    volatile int toolWindows = -1;
-    volatile int symbols = -1;
+    volatile int targets = -1;
 
-    final String gotoClassTitle;
-    final String gotoFileTitle;
-    final String gotoActionTitle;
-    final String gotoSettingsTitle;
-    final String gotoRecentFilesTitle;
-    final String gotoRunConfigurationsTitle;
-    final String gotoSymbolTitle;
-    final String gotoStructureTitle;
-    static final String toolWindowsTitle = "Tool Windows";
+    final String gotoTargetsTitle;
 
     TitleIndex() {
-      String gotoClass = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("GotoClass"));
-      gotoClassTitle = StringUtil.isEmpty(gotoClass) ? "Classes" : "Classes (" + gotoClass + ")";
-      String gotoFile = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("GotoFile"));
-      gotoFileTitle = StringUtil.isEmpty(gotoFile) ? "Files" : "Files (" + gotoFile + ")";
-      String gotoAction = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("GotoAction"));
-      gotoActionTitle = StringUtil.isEmpty(gotoAction) ? "Actions" : "Actions (" + gotoAction + ")";
-      String gotoSettings = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("ShowSettings"));
-      gotoSettingsTitle = StringUtil.isEmpty(gotoAction) ? ShowSettingsUtil.getSettingsMenuName() : ShowSettingsUtil.getSettingsMenuName() + " (" + gotoSettings + ")";
-      String gotoRecentFiles = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("RecentFiles"));
-      gotoRecentFilesTitle = StringUtil.isEmpty(gotoRecentFiles) ? "Recent Files" : "Recent Files (" + gotoRecentFiles + ")";
-      String gotoSymbol = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("GotoSymbol"));
-      gotoSymbolTitle = StringUtil.isEmpty(gotoSymbol) ? "Symbols" : "Symbols (" + gotoSymbol + ")";
-      String gotoRunConfiguration = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("ChooseDebugConfiguration"));
-      if (StringUtil.isEmpty(gotoRunConfiguration)) {
-        gotoRunConfiguration = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("ChooseRunConfiguration"));
-      }
-      gotoRunConfigurationsTitle = StringUtil.isEmpty(gotoRunConfiguration) ? "Run Configurations" : "Run Configurations (" + gotoRunConfiguration + ")";
-      String gotoStructure = KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction("FileStructurePopup"));
-      gotoStructureTitle = StringUtil.isEmpty(gotoStructure) ? "File Structure" : "File Structure (" + gotoStructure + ")";
+      gotoTargetsTitle = "Targets";
     }
 
     String getTitle(int index) {
-      if (index == topHit) return index == 0 ? "Top Hit" : "Top Hits";
-      if (index == recentFiles) return gotoRecentFilesTitle;
-      if (index == structure) return gotoStructureTitle;
-      if (index == runConfigurations) return gotoRunConfigurationsTitle;
-      if (index == classes) return gotoClassTitle;
-      if (index == files) return gotoFileTitle;
-      if (index == toolWindows) return toolWindowsTitle;
-      if (index == actions) return gotoActionTitle;
-      if (index == settings) return gotoSettingsTitle;
-      if (index == symbols) return gotoSymbolTitle;
+      if (index == targets) return gotoTargetsTitle;
       return null;
-    }
-
-    public void clear() {
-      topHit = -1;
-      runConfigurations = -1;
-      recentFiles = -1;
-      classes = -1;
-      files = -1;
-      structure = -1;
-      actions = -1;
-      settings = -1;
-      toolWindows = -1;
-    }
-
-    public void shift(int index, int shift) {
-      if (toolWindows != -1 && toolWindows > index) toolWindows += shift;
-      if (settings != -1 && settings > index) settings += shift;
-      if (actions != -1 && actions > index) actions += shift;
-      if (files != -1 && files > index) files += shift;
-      if (structure != -1 && structure > index) structure += shift;
-      if (classes != -1 && classes > index) classes += shift;
-      if (runConfigurations != -1 && runConfigurations > index) runConfigurations += shift;
-      if (symbols != -1 && symbols > index) symbols += shift;
     }
   }
 
@@ -921,7 +802,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     Vector myDelegate;
 
     volatile TitleIndex titleIndex = new TitleIndex();
-    volatile MoreIndex moreIndex = new MoreIndex();
 
     private SearchListModel() {
       super();
@@ -932,30 +812,16 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       int[] all = getAll();
       Arrays.sort(all);
       for (int next : all) {
-        if (next > index) return next;
+        if (next > index) {
+          return next;
+        }
       }
       return 0;
     }
 
     int[] getAll() {
-      return new int[]{
-          titleIndex.topHit,
-          titleIndex.recentFiles,
-          titleIndex.structure,
-          titleIndex.runConfigurations,
-          titleIndex.classes,
-          titleIndex.files,
-          titleIndex.actions,
-          titleIndex.settings,
-          titleIndex.toolWindows,
-          titleIndex.symbols,
-          moreIndex.classes,
-          moreIndex.actions,
-          moreIndex.files,
-          moreIndex.settings,
-          moreIndex.symbols,
-          moreIndex.runConfigurations,
-          moreIndex.structure
+      return new int[] {
+          titleIndex.targets,
       };
     }
 
@@ -963,7 +829,9 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       int[] all = getAll();
       Arrays.sort(all);
       for (int i = all.length - 1; i >= 0; i--) {
-        if (all[i] != -1 && all[i] < index) return all[i];
+        if (all[i] != -1 && all[i] < index) {
+          return all[i];
+        }
       }
       return all[all.length - 1];
     }
@@ -987,9 +855,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         setIcon(myLocationIcon);
       }
     };
-    //SearchEverywherePsiRenderer myFileRenderer = new SearchEverywherePsiRenderer(myList);
-    @SuppressWarnings("unchecked")
-    ListCellRenderer myActionsRenderer = new GotoActionModel.GotoActionListCellRenderer(Function.TO_STRING);
+    BuckTargetPsiRenderer myTargetRenderer = new BuckTargetPsiRenderer();
 
     private String myLocationString;
     private Icon myLocationIcon;
@@ -1005,52 +871,34 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       myLocationIcon = null;
     }
 
-    public void setLocationString(String locationString) {
-      myLocationString = locationString;
-    }
-
     @Override
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(
+        JList list,
+        Object value,
+        int index,
+        boolean isSelected,
+        boolean cellHasFocus) {
       Component cmp;
       PsiElement file;
       myLocationString = null;
       String pattern = "*" + myPopupField.getText();
       Matcher matcher = NameUtil.buildMatcher(pattern, 0, true, true);
-//            if (isMoreItem(index)) {
-//                cmp = More.get(isSelected);
-//            } else if (value instanceof VirtualFile
-//                    && myProject != null
-//                    && ((((VirtualFile)value).isDirectory() && (file = PsiManager.getInstance(myProject).findDirectory((VirtualFile)value)) != null )
-//                    || (file = PsiManager.getInstance(myProject).findFile((VirtualFile)value)) != null)) {
-//                myFileRenderer.setPatternMatcher(matcher);
-//                cmp = myFileRenderer.getListCellRendererComponent(list, file, index, isSelected, cellHasFocus);
-//            } else if (value instanceof PsiElement) {
-//                myFileRenderer.setPatternMatcher(matcher);
-//                cmp = myFileRenderer.getListCellRendererComponent(list, value, index, isSelected, isSelected);
-//            } else if (value instanceof GotoActionModel.ActionWrapper) {
-//                cmp = myActionsRenderer.getListCellRendererComponent(list, new GotoActionModel.MatchedValue(((GotoActionModel.ActionWrapper)value), pattern), index, isSelected, isSelected);
-//            } else {
-      cmp = super.getListCellRendererComponent(list, value, index, isSelected, isSelected);
-      final JPanel p = new JPanel(new BorderLayout());
-      p.setBackground(UIUtil.getListBackground(isSelected));
-      p.add(cmp, BorderLayout.CENTER);
-      cmp = p;
-      //}
 
-      if (myLocationString != null || value instanceof BooleanOptionDescription) {
-        final JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(UIUtil.getListBackground(isSelected));
-        panel.add(cmp, BorderLayout.CENTER);
-        final Component rightComponent;
-        if (value instanceof BooleanOptionDescription) {
-          final OnOffButton button = new OnOffButton();
-          button.setSelected(((BooleanOptionDescription) value).isOptionEnabled());
-          rightComponent = button;
-        } else {
-          rightComponent = myLocation.getListCellRendererComponent(list, value, index, isSelected, isSelected);
-        }
-        panel.add(rightComponent, BorderLayout.EAST);
-        cmp = panel;
+      VirtualFile buckFile = ((BuckTarget) value).getVirtualFile();
+      if (buckFile != null && myProject != null && ((buckFile.isDirectory() &&
+          (file = PsiManager.getInstance(myProject).findDirectory(buckFile)) != null ) ||
+          (file = PsiManager.getInstance(myProject).findFile(buckFile)) != null)) {
+        myTargetRenderer.setPatternMatcher(matcher);
+        myTargetRenderer.setAlias(((BuckTarget) value).getAlias());
+        myTargetRenderer.setTarget(((BuckTarget) value).getTarget());
+        cmp = myTargetRenderer.getListCellRendererComponent(
+            list, file, index, isSelected, cellHasFocus);
+      } else {
+        cmp = super.getListCellRendererComponent(list, value, index, isSelected, isSelected);
+        final JPanel p = new JPanel(new BorderLayout());
+        p.setBackground(UIUtil.getListBackground(isSelected));
+        p.add(cmp, BorderLayout.CENTER);
+        cmp = p;
       }
 
       Color bg = cmp.getBackground();
@@ -1069,100 +917,24 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       final int width = myMainPanel.getPreferredSize().width;
       if (width > myPopupActualWidth) {
         myPopupActualWidth = width;
-        //schedulePopupUpdate();
       }
       return myMainPanel;
     }
 
     @Override
-    protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-      setPaintFocusBorder(false);
-      setIcon(EmptyIcon.ICON_16);
-      AccessToken token = ApplicationManager.getApplication().acquireReadActionLock();
-      try {
-        if (value instanceof PsiElement) {
-          String name = myClassModel.getElementName(value);
-          assert name != null;
-          append(name);
-        } else if (value instanceof ChooseRunConfigurationPopup.ItemWrapper) {
-          final ChooseRunConfigurationPopup.ItemWrapper wrapper = (ChooseRunConfigurationPopup.ItemWrapper) value;
-          append(wrapper.getText());
-          setIcon(wrapper.getIcon());
-          setLocationString(ourShiftIsPressed.get() ? "Run" : "Debug");
-          myLocationIcon = ourShiftIsPressed.get() ? AllIcons.Toolwindows.ToolWindowRun : AllIcons.Toolwindows.ToolWindowDebugger;
-        } else if (isVirtualFile(value)) {
-          final VirtualFile file = (VirtualFile) value;
-          if (file instanceof VirtualFilePathWrapper) {
-            append(((VirtualFilePathWrapper) file).getPresentablePath());
-          } else {
-            append(file.getName());
-          }
-          setIcon(IconUtil.getIcon(file, Iconable.ICON_FLAG_READ_STATUS, myProject));
-        } else if (isActionValue(value)) {
-          final GotoActionModel.ActionWrapper actionWithParentGroup = value instanceof GotoActionModel.ActionWrapper ? (GotoActionModel.ActionWrapper) value : null;
-          final AnAction anAction = actionWithParentGroup == null ? (AnAction) value : actionWithParentGroup.getAction();
-          final Presentation templatePresentation = anAction.getTemplatePresentation();
-          Icon icon = templatePresentation.getIcon();
-          if (anAction instanceof ActivateToolWindowAction) {
-            final String id = ((ActivateToolWindowAction) anAction).getToolWindowId();
-            ToolWindow toolWindow = ToolWindowManager.getInstance(myProject).getToolWindow(id);
-            if (toolWindow != null) {
-              icon = toolWindow.getIcon();
-            }
-          }
-
-          append(templatePresentation.getText());
-          if (actionWithParentGroup != null) {
-            final String groupName = actionWithParentGroup.getGroupName();
-            if (!StringUtil.isEmpty(groupName)) {
-              setLocationString(groupName);
-            }
-          }
-
-          final String groupName = actionWithParentGroup == null ? null : actionWithParentGroup.getGroupName();
-          if (!StringUtil.isEmpty(groupName)) {
-            setLocationString(groupName);
-          }
-          if (icon != null && icon.getIconWidth() <= 16 && icon.getIconHeight() <= 16) {
-            setIcon(IconUtil.toSize(icon, 16, 16));
-          }
-        } else if (isSetting(value)) {
-          String text = getSettingText((OptionDescription) value);
-          append(text);
-          final String id = ((OptionDescription) value).getConfigurableId();
-          final String name = myConfigurables.get(id);
-          if (name != null) {
-            setLocationString(name);
-          }
-        } else if (value instanceof OptionsTopHitProvider) {
-          append("#" + ((OptionsTopHitProvider) value).getId());
-        } else {
-          ItemPresentation presentation = null;
-          if (value instanceof ItemPresentation) {
-            presentation = (ItemPresentation) value;
-          } else if (value instanceof NavigationItem) {
-            presentation = ((NavigationItem) value).getPresentation();
-          }
-          if (presentation != null) {
-            final String text = presentation.getPresentableText();
-            append(text == null ? value.toString() : text);
-            final String location = presentation.getLocationString();
-            if (!StringUtil.isEmpty(location)) {
-              setLocationString(location);
-            }
-            Icon icon = presentation.getIcon(false);
-            if (icon != null) setIcon(icon);
-          }
-        }
-      } finally {
-        token.finish();
-      }
+    protected void customizeCellRenderer(
+        JList list,
+        Object value,
+        int index,
+        boolean selected,
+        boolean hasFocus) {
     }
 
     public void recalculateWidth() {
       ListModel model = myList.getModel();
       myTitle.setIcon(EmptyIcon.ICON_16);
       myTitle.setFont(getTitleFont());
+
       int index = 0;
       while (index < model.getSize()) {
         String title = getModel().titleIndex.getTitle(index);
@@ -1178,16 +950,12 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   }
 
   private class CalcThread implements Runnable {
-    private final Project project;
     private final String pattern;
     private final ProgressIndicator myProgressIndicator = new ProgressIndicatorBase();
     private final ActionCallback myDone = new ActionCallback();
     private final SearchListModel myListModel;
-    private final ArrayList<VirtualFile> myAlreadyAddedFiles = new ArrayList<VirtualFile>();
-    private final ArrayList<AnAction> myAlreadyAddedActions = new ArrayList<AnAction>();
 
-    public CalcThread(Project project, String pattern, boolean reuseModel) {
-      this.project = project;
+    public CalcThread(String pattern, boolean reuseModel) {
       this.pattern = pattern;
       myListModel = reuseModel ? (SearchListModel) myList.getModel() : new SearchListModel();
     }
@@ -1197,31 +965,121 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          myList.getEmptyText().setText("Searching...");
+          try {
+            check();
+            myList.getEmptyText().setText("Searching...");
 
-          if (myList.getModel() instanceof SearchListModel) {
-            //noinspection unchecked
-            myAlarm.cancelAllRequests();
-            myAlarm.addRequest(new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
               @Override
               public void run() {
-                if (!myDone.isRejected()) {
+                myList.getEmptyText().setText("Searching...");
+
+                if (myList.getModel() instanceof SearchListModel) {
+                  myAlarm.cancelAllRequests();
+                  myAlarm.addRequest(new Runnable() {
+                    @Override
+                    public void run() {
+                      if (!myDone.isRejected()) {
+                        myList.setModel(myListModel);
+                        updatePopup();
+                      }
+                    }
+                  }, 50);
+                } else {
                   myList.setModel(myListModel);
-                  updatePopup();
                 }
               }
-            }, 50);
-          } else {
-            myList.setModel(myListModel);
+            });
+
+            if (pattern.trim().length() == 0) {
+              buildTargets("");
+              return;
+            }
+
+            runReadAction(new Runnable() {
+              public void run() {
+                buildTargets(pattern);
+              }
+            }, true);
+            check();
+            updatePopup();
+          } catch (ProcessCanceledException ignore) {
+            myDone.setRejected();
+          } catch (Exception e) {
+            myDone.setRejected();
+          }finally {
+            if (!isCanceled()) {
+              SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                  myList.getEmptyText().setText(StatusText.DEFAULT_EMPTY_TEXT);
+                }
+              });
+              updatePopup();
+            }
+            if (!myDone.isProcessed()) {
+              myDone.setDone();
+            }
           }
         }
       });
     }
 
+    private void runReadAction(Runnable action, boolean checkDumb) {
+      if (!checkDumb || !DumbService.getInstance(myProject).isDumb()) {
+        ApplicationManager.getApplication().runReadAction(action);
+        updatePopup();
+      }
+    }
+
+    private synchronized void buildTargets(String pattern) {
+      final MinusculeMatcher matcher =
+          new MinusculeMatcher("*" + pattern, NameUtil.MatchingCaseSensitivity.NONE);
+
+      final ArrayList<BuckTarget> targets =
+          new ArrayList<BuckTarget>();
+
+      for (Map.Entry<String, String> entry : TargetAliasParser.sTargetAlias.entrySet()) {
+        String alias = entry.getKey();
+        String path = entry.getValue();
+        if (StringUtil.isEmptyOrSpaces(pattern) || matcher.matches(alias)) {
+          BuckTarget target = new BuckTarget(myProject, path, alias);
+          if (target.getVirtualFile() != null) {
+            targets.add(target);
+          }
+        }
+        if (targets.size() > MAX_RECENT_TARGETS) {
+          break;
+        }
+      }
+
+      check();
+
+      if (targets.size() > 0) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            if (isCanceled()) {
+              return;
+            }
+            myListModel.titleIndex.targets = myListModel.size();
+            for (Object target : targets) {
+              myListModel.addElement(target);
+            }
+            updatePopup();
+          }
+        });
+      }
+    }
+
     protected void check() {
       myProgressIndicator.checkCanceled();
-      if (myDone.isRejected()) throw new ProcessCanceledException();
-      if (myBalloon == null || myBalloon.isDisposed()) throw new ProcessCanceledException();
+      if (myDone.isRejected()) {
+        throw new ProcessCanceledException();
+      }
+      if (myBalloon == null || myBalloon.isDisposed()) {
+        throw new ProcessCanceledException();
+      }
     }
 
     @SuppressWarnings("SSBasedInspection")
@@ -1239,7 +1097,8 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
             return;
           }
           if (myPopup == null || !myPopup.isVisible()) {
-            final ActionCallback callback = ListDelegationUtil.installKeyboardDelegation(getField().getTextEditor(), myList);
+            final ActionCallback callback =
+                ListDelegationUtil.installKeyboardDelegation(getField().getTextEditor(), myList);
             JBScrollPane content = new JBScrollPane(myList) {
               {
                 if (UIUtil.isUnderDarcula()) {
@@ -1258,7 +1117,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
                 if (size.width < myBalloon.getSize().width) {
                   size.width = myBalloon.getSize().width;
                 }
-
                 return size;
               }
             };
@@ -1271,13 +1129,14 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
                 .setCancelCallback(new Computable<Boolean>() {
                   @Override
                   public Boolean compute() {
-                    return myBalloon == null || myBalloon.isDisposed() || (!getField().getTextEditor().hasFocus() && !mySkipFocusGain);
+                    return myBalloon == null ||
+                        myBalloon.isDisposed() ||
+                        (!getField().getTextEditor().hasFocus() && !mySkipFocusGain);
                   }
                 })
                 .setShowShadow(false)
                 .setShowBorder(false)
                 .createPopup();
-            //myPopup.setMinimumSize(new Dimension(myBalloon.getSize().width, 30));
             myPopup.getContent().setBorder(null);
             Disposer.register(myPopup, new Disposable() {
               @Override
@@ -1286,14 +1145,14 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
                   public void run() {
                     callback.setDone();
                     resetFields();
-                    //noinspection SSBasedInspection
                     SwingUtilities.invokeLater(new Runnable() {
                       @Override
                       public void run() {
                         ActionToolbarImpl.updateAllToolbarsImmediately();
                       }
                     });
-                    if (myActionEvent != null && myActionEvent.getInputEvent() instanceof MouseEvent) {
+                    if (myActionEvent != null &&
+                        myActionEvent.getInputEvent() instanceof MouseEvent) {
                       final Component component = myActionEvent.getInputEvent().getComponent();
                       if (component != null) {
                         final JLabel label = UIUtil.getParentOfType(JLabel.class, component);
@@ -1308,11 +1167,17 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
               }
             });
             updatePopupBounds();
-            myPopup.show(new RelativePoint(getField().getParent(), new Point(0, getField().getParent().getHeight())));
+            myPopup.show(
+                new RelativePoint(getField().getParent(),
+                new Point(0, getField().getParent().getHeight()))
+            );
 
             ActionManager.getInstance().addAnActionListener(new AnActionListener.Adapter() {
               @Override
-              public void beforeActionPerformed(AnAction action, DataContext dataContext, AnActionEvent event) {
+              public void beforeActionPerformed(
+                  AnAction action,
+                  DataContext dataContext,
+                  AnActionEvent event) {
                 if (action instanceof TextComponentEditorAction) {
                   return;
                 }
@@ -1348,21 +1213,4 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     }
   }
 
-  static class More extends JPanel {
-    static final More instance = new More();
-    final JLabel label = new JLabel("    ... more   ");
-
-    private More() {
-      super(new BorderLayout());
-      add(label, BorderLayout.CENTER);
-    }
-
-    static More get(boolean isSelected) {
-      instance.setBackground(UIUtil.getListBackground(isSelected));
-      instance.label.setForeground(UIUtil.getLabelDisabledForeground());
-      instance.label.setFont(getTitleFont());
-      instance.label.setBackground(UIUtil.getListBackground(isSelected));
-      return instance;
-    }
-  }
 }

@@ -1,4 +1,4 @@
-package com.intellij.plugin.buck.toolwindow;
+package com.intellij.plugin.buck.ui;
 
 import com.intellij.execution.impl.ConsoleViewImpl;
 import com.intellij.execution.ui.ConsoleView;
@@ -11,6 +11,10 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.plugin.buck.actions.BuckBuildAction;
+import com.intellij.plugin.buck.actions.BuckInstallAction;
+import com.intellij.plugin.buck.actions.BuckUninstallAction;
+import com.intellij.plugin.buck.actions.ChooseTargetAction;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NonNls;
@@ -34,7 +38,7 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
     Content consoleContent = createAdbLogsContent(layoutUi, project);
 
     layoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
-    layoutUi.getOptions().setLeftToolbar(getLeftToolbarActions(), ActionPlaces.UNKNOWN);
+    layoutUi.getOptions().setLeftToolbar(getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
 
     final ContentManager contentManager = toolWindow.getContentManager();
     Content c = contentManager.getFactory().createContent(layoutUi.getComponent(), "Build System", true);
@@ -50,9 +54,9 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
   }
 
   @NotNull
-  public ActionGroup getLeftToolbarActions() {
+  public ActionGroup getLeftToolbarActions(final Project project) {
     DefaultActionGroup group = new DefaultActionGroup();
-    group.add(new ChooseTargetAction());
+    group.add(new ChooseTargetAction(project));
     group.addSeparator();
     group.add(new BuckInstallAction());
     group.add(new BuckBuildAction());

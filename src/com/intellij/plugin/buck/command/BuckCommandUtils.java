@@ -1,8 +1,6 @@
 package com.intellij.plugin.buck.command;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.MessageType;
-import com.intellij.plugin.buck.notification.EventLogger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,7 +61,7 @@ public class BuckCommandUtils {
   }
 
   public static void outputLog(String msg) {
-    EventLogger.showOverChangesView(sProject, msg, MessageType.ERROR);
+    //EventLogger.showOverChangesView(sProject, msg, MessageType.ERROR);
   }
 
   public static String getPorjectDir(Project project) {

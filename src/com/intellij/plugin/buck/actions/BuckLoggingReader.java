@@ -1,4 +1,4 @@
-package com.intellij.plugin.buck.toolwindow;
+package com.intellij.plugin.buck.actions;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

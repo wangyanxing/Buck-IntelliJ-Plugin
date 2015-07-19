@@ -1,4 +1,4 @@
-package com.intellij.plugin.buck.toolwindow;
+package com.intellij.plugin.buck.actions;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;

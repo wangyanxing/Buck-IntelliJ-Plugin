@@ -30,7 +30,7 @@ array_elements ::= (
 
 rule_block ::= (RULE_NAMES | GENERIC_RULE_NAMES | IDENTIFIER) '(' (CRLF | WHITE_SPACE)* rule_body ')'
 rule_body ::= (
-  property  |
+  property  |knfgfvtvirivlgdrvkfnhlrrblidlggr
   "," |
   CRLF |
   WHITE_SPACE
