@@ -37,6 +37,9 @@ public class BuckParser implements PsiParser {
     else if (t == PROPERTY) {
       r = property(b, 0);
     }
+    else if (t == PROPERTY_LVALUE) {
+      r = property_lvalue(b, 0);
+    }
     else if (t == RBRACE) {
       r = rbrace(b, 0);
     }
@@ -161,7 +164,7 @@ public class BuckParser implements PsiParser {
   }
 
   /* ********************************************************** */
-  // ((IDENTIFIER | MACROS | KEYWORDS) '=' value) | value
+  // (property_lvalue '=' value) | value
   public static boolean property(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property")) return false;
     boolean r;
@@ -172,27 +175,28 @@ public class BuckParser implements PsiParser {
     return r;
   }
 
-  // (IDENTIFIER | MACROS | KEYWORDS) '=' value
+  // property_lvalue '=' value
   private static boolean property_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = property_0_0(b, l + 1);
+    r = property_lvalue(b, l + 1);
     r = r && consumeToken(b, "=");
     r = r && value(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  /* ********************************************************** */
   // IDENTIFIER | MACROS | KEYWORDS
-  private static boolean property_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "property_0_0")) return false;
+  public static boolean property_lvalue(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "property_lvalue")) return false;
     boolean r;
-    Marker m = enter_section_(b);
+    Marker m = enter_section_(b, l, _NONE_, "<property lvalue>");
     r = consumeToken(b, IDENTIFIER);
     if (!r) r = consumeToken(b, MACROS);
     if (!r) r = consumeToken(b, KEYWORDS);
-    exit_section_(b, m, null, r);
+    exit_section_(b, l, m, PROPERTY_LVALUE, r, false, null);
     return r;
   }
 

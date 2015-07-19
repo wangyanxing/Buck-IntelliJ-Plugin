@@ -13,6 +13,7 @@ public interface BuckTypes {
   IElementType EQUAL = new BuckElementType("EQUAL");
   IElementType LBRACE = new BuckElementType("LBRACE");
   IElementType PROPERTY = new BuckElementType("PROPERTY");
+  IElementType PROPERTY_LVALUE = new BuckElementType("PROPERTY_LVALUE");
   IElementType RBRACE = new BuckElementType("RBRACE");
   IElementType RULE_BLOCK = new BuckElementType("RULE_BLOCK");
   IElementType RULE_BODY = new BuckElementType("RULE_BODY");
@@ -47,6 +48,9 @@ public interface BuckTypes {
       }
       else if (type == PROPERTY) {
         return new BuckPropertyImpl(node);
+      }
+      else if (type == PROPERTY_LVALUE) {
+        return new BuckPropertyLvalueImpl(node);
       }
       else if (type == RBRACE) {
         return new BuckRbraceImpl(node);
