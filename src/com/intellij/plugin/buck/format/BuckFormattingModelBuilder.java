@@ -3,7 +3,7 @@ package com.intellij.plugin.buck.format;
 import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.plugin.buck.lang.psi.BuckTypes;
+import com.intellij.plugin.buck.lang.BuckLanguage;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
@@ -24,7 +24,7 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilder {
   }
 
   private static SpacingBuilder createSpaceBuilder(CodeStyleSettings settings) {
-    return new SpacingBuilder(settings);
+      return new SpacingBuilder(settings, BuckLanguage.INSTANCE);
   }
 
   @Nullable

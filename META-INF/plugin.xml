@@ -47,6 +47,11 @@
         <lang.formatter language="Buck" implementationClass="com.intellij.plugin.buck.format.BuckFormattingModelBuilder"/>
         <completion.contributor language="Buck"
                                 implementationClass="com.intellij.plugin.buck.completion.BuckCompletionContributor"/>
+
+        <codeStyleSettingsProvider implementation="com.intellij.plugin.buck.format.BuckCodeStyleSettingsProvider"/>
+
+        <langCodeStyleSettingsProvider implementation="com.intellij.plugin.buck.format.BuckLanguageCodeStyleSettingsProvider"/>
+
         <gotoDeclarationHandler
                 implementation="com.intellij.plugin.buck.navigation.BuckGotoProvider"
                 order="FIRST"/>
