@@ -20,7 +20,6 @@ private item_ ::= (rule_block | property | COMMENT | WHITE_SPACE)
 property_lvalue ::= IDENTIFIER | MACROS | KEYWORDS
 property ::= (property_lvalue '=' value) | value
 value ::= VALUE_STRING | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | rule_block
-keyword_deps ::= KEYWORD_DEPS
 
 value_array ::= '[' (WHITE_SPACE)* array_elements ']'
 array_elements ::= (

@@ -25,7 +25,6 @@ public interface BuckTypes {
   IElementType GENERIC_RULE_NAMES = new BuckTokenType("GENERIC_RULE_NAMES");
   IElementType IDENTIFIER = new BuckTokenType("IDENTIFIER");
   IElementType KEYWORDS = new BuckTokenType("KEYWORDS");
-  IElementType KEYWORD_DEPS = new BuckTokenType("KEYWORD_DEPS");
   IElementType MACROS = new BuckTokenType("MACROS");
   IElementType RULE_NAMES = new BuckTokenType("RULE_NAMES");
   IElementType VALUE_BOOLEAN = new BuckTokenType("VALUE_BOOLEAN");
@@ -43,9 +42,6 @@ public interface BuckTypes {
       }
       else if (type == EQUAL) {
         return new BuckEqualImpl(node);
-      }
-      else if (type == KEYWORD_DEPS) {
-        return new BuckKeywordDepsImpl(node);
       }
       else if (type == LBRACE) {
         return new BuckLbraceImpl(node);

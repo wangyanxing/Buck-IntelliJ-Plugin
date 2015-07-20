@@ -9,10 +9,9 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
-public class BuckParser implements PsiParser, LightPsiParser {
+public class BuckParser implements PsiParser {
 
   public ASTNode parse(IElementType t, PsiBuilder b) {
     parseLight(t, b);
@@ -31,9 +30,6 @@ public class BuckParser implements PsiParser, LightPsiParser {
     }
     else if (t == EQUAL) {
       r = equal(b, 0);
-    }
-    else if (t == KEYWORD_DEPS) {
-      r = keyword_deps(b, 0);
     }
     else if (t == LBRACE) {
       r = lbrace(b, 0);
@@ -151,18 +147,6 @@ public class BuckParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, COMMENT);
     if (!r) r = consumeToken(b, WHITE_SPACE);
     exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // KEYWORD_DEPS
-  public static boolean keyword_deps(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "keyword_deps")) return false;
-    if (!nextTokenIs(b, KEYWORD_DEPS)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, KEYWORD_DEPS);
-    exit_section_(b, m, KEYWORD_DEPS, r);
     return r;
   }
 
