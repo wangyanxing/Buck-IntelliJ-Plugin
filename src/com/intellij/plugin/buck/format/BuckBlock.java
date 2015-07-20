@@ -1,12 +1,19 @@
 package com.intellij.plugin.buck.format;
 
 import com.intellij.formatting.*;
+import com.intellij.json.psi.JsonArray;
+import com.intellij.json.psi.JsonObject;
+import com.intellij.json.psi.JsonPsiUtil;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.plugin.buck.lang.psi.BuckTypes;
+import com.intellij.plugin.buck.lang.psi.*;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.TokenType;
+import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.impl.source.tree.TreeUtil;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,173 +21,191 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.intellij.plugin.buck.lang.psi.BuckPsiUtils.hasElementType;
+
 
 public class BuckBlock implements ASTBlock {
 
-    private final BuckBlock myParent;
-    private final Alignment myAlignment;
-    private final Indent myIndent;
-    private final ASTNode myNode;
-    private final Wrap myWrap;
-    private final Wrap myChildWrap;
+  private final BuckBlock myParent;
+  private final Alignment myAlignment;
+  private final Indent myIndent;
+  private final PsiElement myPsiElement;
+  private final ASTNode myNode;
+  private final Wrap myWrap;
+  private final Wrap myChildWrap;
+  private final CodeStyleSettings mySettings;
+  private final SpacingBuilder mySpacingBuilder;
 
-    //private final BuckBlockContext myContext;
-    private List<BuckBlock> mySubBlocks = null;
-    private Alignment myChildAlignment;
-    private final Alignment myDictAlignment;
-    private final Wrap myDictWrapping;
-    private final Alignment myPropertyValueAlignment;
-    private final int myIndentSpaceNum;
+  //private final BuckBlockContext myContext;
+  private List<BuckBlock> mySubBlocks = null;
+  private Alignment myChildAlignment;
+  private final Alignment myDictAlignment;
+  private final Alignment myPropertyValueAlignment;
 
-    public BuckBlock(final BuckBlock parent,
-                     final ASTNode node,
-                     final Alignment alignment,
-                     final Indent indent,
-                     final Wrap wrap,
-                     final int indentSpaceNum) {
-        myParent = parent;
-        myAlignment = alignment;
-        myIndent = indent;
-        myNode = node;
-        myWrap = wrap;
-        myChildWrap = Wrap.createWrap(2, true);
-        myPropertyValueAlignment = Alignment.createAlignment(true);
-        myDictAlignment = null;
-        myDictWrapping = null;
-        myIndentSpaceNum = indentSpaceNum;
+  public BuckBlock(@Nullable final BuckBlock parent,
+                   @NotNull final ASTNode node,
+                   @NotNull CodeStyleSettings settings,
+                   @Nullable final Alignment alignment,
+                   @NotNull final Indent indent,
+                   @Nullable final Wrap wrap) {
+    myParent = parent;
+    myAlignment = alignment;
+    myIndent = indent;
+    myNode = node;
+    myPsiElement = node.getPsi();
+    myWrap = wrap;
+    myPropertyValueAlignment = Alignment.createAlignment(true);
+    myDictAlignment = null;
+    mySettings = settings;
+
+    mySpacingBuilder = BuckFormattingModelBuilder.createSpacingBuilder(settings);
+
+    if (myPsiElement instanceof BuckValueArray) {
+      myChildWrap = Wrap.createWrap(CommonCodeStyleSettings.WRAP_ALWAYS, true);
+    } else if (myPsiElement instanceof BuckRuleBody) {
+      myChildWrap = Wrap.createWrap(CommonCodeStyleSettings.WRAP_ALWAYS, true);
+    } else {
+      myChildWrap = null;
     }
+  }
 
-    @Override
-    public ASTNode getNode() {
-        return myNode;
+  @Override
+  public ASTNode getNode() {
+    return myNode;
+  }
+
+  @NotNull
+  @Override
+  public TextRange getTextRange() {
+    return myNode.getTextRange();
+  }
+
+  @NotNull
+  @Override
+  public List<Block> getSubBlocks() {
+    if (mySubBlocks == null) {
+      mySubBlocks = buildSubBlocks();
     }
+    return new ArrayList<Block>(mySubBlocks);
+  }
 
-    @NotNull
-    @Override
-    public TextRange getTextRange() {
-        return myNode.getTextRange();
+  private List<BuckBlock> buildSubBlocks() {
+    final List<BuckBlock> blocks = new ArrayList<BuckBlock>();
+    for (ASTNode child = myNode.getFirstChildNode(); child != null; child = child.getTreeNext()) {
+      final IElementType childType = child.getElementType();
+
+      if (child.getTextRange().isEmpty()) {
+        continue;
+      }
+      if (childType == TokenType.WHITE_SPACE) {
+        continue;
+      }
+      blocks.add(buildSubBlock(child));
     }
+    return Collections.unmodifiableList(blocks);
+  }
 
-    @NotNull
-    @Override
-    public List<Block> getSubBlocks() {
-        if (mySubBlocks == null) {
-            mySubBlocks = buildSubBlocks();
+  private BuckBlock buildSubBlock(ASTNode childNode) {
+    Indent indent = Indent.getNoneIndent();
+    Alignment alignment = null;
+    Wrap wrap = null;
+
+    final TokenSet ALL_BRACES =
+        TokenSet.orSet(TokenSet.create(BuckTypes.LBRACE), TokenSet.create(BuckTypes.RBRACE));
+
+    if(hasElementType(myNode, TokenSet.create(BuckTypes.VALUE_ARRAY, BuckTypes.RULE_BODY))) {
+      if (hasElementType(childNode, BuckTypes.COMMA)) {
+        wrap = Wrap.createWrap(WrapType.NONE, true);
+      } else if (!hasElementType(childNode, ALL_BRACES)) {
+        assert myChildWrap != null;
+        wrap = myChildWrap;
+        indent = Indent.getNormalIndent();
+      } else if (hasElementType(childNode, TokenSet.create(BuckTypes.LBRACE))) {
+        if (myPsiElement instanceof BuckProperty) {
+          assert myParent != null &&
+              myParent.myParent != null &&
+              myParent.myParent.myPropertyValueAlignment != null;
+          alignment = myParent.myParent.myPropertyValueAlignment;
         }
-        int a = 0;
-        return new ArrayList<Block>(mySubBlocks);
+      }
+    } else if (hasElementType(myNode, BuckTypes.PROPERTY) ) {
+      if (myPsiElement instanceof BuckProperty) {
+        alignment = myParent.myPropertyValueAlignment;
+      }
     }
+    return new BuckBlock(this, childNode, mySettings, alignment, indent, wrap);
+  }
 
-    private List<BuckBlock> buildSubBlocks() {
-        final List<BuckBlock> blocks = new ArrayList<BuckBlock>();
-        for (ASTNode child = myNode.getFirstChildNode(); child != null; child = child.getTreeNext()) {
-            final IElementType childType = child.getElementType();
+  @Nullable
+  @Override
+  public Wrap getWrap() {
+    return myWrap;
+  }
 
-            if (child.getTextRange().isEmpty()) {
-                continue;
-            }
-            if (childType == TokenType.WHITE_SPACE) {
-                continue;
-            }
-            blocks.add(buildSubBlock(child));
+  @Nullable
+  @Override
+  public Indent getIndent() {
+    assert myIndent != null;
+    return myIndent;
+  }
+
+  @Nullable
+  @Override
+  public Alignment getAlignment() {
+    return myAlignment;
+  }
+
+  @Nullable
+  @Override
+  public Spacing getSpacing(@Nullable Block child1, @NotNull Block child2) {
+    return mySpacingBuilder.getSpacing(this, child1, child2);
+  }
+
+  @NotNull
+  @Override
+  public ChildAttributes getChildAttributes(int newChildIndex) {
+    return new ChildAttributes(Indent.getNoneIndent(), null);
+  }
+
+  @Override
+  public boolean isIncomplete() {
+    return false;
+  }
+
+  @Override
+  public boolean isLeaf() {
+    return myNode.getFirstChildNode() == null;
+  }
+
+  private static boolean hasLineBreaksBefore(@NotNull ASTNode child, int minCount) {
+    final ASTNode treePrev = child.getTreePrev();
+    return (treePrev != null && isWhitespaceWithLineBreaks(TreeUtil.findLastLeaf(treePrev), minCount)) ||
+        isWhitespaceWithLineBreaks(child.getFirstChildNode(), minCount);
+  }
+
+  private static boolean isWhitespaceWithLineBreaks(@Nullable ASTNode node, int minCount) {
+    if (isWhitespace(node)) {
+      final String prevNodeText = node.getText();
+      int count = 0;
+      for (int i = 0; i < prevNodeText.length(); i++) {
+        if (prevNodeText.charAt(i) == '\n') {
+          count++;
+          if (count == minCount) {
+            return true;
+          }
         }
-        return Collections.unmodifiableList(blocks);
+      }
     }
+    return false;
+  }
 
-    private BuckBlock buildSubBlock(ASTNode child) {
-        IElementType parentType = myNode.getElementType();
-        IElementType childType = child.getElementType();
-        IElementType grandparentType =
-                myNode.getTreeParent() == null ? null : myNode.getTreeParent().getElementType();
+  private static boolean isWhitespace(@Nullable ASTNode node) {
+    return node != null && (node.getElementType() == TokenType.WHITE_SPACE);
+  }
 
-        Wrap wrap = null;
-        Indent childIndent = Indent.getNoneIndent();
-        Alignment childAlignment = null;
-        int indentSpaceNum = 0;
-        if (parentType == BuckTypes.ARRAY_ELEMENTS) {
-//            if (hasLineBreaksBefore(child, 1)) {
-//                indentSpaceNum = 2;
-//            }
-//            else {
-//                indentSpaceNum = 0;
-//            }
-            indentSpaceNum = 4;
-        }
-        if (parentType == BuckTypes.PROPERTY) {
-            indentSpaceNum = 2;
-        }
-        if (parentType == BuckTypes.RBRACE) {
-            indentSpaceNum = 2;
-        }
-        childIndent = Indent.getSpaceIndent(myIndentSpaceNum);
-        return new BuckBlock(this, child, childAlignment, childIndent, wrap, indentSpaceNum);
-    }
+  private BuckCodeStyleSettings getCustomSettings() {
+    return mySettings.getCustomSettings(BuckCodeStyleSettings.class);
+  }
 
-    @Nullable
-    @Override
-    public Wrap getWrap() {
-        return myWrap;
-    }
-
-    @Nullable
-    @Override
-    public Indent getIndent() {
-        assert myIndent != null;
-        return myIndent;
-    }
-
-    @Nullable
-    @Override
-    public Alignment getAlignment() {
-        return myAlignment;
-    }
-
-    @Nullable
-    @Override
-    public Spacing getSpacing(@Nullable Block child1, @NotNull Block child2) {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public ChildAttributes getChildAttributes(int newChildIndex) {
-        return new ChildAttributes(Indent.getNoneIndent(), null);
-    }
-
-    @Override
-    public boolean isIncomplete() {
-        return false;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return myNode.getFirstChildNode() == null;
-    }
-
-    private static boolean hasLineBreaksBefore(@NotNull ASTNode child, int minCount) {
-        final ASTNode treePrev = child.getTreePrev();
-        return (treePrev != null && isWhitespaceWithLineBreaks(TreeUtil.findLastLeaf(treePrev), minCount)) ||
-                isWhitespaceWithLineBreaks(child.getFirstChildNode(), minCount);
-    }
-
-    private static boolean isWhitespaceWithLineBreaks(@Nullable ASTNode node, int minCount) {
-        if (isWhitespace(node)) {
-            final String prevNodeText = node.getText();
-            int count = 0;
-            for (int i = 0; i < prevNodeText.length(); i++) {
-                if (prevNodeText.charAt(i) == '\n') {
-                    count++;
-                    if (count == minCount) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean isWhitespace(@Nullable ASTNode node) {
-        return node != null && (node.getElementType() == TokenType.WHITE_SPACE);
-    }
 }
 

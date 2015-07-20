@@ -4,6 +4,7 @@ import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.plugin.buck.lang.BuckLanguage;
+import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
@@ -19,7 +20,7 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, Cus
                                      @NotNull FormattingMode mode) {
     OrderOptimizer.optimzeDeps(element.getContainingFile());
     final BuckBlock block =
-        new BuckBlock(null, element.getNode(), null, Indent.getNoneIndent(), null, 0);
+        new BuckBlock(null, element.getNode(), settings, null, Indent.getNoneIndent(), null);
 
     return FormattingModelProvider.createFormattingModelForPsiFile(
         element.getContainingFile(),
@@ -56,9 +57,8 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, Cus
     return file != null && file.getLanguage() == BuckLanguage.INSTANCE;
   }
 
-  protected SpacingBuilder createSpacingBuilder(CodeStyleSettings settings) {
-    final CommonCodeStyleSettings commonSettings =
-        settings.getCommonSettings(BuckLanguage.INSTANCE);
-    return new SpacingBuilder(commonSettings);
+  protected static SpacingBuilder createSpacingBuilder(CodeStyleSettings settings) {
+    return new SpacingBuilder(settings, BuckLanguage.INSTANCE)
+        .before(BuckTypes.RBRACE).spacing(0, 0, 0, true, 0);
   }
 }
