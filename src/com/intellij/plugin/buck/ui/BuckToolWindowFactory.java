@@ -2,6 +2,7 @@ package com.intellij.plugin.buck.ui;
 
 import com.intellij.execution.impl.ConsoleViewImpl;
 import com.intellij.execution.ui.ConsoleView;
+import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunnerLayoutUi;
 import com.intellij.execution.ui.layout.PlaceInGrid;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -11,20 +12,27 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.plugin.buck.actions.BuckBuildAction;
-import com.intellij.plugin.buck.actions.BuckInstallAction;
-import com.intellij.plugin.buck.actions.BuckUninstallAction;
-import com.intellij.plugin.buck.actions.ChooseTargetAction;
+import com.intellij.plugin.buck.actions.*;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
-  public static final String TOOL_WINDOW_ID = "Buck";
-
   @NonNls
   private static final String OUTPUT_WINDOW_CONTENT_ID = "OutputWindowContent";
+  private static final String TOOL_WINDOW_ID = "Buck";
+  private static ConsoleView sConsoleWindow;
+
+  public static ConsoleView getConsoleWindow() {
+    return sConsoleWindow;
+  }
+
+  public static void outputConsoleMessage(String message, ConsoleViewContentType type) {
+    if (sConsoleWindow != null) {
+      sConsoleWindow.print(message, type);
+    }
+  }
 
   @Override
   public void createToolWindowContent(@NotNull final Project project, @NotNull ToolWindow toolWindow) {
@@ -46,9 +54,9 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
   }
 
   private Content createAdbLogsContent(RunnerLayoutUi layoutUi, Project project) {
-    final ConsoleView console = new ConsoleViewImpl(project, false);
+    sConsoleWindow = new ConsoleViewImpl(project, false);
     Content adbLogsContent = layoutUi.createContent(
-        OUTPUT_WINDOW_CONTENT_ID, console.getComponent(), "Output Logs", null, null);
+        OUTPUT_WINDOW_CONTENT_ID, sConsoleWindow.getComponent(), "Output Logs", null, null);
     adbLogsContent.setCloseable(false);
     return adbLogsContent;
   }
@@ -60,6 +68,7 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
     group.addSeparator();
     group.add(new BuckInstallAction());
     group.add(new BuckBuildAction());
+    group.add(new BuckKillAction());
     group.add(new BuckUninstallAction());
     return group;
   }
