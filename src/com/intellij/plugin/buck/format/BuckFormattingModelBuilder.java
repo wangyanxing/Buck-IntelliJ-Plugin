@@ -59,6 +59,10 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, Cus
 
   protected static SpacingBuilder createSpacingBuilder(CodeStyleSettings settings) {
     return new SpacingBuilder(settings, BuckLanguage.INSTANCE)
-        .before(BuckTypes.RBRACE).spacing(0, 0, 0, true, 0);
+        .before(BuckTypes.LBRACE).spacing(0, 0, 0, false, 0)
+        .before(BuckTypes.EQUAL).spacing(1, 1, 0, false, 0)
+        .after(BuckTypes.EQUAL).spacing(1, 1, 0, false, 0)
+        .before(BuckTypes.RBRACE).lineBreakInCode()
+        .before(BuckTypes.COMMA).spacing(0, 0, 0, false, 0);
   }
 }

@@ -1,17 +1,17 @@
 package com.intellij.plugin.buck.format;
 
 import com.intellij.formatting.*;
-import com.intellij.json.psi.JsonArray;
-import com.intellij.json.psi.JsonObject;
-import com.intellij.json.psi.JsonPsiUtil;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.plugin.buck.lang.psi.*;
+import com.intellij.plugin.buck.lang.psi.BuckProperty;
+import com.intellij.plugin.buck.lang.psi.BuckRuleBody;
+import com.intellij.plugin.buck.lang.psi.BuckTypes;
+import com.intellij.plugin.buck.lang.psi.BuckValueArray;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
-import com.intellij.psi.impl.source.tree.TreeUtil;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +26,9 @@ import static com.intellij.plugin.buck.lang.psi.BuckPsiUtils.hasElementType;
 
 public class BuckBlock implements ASTBlock {
 
+  private static final TokenSet BUCK_CONTAINERS =
+      TokenSet.create(BuckTypes.VALUE_ARRAY, BuckTypes.RULE_BODY);
+
   private final BuckBlock myParent;
   private final Alignment myAlignment;
   private final Indent myIndent;
@@ -36,9 +39,7 @@ public class BuckBlock implements ASTBlock {
   private final CodeStyleSettings mySettings;
   private final SpacingBuilder mySpacingBuilder;
 
-  //private final BuckBlockContext myContext;
   private List<BuckBlock> mySubBlocks = null;
-  private Alignment myChildAlignment;
   private final Alignment myDictAlignment;
   private final Alignment myPropertyValueAlignment;
 
@@ -100,6 +101,13 @@ public class BuckBlock implements ASTBlock {
       if (childType == TokenType.WHITE_SPACE) {
         continue;
       }
+      if (childType == BuckTypes.RULE_BLOCK) {
+        ASTNode nameNode = child.findChildByType(BuckTypes.RULE_NAMES);
+        // We don't do glob for now
+        if (nameNode.getText().equals("glob")) {
+          continue;
+        }
+      }
       blocks.add(buildSubBlock(child));
     }
     return Collections.unmodifiableList(blocks);
@@ -113,7 +121,7 @@ public class BuckBlock implements ASTBlock {
     final TokenSet ALL_BRACES =
         TokenSet.orSet(TokenSet.create(BuckTypes.LBRACE), TokenSet.create(BuckTypes.RBRACE));
 
-    if(hasElementType(myNode, TokenSet.create(BuckTypes.VALUE_ARRAY, BuckTypes.RULE_BODY))) {
+    if(hasElementType(myNode, BUCK_CONTAINERS)) {
       if (hasElementType(childNode, BuckTypes.COMMA)) {
         wrap = Wrap.createWrap(WrapType.NONE, true);
       } else if (!hasElementType(childNode, ALL_BRACES)) {
@@ -130,7 +138,9 @@ public class BuckBlock implements ASTBlock {
       }
     } else if (hasElementType(myNode, BuckTypes.PROPERTY) ) {
       if (myPsiElement instanceof BuckProperty) {
-        alignment = myParent.myPropertyValueAlignment;
+        if (!hasElementType(childNode, BUCK_CONTAINERS)) {
+          alignment = myParent.myPropertyValueAlignment;
+        }
       }
     }
     return new BuckBlock(this, childNode, mySettings, alignment, indent, wrap);
@@ -164,47 +174,30 @@ public class BuckBlock implements ASTBlock {
   @NotNull
   @Override
   public ChildAttributes getChildAttributes(int newChildIndex) {
-    return new ChildAttributes(Indent.getNoneIndent(), null);
+    if (hasElementType(myNode, BUCK_CONTAINERS)) {
+      return new ChildAttributes(Indent.getNormalIndent(), null);
+    } else if (myNode.getPsi() instanceof PsiFile) {
+      return new ChildAttributes(Indent.getNoneIndent(), null);
+    } else {
+      return new ChildAttributes(null, null);
+    }
   }
 
   @Override
   public boolean isIncomplete() {
+    final ASTNode lastChildNode = myNode.getLastChildNode();
+
+    if (hasElementType(myNode, TokenSet.create(BuckTypes.VALUE_ARRAY))) {
+      return lastChildNode != null && lastChildNode.getElementType() != BuckTypes.RBRACE;
+    } else if (hasElementType(myNode, TokenSet.create(BuckTypes.RULE_BODY))) {
+      return lastChildNode != null && lastChildNode.getElementType() != BuckTypes.RBRACE;
+    }
     return false;
   }
 
   @Override
   public boolean isLeaf() {
     return myNode.getFirstChildNode() == null;
-  }
-
-  private static boolean hasLineBreaksBefore(@NotNull ASTNode child, int minCount) {
-    final ASTNode treePrev = child.getTreePrev();
-    return (treePrev != null && isWhitespaceWithLineBreaks(TreeUtil.findLastLeaf(treePrev), minCount)) ||
-        isWhitespaceWithLineBreaks(child.getFirstChildNode(), minCount);
-  }
-
-  private static boolean isWhitespaceWithLineBreaks(@Nullable ASTNode node, int minCount) {
-    if (isWhitespace(node)) {
-      final String prevNodeText = node.getText();
-      int count = 0;
-      for (int i = 0; i < prevNodeText.length(); i++) {
-        if (prevNodeText.charAt(i) == '\n') {
-          count++;
-          if (count == minCount) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  private static boolean isWhitespace(@Nullable ASTNode node) {
-    return node != null && (node.getElementType() == TokenType.WHITE_SPACE);
-  }
-
-  private BuckCodeStyleSettings getCustomSettings() {
-    return mySettings.getCustomSettings(BuckCodeStyleSettings.class);
   }
 
 }

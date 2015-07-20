@@ -93,7 +93,9 @@ KEYWORDS =  "name" |
             "proguard_config" |
             "source_jar" |
             "aidl" |
-            "import_path"
+            "import_path" |
+            "annotation_processors" |
+            "annotation_processor_deps"
 
 MACROS = ([A-Z0-9] | ("_"))+
 
