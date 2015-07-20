@@ -95,6 +95,7 @@ KEYWORDS =  "name" |
             "aidl" |
             "import_path"
 
+KEYWORD_DEPS = "deps"
 
 MACROS = ([A-Z0-9] | ("_"))+
 

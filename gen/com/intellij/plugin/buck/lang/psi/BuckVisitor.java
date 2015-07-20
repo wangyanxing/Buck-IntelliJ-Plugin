@@ -19,6 +19,10 @@ public class BuckVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitKeywordDeps(@NotNull BuckKeywordDeps o) {
+    visitPsiElement(o);
+  }
+
   public void visitLbrace(@NotNull BuckLbrace o) {
     visitPsiElement(o);
   }
