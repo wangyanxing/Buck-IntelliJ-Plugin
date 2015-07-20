@@ -109,6 +109,9 @@ public class BuckBlock implements ASTBlock {
         if (parentType == BuckTypes.PROPERTY) {
             indentSpaceNum = 2;
         }
+        if (parentType == BuckTypes.RBRACE) {
+            indentSpaceNum = 2;
+        }
         childIndent = Indent.getSpaceIndent(myIndentSpaceNum);
         return new BuckBlock(this, child, childAlignment, childIndent, wrap, indentSpaceNum);
     }
