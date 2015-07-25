@@ -14,6 +14,8 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.util.Function;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +41,8 @@ public class BuckBlock implements ASTBlock {
   private final CodeStyleSettings mySettings;
   private final SpacingBuilder mySpacingBuilder;
 
-  private List<BuckBlock> mySubBlocks = null;
+  private List<Block> mySubBlocks = null;
+  private final Alignment myDictAlignment;
   private final Alignment myPropertyValueAlignment;
 
   public BuckBlock(@Nullable final BuckBlock parent,
@@ -55,6 +58,7 @@ public class BuckBlock implements ASTBlock {
     myPsiElement = node.getPsi();
     myWrap = wrap;
     myPropertyValueAlignment = Alignment.createAlignment(true);
+    myDictAlignment = null;
     mySettings = settings;
 
     mySpacingBuilder = BuckFormattingModelBuilder.createSpacingBuilder(settings);
@@ -83,9 +87,17 @@ public class BuckBlock implements ASTBlock {
   @Override
   public List<Block> getSubBlocks() {
     if (mySubBlocks == null) {
-      mySubBlocks = buildSubBlocks();
+      mySubBlocks = ContainerUtil.mapNotNull(myNode.getChildren(null), new Function<ASTNode, Block>() {
+        @Override
+        public Block fun(ASTNode node) {
+          if (isWhitespaceOrEmpty(node)) {
+            return null;
+          }
+          return buildSubBlock(node);
+        }
+      });
     }
-    return new ArrayList<Block>(mySubBlocks);
+    return mySubBlocks;
   }
 
   private List<BuckBlock> buildSubBlocks() {
@@ -197,5 +209,10 @@ public class BuckBlock implements ASTBlock {
   public boolean isLeaf() {
     return myNode.getFirstChildNode() == null;
   }
+
+  private static boolean isWhitespaceOrEmpty(ASTNode node) {
+    return node.getElementType() == TokenType.WHITE_SPACE || node.getTextLength() == 0;
+  }
+
 }
 

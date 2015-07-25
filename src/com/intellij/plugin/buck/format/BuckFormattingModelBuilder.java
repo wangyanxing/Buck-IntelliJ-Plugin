@@ -4,13 +4,13 @@ import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.plugin.buck.lang.BuckLanguage;
-import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
 
 public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, CustomFormattingModelBuilder {
   @NotNull
@@ -59,11 +59,14 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, Cus
 
   protected static SpacingBuilder createSpacingBuilder(CodeStyleSettings settings) {
     return new SpacingBuilder(settings, BuckLanguage.INSTANCE)
-        .before(BuckTypes.LBRACE).spacing(0, 0, 0, false, 0)
-        .before(BuckTypes.EQUAL).spacing(1, 1, 0, false, 0)
-        .after(BuckTypes.EQUAL).spacing(1, 1, 0, false, 0)
-        .before(BuckTypes.COMMA).spacing(0, 0, 0, false, 0)
-        .after(BuckTypes.COMMA).lineBreakInCode()
-        .before(BuckTypes.RBRACE).lineBreakInCode();
+        .before(LBRACE).spacing(0, 0, 0, false, 0)
+        .before(EQUAL).spacing(1, 1, 0, false, 0)
+        .after(EQUAL).spacing(1, 1, 0, false, 0)
+        .before(RBRACE).lineBreakInCode()
+        .after(COMMA).lineBreakInCode()
+        .after(RBRACE).blankLines(1)
+        .before(RULE_BLOCK).blankLines(1)
+        .after(RBRACE).spacing(1, Integer.MAX_VALUE, 0, true, 0)
+        .before(COMMA).spacing(0, 0, 0, false, 0);
   }
 }

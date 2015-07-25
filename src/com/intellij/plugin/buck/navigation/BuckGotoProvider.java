@@ -17,11 +17,11 @@ public class BuckGotoProvider extends GotoDeclarationHandlerBase {
   @Override
   public PsiElement getGotoDeclarationTarget(@Nullable PsiElement source, Editor editor) {
     if (source != null && source.getLanguage() instanceof BuckLanguage) {
-      // The parent type of the element must be BuckValue
-      BuckValue value = PsiTreeUtil.getParentOfType(source, BuckValue.class);
-      if (value == null) {
+      BuckValue ref = PsiTreeUtil.getParentOfType(source, BuckValue.class);
+      if (ref == null) {
         return null;
       }
+
       final Project project = editor.getProject();
       if (project == null) {
         return null;
@@ -31,6 +31,7 @@ public class BuckGotoProvider extends GotoDeclarationHandlerBase {
       if (target.startsWith("'") && target.endsWith("'")) {
         target = target.substring(1, target.length() - 1);
       }
+
       VirtualFile targetBuckFile =
           BuckTargetUtil.getBuckFileFromAbsoluteTarget(project, target);
       if (targetBuckFile == null) {
@@ -40,4 +41,6 @@ public class BuckGotoProvider extends GotoDeclarationHandlerBase {
     }
     return null;
   }
+
 }
+
