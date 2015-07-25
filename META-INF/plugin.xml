@@ -1,13 +1,13 @@
 <idea-plugin version="2">
-    <id>intellij.buck.plugin</id>
-    <name>Buck for IDEA</name>
-    <version>1.1</version>
-    <vendor email="demiwangya@gmail.com" url="https://github.com/wangyanxing/buck_idea_plugin">
-        Yanxing Wang
-    </vendor>
-    <category>Build</category>
+  <id>intellij.buck.plugin</id>
+  <name>Buck for IDEA</name>
+  <version>1.1</version>
+  <vendor email="demiwangya@gmail.com" url="https://github.com/wangyanxing/buck_idea_plugin">
+    Yanxing Wang
+  </vendor>
+  <category>Build</category>
 
-    <description><![CDATA[
+  <description><![CDATA[
       An IntelliJ plugin for Buck build system.<br>
       <h3>Features:</h3>
       <ul>
@@ -18,95 +18,85 @@
       </ul>
     ]]></description>
 
-    <change-notes><![CDATA[
+  <change-notes><![CDATA[
       1. BNF and flex file revised.<br>
       2. **_android_binary rule name supported.<br>
       3. Macro type added.<br>
     ]]>
-    </change-notes>
+  </change-notes>
 
-    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="131"/>
+  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="131"/>
 
-    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
 
-    <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.lang</depends>
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="com.intellij.plugin.buck.file.BuckFileTypeFactory"/>
+    <lang.parserDefinition
+        language="Buck"
+        implementationClass="com.intellij.plugin.buck.lang.BuckParserDefinition"/>
+    <lang.syntaxHighlighterFactory
+        key="Buck"
+        implementationClass="com.intellij.plugin.buck.highlight.BuckSyntaxHighlighterFactory"/>
+    <lang.formatter
+        language="Buck"
+        implementationClass="com.intellij.plugin.buck.format.BuckFormattingModelBuilder"/>
+    <completion.contributor
+        language="Buck"
+        implementationClass="com.intellij.plugin.buck.completion.BuckCompletionContributor"/>
+    <codeStyleSettingsProvider
+        implementation="com.intellij.plugin.buck.format.BuckCodeStyleSettingsProvider"/>
+    <langCodeStyleSettingsProvider
+        implementation="com.intellij.plugin.buck.format.BuckLanguageCodeStyleSettingsProvider"/>
+    <gotoDeclarationHandler
+        implementation="com.intellij.plugin.buck.navigation.BuckGotoProvider"
+        order="FIRST"/>
+    <annotator language="Buck" implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
+  </extensions>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
-        <fileTypeFactory implementation="com.intellij.plugin.buck.file.BuckFileTypeFactory"/>
-        <lang.parserDefinition language="Buck"
-                               implementationClass="com.intellij.plugin.buck.lang.BuckParserDefinition"/>
-        <lang.syntaxHighlighterFactory key="Buck"
-                                       implementationClass="com.intellij.plugin.buck.highlight.BuckSyntaxHighlighterFactory"/>
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
 
-        <lang.formatter language="Buck" implementationClass="com.intellij.plugin.buck.format.BuckFormattingModelBuilder"/>
-        <completion.contributor language="Buck"
-                                implementationClass="com.intellij.plugin.buck.completion.BuckCompletionContributor"/>
+  <project-components>
+    <component>
+      <implementation-class>com.intellij.plugin.buck.settings.BuckSettings
+      </implementation-class>
+    </component>
+  </project-components>
 
-        <codeStyleSettingsProvider implementation="com.intellij.plugin.buck.format.BuckCodeStyleSettingsProvider"/>
+  <actions>
+    <group id="buck.Menu" popup="true" text="Buck">
+      <action
+          id="buck.GoToBuckFile"
+          class="com.intellij.plugin.buck.actions.GoToBuckFile"
+          text="Go to Buck file"
+          description="Go to Buck file for this source file."/>
+      <add-to-group anchor="first" group-id="BuildMenu"/>
+      <add-to-group anchor="first" group-id="EditorPopupMenu"/>
+    </group>
+  </actions>
 
-        <langCodeStyleSettingsProvider implementation="com.intellij.plugin.buck.format.BuckLanguageCodeStyleSettingsProvider"/>
+  <extensions defaultExtensionNs="com.intellij">
+    <toolWindow
+        id="Buck"
+        anchor="bottom"
+        icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
+        factoryClass="com.intellij.plugin.buck.ui.BuckToolWindowFactory"/>
+    <projectConfigurable
+        groupId="tools"
+        groupWeight="130"
+        displayName="Buck"
+        id="buck"
+        instance="com.intellij.plugin.buck.config.BuckOptionsConfigurable"/>
+  </extensions>
 
-        <gotoDeclarationHandler
-                implementation="com.intellij.plugin.buck.navigation.BuckGotoProvider"
-                order="FIRST"/>
-    </extensions>
-
-    <application-components>
-        <!-- Add your application components here -->
-    </application-components>
-
-    <project-components>
-        <component>
-            <implementation-class>com.intellij.plugin.buck.settings.BuckSettings
-            </implementation-class>
-        </component>
-    </project-components>
-
-    <actions>
-        <group id="buck.Menu" popup="true" text="Buck">
-            <action id="buck.GoToBuckFile" class="com.intellij.plugin.buck.actions.GoToBuckFile"
-                    text="Go to Buck file"
-                    description="Go to Buck file for this source file."/>
-            <!--
-            <separator/>
-            <action id="buck.Install" class="com.intellij.plugin.buck.actions.BuckInstall" text="Buck install"
-                    description="Run buck install."/>
-            <action id="buck.Uninstall" class="com.intellij.plugin.buck.actions.BuckUninstall" text="Buck uninstall"
-                    description="Run buck uninstall."/>
-            <action id="buck.Build" class="com.intellij.plugin.buck.actions.BuckBuild" text="Buck build"
-                    description="Run buck build."/>Terminal
-            <separator/>
-            <action id="buck.InstallProject" class="com.intellij.plugin.buck.actions.BuckInstallProject" text="Buck install..."
-                    description="Run buck install with a specific project."/>
-            <action id="buck.UninstallProject" class="com.intellij.plugin.buck.actions.BuckUninstallProject" text="Buck uninstall..."
-                    description="Run buck uninstall with a specific project."/>
-            <action id="buck.BuildProject" class="com.intellij.plugin.buck.actions.BuckBuildProject" text="Buck build..."
-                    description="Run buck build with a specific project."/>
-            -->
-            <add-to-group anchor="first" group-id="BuildMenu"/>
-            <add-to-group anchor="first" group-id="EditorPopupMenu"/>
-        </group>
-    </actions>
-
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Buck" anchor="bottom" icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
-                    factoryClass="com.intellij.plugin.buck.ui.BuckToolWindowFactory"/>
-        <projectConfigurable groupId="tools" groupWeight="130" displayName="Buck" id="buck"
-                             instance="com.intellij.plugin.buck.config.BuckOptionsConfigurable"/>
-    </extensions>
-
-    <application-components>
-        <component>
-            <interface-class>com.intellij.plugin.buck.config.BuckOptionsProvider</interface-class>
-            <implementation-class>com.intellij.plugin.buck.config.BuckOptionsProvider
-            </implementation-class>
-        </component>
-    </application-components>
-
+  <application-components>
+    <component>
+      <interface-class>com.intellij.plugin.buck.config.BuckOptionsProvider</interface-class>
+      <implementation-class>com.intellij.plugin.buck.config.BuckOptionsProvider
+      </implementation-class>
+    </component>
+  </application-components>
 </idea-plugin>

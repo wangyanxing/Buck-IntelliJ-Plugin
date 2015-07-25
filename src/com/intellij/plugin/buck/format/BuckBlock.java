@@ -40,7 +40,6 @@ public class BuckBlock implements ASTBlock {
   private final SpacingBuilder mySpacingBuilder;
 
   private List<BuckBlock> mySubBlocks = null;
-  private final Alignment myDictAlignment;
   private final Alignment myPropertyValueAlignment;
 
   public BuckBlock(@Nullable final BuckBlock parent,
@@ -56,7 +55,6 @@ public class BuckBlock implements ASTBlock {
     myPsiElement = node.getPsi();
     myWrap = wrap;
     myPropertyValueAlignment = Alignment.createAlignment(true);
-    myDictAlignment = null;
     mySettings = settings;
 
     mySpacingBuilder = BuckFormattingModelBuilder.createSpacingBuilder(settings);
@@ -199,6 +197,5 @@ public class BuckBlock implements ASTBlock {
   public boolean isLeaf() {
     return myNode.getFirstChildNode() == null;
   }
-
 }
 

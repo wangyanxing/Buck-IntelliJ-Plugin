@@ -62,7 +62,8 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, Cus
         .before(BuckTypes.LBRACE).spacing(0, 0, 0, false, 0)
         .before(BuckTypes.EQUAL).spacing(1, 1, 0, false, 0)
         .after(BuckTypes.EQUAL).spacing(1, 1, 0, false, 0)
-        .before(BuckTypes.RBRACE).lineBreakInCode()
-        .before(BuckTypes.COMMA).spacing(0, 0, 0, false, 0);
+        .before(BuckTypes.COMMA).spacing(0, 0, 0, false, 0)
+        .after(BuckTypes.COMMA).lineBreakInCode()
+        .before(BuckTypes.RBRACE).lineBreakInCode();
   }
 }
