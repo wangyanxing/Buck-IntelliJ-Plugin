@@ -53,6 +53,7 @@
         implementation="com.intellij.plugin.buck.navigation.BuckGotoProvider"
         order="FIRST"/>
     <annotator language="Buck" implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
+    <colorSettingsPage implementation="com.intellij.plugin.buck.settings.BuckColorSettingsPage"/>
   </extensions>
 
   <application-components>
