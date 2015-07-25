@@ -18,7 +18,7 @@ public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, Cus
   public FormattingModel createModel(@NotNull PsiElement element,
                                      @NotNull CodeStyleSettings settings,
                                      @NotNull FormattingMode mode) {
-    OrderOptimizer.optimzeDeps(element.getContainingFile());
+    //OrderOptimizer.optimzeDeps(element.getContainingFile());
     final BuckBlock block =
         new BuckBlock(null, element.getNode(), settings, null, Indent.getNoneIndent(), null);
 
