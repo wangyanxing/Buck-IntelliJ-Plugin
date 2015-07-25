@@ -26,7 +26,6 @@ public class BuckKillAction extends DumbAwareAction {
       Runtime.getRuntime().exec(
           new String[]{"buck", "kill"},
           null,
-          //new File("/Users/cjlm/fbandroid-hg"));
           new File(e.getProject().getBasePath()));
     } catch (IOException e1) {
       e1.printStackTrace();

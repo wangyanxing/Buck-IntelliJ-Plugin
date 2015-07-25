@@ -73,6 +73,8 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
       return STRING_KEYS;
     } else if (tokenType.equals(BuckTypes.VALUE_BOOLEAN)) {
       return KEY_KEYS;
+    } else if (tokenType.equals(BuckTypes.VALUE_NONE)) {
+      return KEY_KEYS;
     } else if (tokenType.equals(BuckTypes.LBRACE)) {
       return BRACES_KEYS;
     } else if (tokenType.equals(BuckTypes.RBRACE)) {

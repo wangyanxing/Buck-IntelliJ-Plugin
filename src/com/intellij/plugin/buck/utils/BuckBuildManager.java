@@ -111,7 +111,6 @@ public class BuckBuildManager {
           Process process = rt.exec(
               commandForTask,
               null,
-              //new File("/Users/cjlm/fbandroid-hg"));
               new File(mPostponingCommand.project.getBasePath()));
 
           mPostponingCommand = null;

@@ -102,7 +102,7 @@ public class BuckBlock implements ASTBlock {
       if (childType == BuckTypes.RULE_BLOCK) {
         ASTNode nameNode = child.findChildByType(BuckTypes.RULE_NAMES);
         // We don't do glob for now
-        if (nameNode.getText().equals("glob")) {
+        if (nameNode != null && nameNode.getText().equals("glob")) {
           continue;
         }
       }

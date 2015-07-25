@@ -28,6 +28,7 @@ public interface BuckTypes {
   IElementType MACROS = new BuckTokenType("MACROS");
   IElementType RULE_NAMES = new BuckTokenType("RULE_NAMES");
   IElementType VALUE_BOOLEAN = new BuckTokenType("VALUE_BOOLEAN");
+  IElementType VALUE_NONE = new BuckTokenType("VALUE_NONE");
   IElementType VALUE_STRING = new BuckTokenType("VALUE_STRING");
   IElementType WHITE_SPACE = new BuckTokenType("WHITE_SPACE");
 
