@@ -19,14 +19,11 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
+
   @NonNls
   private static final String OUTPUT_WINDOW_CONTENT_ID = "OutputWindowContent";
   private static final String TOOL_WINDOW_ID = "Buck";
   private static ConsoleView sConsoleWindow;
-
-  public static ConsoleView getConsoleWindow() {
-    return sConsoleWindow;
-  }
 
   public static void outputConsoleMessage(String message, ConsoleViewContentType type) {
     if (sConsoleWindow != null) {

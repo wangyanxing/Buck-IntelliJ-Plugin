@@ -54,5 +54,4 @@ public class TargetAliasParser {
       e.printStackTrace();
     }
   }
-
 }

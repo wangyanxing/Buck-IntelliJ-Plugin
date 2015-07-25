@@ -18,5 +18,4 @@ public class BuckBuildAction extends DumbAwareAction {
         e.getProject(),
         "oculus-store");
   }
-
 }

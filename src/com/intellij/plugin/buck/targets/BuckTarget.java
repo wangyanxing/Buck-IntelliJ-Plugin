@@ -5,8 +5,19 @@ import com.intellij.openapi.vfs.VirtualFile;
 
 public class BuckTarget {
 
+  /**
+   * The alias of a target, defined in .buckconfig. For example, fb4a
+   */
   private String alias;
+
+  /**
+   * Buck target, for example '//third-party/java/dagger:dagger'
+   */
   private String target;
+
+  /**
+   * Intellij virtual file of the BUCK file
+   */
   private VirtualFile virtualFile;
 
   public BuckTarget(Project project, String target, String alias) {
@@ -26,5 +37,4 @@ public class BuckTarget {
   public VirtualFile getVirtualFile() {
     return virtualFile;
   }
-
 }

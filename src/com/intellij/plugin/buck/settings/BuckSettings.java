@@ -15,61 +15,6 @@ import java.util.Queue;
             scheme = StorageScheme.DIRECTORY_BASED)
     }
 )
-/*
-public class BuckSettingsStorage extends AbstractProjectComponent implements PersistentStateComponent<Element> {
-
-    public static Queue<String> HISTORICAL_PROJECT_NAMES = new LinkedList<String>();
-    public static final int MAX_HISTORIES = 1;
-
-    public static void addHistory(String project) {
-        if (HISTORICAL_PROJECT_NAMES.contains(project)) {
-            return;
-        }
-
-        HISTORICAL_PROJECT_NAMES.add(project);
-        while (HISTORICAL_PROJECT_NAMES.size() > MAX_HISTORIES) {
-            HISTORICAL_PROJECT_NAMES.remove();
-        }
-    }
-
-    public static String peekHistory() {
-        return HISTORICAL_PROJECT_NAMES.peek();
-    }
-
-    public BuckSettingsStorage(Project project) {
-        super(project);
-    }
-
-    public Element getState() {
-        final Element e = new Element("state");
-        Element childHisProjects = new Element("histories");
-        e.addContent(childHisProjects);
-
-        for (String projName : HISTORICAL_PROJECT_NAMES) {
-            Element child = new Element("project");
-            child.setAttribute("name", projName);
-            childHisProjects.addContent(child);
-        }
-        return e;
-    }
-
-    public void loadState(Element state) {
-        HISTORICAL_PROJECT_NAMES.clear();
-
-        Element his = state.getChild("histories");
-        for (Element ch : his.getChildren()) {
-            String name = ch.getAttributeValue("name");
-            HISTORICAL_PROJECT_NAMES.add(name);
-        }
-    }
-
-    @NonNls
-    @NotNull
-    public String getComponentName() {
-        return "BuckSettings";
-    }
-}
-*/
 public class BuckSettings implements PersistentStateComponent<BuckSettings.MyState> {
 
   public static final int MAX_HISTORIES = 10;

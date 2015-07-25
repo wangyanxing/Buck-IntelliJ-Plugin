@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class BuckSettingsPanel {
+
   private JPanel myWholePanel;
   private BuckOptionsProvider myOptionsProvider;
 

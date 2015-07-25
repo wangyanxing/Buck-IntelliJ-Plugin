@@ -83,14 +83,9 @@ public class BuckCompletionContributor extends CompletionContributor {
             for (String card : sKeywords) {
               resultSet.addElement(LookupElementBuilder.create(card));
             }
-
             for (String card : sRuleNames) {
               resultSet.addElement(LookupElementBuilder.create(card));
             }
-
-            //resultSet.addElement(BuckCompletionUtil.createLookupElement());
-            //resultSet.addElement(BuckCompletionUtil.createQuotesLookupElement());
-            //LookupElement element = BuckCompletionUtil.createLookupElement((PsiNamedElement)parameters.getPosition());
           }
         }
     );

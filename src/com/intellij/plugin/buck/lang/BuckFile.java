@@ -9,12 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class BuckFile extends PsiFileBase {
+
   public BuckFile(@NotNull FileViewProvider viewProvider) {
     super(viewProvider, BuckLanguage.INSTANCE);
-  }
-
-  public static BuckFile create(@NotNull FileViewProvider viewProvider) {
-    return new BuckFile(viewProvider);
   }
 
   @NotNull

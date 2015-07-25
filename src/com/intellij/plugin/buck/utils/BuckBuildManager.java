@@ -85,7 +85,6 @@ public class BuckBuildManager {
     if (listeningServer()) {
       processPostponingCommand();
     } else {
-      //queryPortNumber(project, "/Users/cjlm/fbandroid-hg");
       queryPortNumber(project, mPostponingCommand.project.getBasePath());
     }
   }
@@ -168,5 +167,4 @@ public class BuckBuildManager {
     };
     ProgressManager.getInstance().run(task);
   }
-
 }

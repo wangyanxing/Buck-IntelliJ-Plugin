@@ -5,6 +5,7 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 
 public class BuckIcons {
+
   private static Icon load(String path) {
     return IconLoader.getIcon(path, BuckIcons.class);
   }
