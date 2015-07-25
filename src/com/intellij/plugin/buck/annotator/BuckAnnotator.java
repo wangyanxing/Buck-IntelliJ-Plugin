@@ -10,7 +10,6 @@ import com.intellij.plugin.buck.targets.BuckTargetUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 
-
 /**
  * Annotator for Buck, it helps highlight and annotate any issue in Buck files
  */
