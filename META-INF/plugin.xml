@@ -55,6 +55,7 @@
     <annotator language="Buck" implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
     <colorSettingsPage implementation="com.intellij.plugin.buck.config.BuckColorSettingsPage"/>
     <psi.referenceContributor implementation="com.intellij.plugin.buck.reference.BuckReferenceContributor"/>
+    <lang.commenter language="Buck" implementationClass="com.intellij.plugin.buck.commenter.BuckCommenter"/>
     <toolWindow
         id="Buck"
         anchor="bottom"
