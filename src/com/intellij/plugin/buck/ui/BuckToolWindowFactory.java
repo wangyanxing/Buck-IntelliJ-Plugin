@@ -5,15 +5,15 @@ import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunnerLayoutUi;
 import com.intellij.execution.ui.layout.PlaceInGrid;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.plugin.buck.actions.*;
+import com.intellij.plugin.buck.utils.BuckBuildManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NonNls;
@@ -25,33 +25,50 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
   private static final String OUTPUT_WINDOW_CONTENT_ID = "BuckOutputWindowContent";
   private static final String TOOL_WINDOW_ID = "Buck";
   private static ConsoleView sConsoleWindow;
+  private static RunnerLayoutUi sRunnerLayoutUi;
 
-  public static ToolWindow getBuckToolWindow(Project project) {
-    return ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID);
+  public static void updateBuckToolWindowTitle(Project project) {
+    ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID);
+    String target = BuckBuildManager.getInstance().getCurrentSavedTarget(project);
+    if (target != null) {
+      toolWindow.setTitle("Target: " + target);
+    }
   }
 
-  public static void outputConsoleMessage(String message, ConsoleViewContentType type) {
+  public static synchronized void outputConsoleMessage(String message, ConsoleViewContentType type) {
     if (sConsoleWindow != null) {
       sConsoleWindow.print(message, type);
     }
+  }
+
+  public static synchronized void updateActionsNow() {
+    ApplicationManager.getApplication().invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        sRunnerLayoutUi.updateActionsNow();
+      }
+    });
   }
 
   @Override
   public void createToolWindowContent(@NotNull final Project project, @NotNull ToolWindow toolWindow) {
     toolWindow.setAvailable(true, null);
     toolWindow.setToHideOnEmptyContent(true);
-    toolWindow.setTitle(TOOL_WINDOW_ID);
 
-    RunnerLayoutUi layoutUi = RunnerLayoutUi.Factory.getInstance(project).create(
+    sRunnerLayoutUi = RunnerLayoutUi.Factory.getInstance(project).create(
         "buck", "buck", "buck", project);
-    Content consoleContent = createConsoleContent(layoutUi, project);
+    Content consoleContent = createConsoleContent(sRunnerLayoutUi, project);
 
-    layoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
-    layoutUi.getOptions().setLeftToolbar(getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
+    sRunnerLayoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
+    sRunnerLayoutUi.getOptions().setLeftToolbar(getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
+
+    sRunnerLayoutUi.updateActionsNow();
 
     final ContentManager contentManager = toolWindow.getContentManager();
-    Content content = contentManager.getFactory().createContent(layoutUi.getComponent(), "", true);
+    Content content = contentManager.getFactory().createContent(sRunnerLayoutUi.getComponent(), "", true);
     contentManager.addContent(content);
+
+    updateBuckToolWindowTitle(project);
   }
 
   private Content createConsoleContent(RunnerLayoutUi layoutUi, Project project) {

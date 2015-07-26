@@ -29,11 +29,4 @@ public class BuckTargetUtil {
         project.getBaseDir().findFileByRelativePath(extractAbsoluteTarget(target));
     return buckDir != null ? buckDir.findChild("BUCK") : null;
   }
-
-  public static String getCurrentSavedTarget(Project project) {
-    if (BuckSettingsProvider.getInstance().getState().lastAlias == null) {
-      return null;
-    }
-    return BuckSettingsProvider.getInstance().getState().lastAlias.get(project.getBasePath());
-  }
 }

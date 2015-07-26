@@ -608,10 +608,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         BuckSettingsProvider.getInstance().getState().lastAlias.put(myProject.getBasePath(), alias);
       }
 
-      ToolWindow toolWindow = BuckToolWindowFactory.getBuckToolWindow(myProject);
-      if (toolWindow != null) {
-        toolWindow.setTitle("Target: " + alias);
-      }
+      BuckToolWindowFactory.updateBuckToolWindowTitle(myProject);
     }
 
     IdeFocusManager focusManager =

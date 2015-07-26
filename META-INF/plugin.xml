@@ -54,6 +54,17 @@
         order="FIRST"/>
     <annotator language="Buck" implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
     <colorSettingsPage implementation="com.intellij.plugin.buck.config.BuckColorSettingsPage"/>
+    <toolWindow
+        id="Buck"
+        anchor="bottom"
+        icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
+        factoryClass="com.intellij.plugin.buck.ui.BuckToolWindowFactory"/>
+    <projectConfigurable
+        groupId="tools"
+        groupWeight="130"
+        displayName="Buck"
+        id="buck"
+        instance="com.intellij.plugin.buck.config.BuckSettingsConfigurable"/>
   </extensions>
 
   <actions>
@@ -67,20 +78,6 @@
       <add-to-group anchor="first" group-id="EditorPopupMenu"/>
     </group>
   </actions>
-
-  <extensions defaultExtensionNs="com.intellij">
-    <toolWindow
-        id="Buck"
-        anchor="bottom"
-        icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
-        factoryClass="com.intellij.plugin.buck.ui.BuckToolWindowFactory"/>
-    <projectConfigurable
-        groupId="tools"
-        groupWeight="130"
-        displayName="Buck"
-        id="buck"
-        instance="com.intellij.plugin.buck.config.BuckSettingsConfigurable"/>
-  </extensions>
 
   <application-components>
     <component>
