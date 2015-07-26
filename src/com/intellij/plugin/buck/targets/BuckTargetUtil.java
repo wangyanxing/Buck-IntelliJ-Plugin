@@ -2,6 +2,7 @@ package com.intellij.plugin.buck.targets;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.plugin.buck.config.BuckSettingsProvider;
 
 public class BuckTargetUtil {
 
@@ -28,5 +29,4 @@ public class BuckTargetUtil {
         project.getBaseDir().findFileByRelativePath(extractAbsoluteTarget(target));
     return buckDir != null ? buckDir.findChild("BUCK") : null;
   }
-
 }

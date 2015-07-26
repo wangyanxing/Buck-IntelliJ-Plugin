@@ -1,4 +1,4 @@
-package com.intellij.plugin.buck.format;
+package com.intellij.plugin.buck.config;
 
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings;

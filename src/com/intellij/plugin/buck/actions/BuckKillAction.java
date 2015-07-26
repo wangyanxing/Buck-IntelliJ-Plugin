@@ -8,33 +8,47 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
+import com.intellij.plugin.buck.utils.BuckBuildManager;
 import com.intellij.plugin.buck.utils.CommandUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class BuckKillAction extends DumbAwareAction {
+
+  private boolean mKilling = false;
 
   public BuckKillAction() {
     super("Stop building", "Stop buck building commands", AllIcons.Actions.Suspend);
   }
 
   @Override
-  public void actionPerformed(AnActionEvent e) {
-    try {
-      Runtime.getRuntime().exec(
-          new String[]{"buck", "kill"},
-          null,
-          //new File("/Users/cjlm/fbandroid-hg"));
-          new File(e.getProject().getBasePath()));
-    } catch (IOException e1) {
-      e1.printStackTrace();
-    } finally {
-      BuckToolWindowFactory.outputConsoleMessage(
-          "Build aborted\n",
-          ConsoleViewContentType.ERROR_OUTPUT);
-    }
+  public void update(AnActionEvent e) {
+    e.getPresentation().setEnabled(!mKilling && BuckBuildManager.getInstance().isBuilding());
   }
 
+  @Override
+  public void actionPerformed(final AnActionEvent e) {
+    final String[] commandForTask = {"buck", "kill"};
+    mKilling = true;
+    final Task task = new Task.Backgroundable(
+        e.getProject(), "Killing buck building processes", true) {
+      @Override
+      public void run(@NotNull final ProgressIndicator indicator) {
+        try {
+          Runtime rt = Runtime.getRuntime();
+          rt.exec(commandForTask, null, new File(e.getProject().getBasePath()));
+          BuckBuildManager.getInstance().setBuilding(false);
+          BuckToolWindowFactory.outputConsoleMessage("Build aborted\n", ConsoleViewContentType.ERROR_OUTPUT);
+          mKilling = false;
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    };
+    ProgressManager.getInstance().run(task);
+  }
 }

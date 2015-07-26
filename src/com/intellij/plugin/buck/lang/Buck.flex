@@ -20,12 +20,11 @@ import java.lang.String;
 %eof{  return;
 %eof}
 
-WHITE_SPACE=[\ \t\f]|\n|\r|\r\n
-FIRST_VALUE_CHARACTER=[^ \n\r\f\\] | "\\"{WHITE_SPACE} | "\\".
-VALUE_CHARACTER=[^\n\r\f\\] | "\\"{WHITE_SPACE} | "\\".
-END_OF_LINE_COMMENT=("#")[^\r\n]*
-SEPARATOR="="
-KEY_CHARACTER=[^=\ \n\r\t\f\\] | "\\"{WHITE_SPACE} | "\\".
+WHITE_SPACE = [\ \t\f]|\n|\r|\r\n
+FIRST_VALUE_CHARACTER = [^ \n\r\f\\] | "\\"{WHITE_SPACE} | "\\".
+VALUE_CHARACTER = [^\n\r\f\\] | "\\"{WHITE_SPACE} | "\\".
+END_OF_LINE_COMMENT = ("#")[^\r\n]*
+KEY_CHARACTER = [^=\ \n\r\t\f\\] | "\\"{WHITE_SPACE} | "\\".
 RULE_NAMES = "genrule"|
              "remote_file"|
              "android_aar"|
@@ -61,7 +60,8 @@ RULE_NAMES = "genrule"|
              "python_test"|
              "glob"|
              "include_defs"|
-             "robolectric_test"
+             "robolectric_test"|
+             "keystore"
 
 GENERIC_RULE_NAMES = [a-zA-Z0-9]+("_android_library") | [a-zA-Z0-9]+("_android_library")
 
@@ -95,7 +95,8 @@ KEYWORDS =  "name" |
             "aidl" |
             "import_path" |
             "annotation_processors" |
-            "annotation_processor_deps"
+            "annotation_processor_deps" |
+            "keystore"
 
 MACROS = ([A-Z0-9] | ("_"))+
 
@@ -103,6 +104,7 @@ DIGIT = [0-9]
 LETTER = [:letter:]|"_"
 IDENTIFIER = ({LETTER})({LETTER}|{DIGIT})*
 VALUE_BOOLEAN = "True" | "False" | "true" | "false" | "TRUE" | "FALSE"
+VALUE_NONE = "None"
 
 STRING_SINGLE_QUOTED = \'([^\\\'\r\n]|{WHITE_SPACE})*(\'|\\)? | \'\'\' ( (\'(\')?)? [^\'] )* \'\'\'
 STRING_DOUBLE_QUOTED = \"([^\\\"\r\n]|{WHITE_SPACE})*(\"|\\)? | \"\"\" ( (\"(\")?)? [^\"] )* \"\"\"
@@ -141,6 +143,8 @@ EQUAL = "="
 {EQUAL}                 { return EQUAL; }
 
 {VALUE_BOOLEAN}         { return VALUE_BOOLEAN; }
+
+{VALUE_NONE}            { return VALUE_NONE; }
 
 {KEYWORDS}              { return KEYWORDS; }
 

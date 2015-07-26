@@ -1,9 +1,6 @@
 package com.intellij.plugin.buck.actions;
 
 import com.intellij.codeInsight.lookup.LookupManager;
-import com.intellij.execution.Executor;
-import com.intellij.execution.ExecutorRegistry;
-import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.featureStatistics.FeatureUsageTracker;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
@@ -17,7 +14,6 @@ import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actions.TextComponentEditorAction;
-import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.util.ProgressIndicatorBase;
@@ -34,13 +30,14 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
-import com.intellij.openapi.wm.ToolWindowId;
+import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.actions.renderer.BuckTargetPsiRenderer;
+import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.plugin.buck.targets.BuckTarget;
 import com.intellij.plugin.buck.targets.TargetAliasParser;
+import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.MinusculeMatcher;
 import com.intellij.psi.codeStyle.NameUtil;
@@ -276,11 +273,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     });
   }
 
-  public Executor getExecutor() {
-    return ourShiftIsPressed.get() ? DefaultRunExecutor.getRunExecutorInstance()
-        : ExecutorRegistry.getInstance().getExecutorById(ToolWindowId.DEBUG);
-  }
-
   private void updatePopupBounds() {
     if (myPopup == null || !myPopup.isVisible()) {
       return;
@@ -423,7 +415,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       public void actionPerformed(AnActionEvent e) {
         final int index = myList.getSelectedIndex();
         if (index != -1) {
-          doNavigate(index);
+          chooseTarget(index);
         }
       }
     }.registerCustomShortcutSet(
@@ -598,7 +590,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
             @Override
             public void run() {
               myList.setSelectedIndex(i);
-              doNavigate(i);
+              chooseTarget(i);
             }
           });
         }
@@ -606,7 +598,19 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
     });
   }
 
-  private void doNavigate(final int index) {
+  private void chooseTarget(final int index) {
+    final Object value = myList.getSelectedValue();
+    if (value instanceof BuckTarget) {
+      // Save history
+      String alias = ((BuckTarget) value).getAlias();
+
+      if (BuckSettingsProvider.getInstance().getState().lastAlias != null) {
+        BuckSettingsProvider.getInstance().getState().lastAlias.put(myProject.getBasePath(), alias);
+      }
+
+      BuckToolWindowFactory.updateBuckToolWindowTitle(myProject);
+    }
+
     IdeFocusManager focusManager =
         IdeFocusManager.findInstanceByComponent(getField().getTextEditor());
     if (myPopup != null && myPopup.isVisible()) {

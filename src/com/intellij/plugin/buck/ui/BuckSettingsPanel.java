@@ -1,6 +1,6 @@
 package com.intellij.plugin.buck.ui;
 
-import com.intellij.plugin.buck.config.BuckOptionsProvider;
+import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -8,9 +8,9 @@ import javax.swing.*;
 public class BuckSettingsPanel {
 
   private JPanel myWholePanel;
-  private BuckOptionsProvider myOptionsProvider;
+  private BuckSettingsProvider myOptionsProvider;
 
-  public JComponent createPanel(@NotNull BuckOptionsProvider provider) {
+  public JComponent createPanel(@NotNull BuckSettingsProvider provider) {
     myOptionsProvider = provider;
     return myWholePanel;
   }

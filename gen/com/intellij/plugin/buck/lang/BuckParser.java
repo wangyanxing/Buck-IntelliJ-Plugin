@@ -1,15 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.plugin.buck.lang;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import com.intellij.lang.PsiParser;
-import com.intellij.psi.tree.IElementType;
-
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.TokenSet;
+import com.intellij.lang.PsiParser;
+import com.intellij.lang.LightPsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class BuckParser implements PsiParser, LightPsiParser {
@@ -189,7 +189,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER | MACROS | KEYWORDS
+  // IDENTIFIER | MACROS | KEYWORDS | RULE_NAMES
   public static boolean property_lvalue(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "property_lvalue")) return false;
     boolean r;
@@ -197,6 +197,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, IDENTIFIER);
     if (!r) r = consumeToken(b, MACROS);
     if (!r) r = consumeToken(b, KEYWORDS);
+    if (!r) r = consumeToken(b, RULE_NAMES);
     exit_section_(b, l, m, PROPERTY_LVALUE, r, false, null);
     return r;
   }
@@ -298,12 +299,13 @@ public class BuckParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // VALUE_STRING | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | rule_block
+  // VALUE_STRING | VALUE_NONE | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | rule_block
   public static boolean value(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "value")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<value>");
     r = consumeToken(b, VALUE_STRING);
+    if (!r) r = consumeToken(b, VALUE_NONE);
     if (!r) r = consumeToken(b, VALUE_BOOLEAN);
     if (!r) r = consumeToken(b, MACROS);
     if (!r) r = consumeToken(b, IDENTIFIER);

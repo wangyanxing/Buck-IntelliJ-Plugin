@@ -5,14 +5,15 @@ import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunnerLayoutUi;
 import com.intellij.execution.ui.layout.PlaceInGrid;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.plugin.buck.actions.*;
+import com.intellij.plugin.buck.utils.BuckBuildManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NonNls;
@@ -21,41 +22,61 @@ import org.jetbrains.annotations.NotNull;
 public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
 
   @NonNls
-  private static final String OUTPUT_WINDOW_CONTENT_ID = "OutputWindowContent";
+  private static final String OUTPUT_WINDOW_CONTENT_ID = "BuckOutputWindowContent";
   private static final String TOOL_WINDOW_ID = "Buck";
   private static ConsoleView sConsoleWindow;
+  private static RunnerLayoutUi sRunnerLayoutUi;
 
-  public static void outputConsoleMessage(String message, ConsoleViewContentType type) {
+  public static void updateBuckToolWindowTitle(Project project) {
+    ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID);
+    String target = BuckBuildManager.getInstance().getCurrentSavedTarget(project);
+    if (target != null) {
+      toolWindow.setTitle("Target: " + target);
+    }
+  }
+
+  public static synchronized void outputConsoleMessage(String message, ConsoleViewContentType type) {
     if (sConsoleWindow != null) {
       sConsoleWindow.print(message, type);
     }
   }
 
-  @Override
-  public void createToolWindowContent(@NotNull final Project project, @NotNull ToolWindow toolWindow) {
-    RunnerLayoutUi layoutUi = RunnerLayoutUi.Factory.getInstance(project).create(
-        "buck", "buck", "buck", project);
-
-    toolWindow.setAvailable(true, null);
-    toolWindow.setToHideOnEmptyContent(true);
-    toolWindow.setTitle(TOOL_WINDOW_ID);
-
-    Content consoleContent = createAdbLogsContent(layoutUi, project);
-
-    layoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
-    layoutUi.getOptions().setLeftToolbar(getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
-
-    final ContentManager contentManager = toolWindow.getContentManager();
-    Content c = contentManager.getFactory().createContent(layoutUi.getComponent(), "Build System", true);
-    contentManager.addContent(c);
+  public static synchronized void updateActionsNow() {
+    ApplicationManager.getApplication().invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        sRunnerLayoutUi.updateActionsNow();
+      }
+    });
   }
 
-  private Content createAdbLogsContent(RunnerLayoutUi layoutUi, Project project) {
+  @Override
+  public void createToolWindowContent(@NotNull final Project project, @NotNull ToolWindow toolWindow) {
+    toolWindow.setAvailable(true, null);
+    toolWindow.setToHideOnEmptyContent(true);
+
+    sRunnerLayoutUi = RunnerLayoutUi.Factory.getInstance(project).create(
+        "buck", "buck", "buck", project);
+    Content consoleContent = createConsoleContent(sRunnerLayoutUi, project);
+
+    sRunnerLayoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
+    sRunnerLayoutUi.getOptions().setLeftToolbar(getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
+
+    sRunnerLayoutUi.updateActionsNow();
+
+    final ContentManager contentManager = toolWindow.getContentManager();
+    Content content = contentManager.getFactory().createContent(sRunnerLayoutUi.getComponent(), "", true);
+    contentManager.addContent(content);
+
+    updateBuckToolWindowTitle(project);
+  }
+
+  private Content createConsoleContent(RunnerLayoutUi layoutUi, Project project) {
     sConsoleWindow = new ConsoleViewImpl(project, false);
-    Content adbLogsContent = layoutUi.createContent(
+    Content consoleWindowContent = layoutUi.createContent(
         OUTPUT_WINDOW_CONTENT_ID, sConsoleWindow.getComponent(), "Output Logs", null, null);
-    adbLogsContent.setCloseable(false);
-    return adbLogsContent;
+    consoleWindowContent.setCloseable(false);
+    return consoleWindowContent;
   }
 
   @NotNull

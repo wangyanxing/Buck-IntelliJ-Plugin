@@ -12,17 +12,17 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class BuckOptionsConfigurable implements SearchableConfigurable, Configurable.NoScroll, Disposable {
+public class BuckSettingsConfigurable implements SearchableConfigurable, Configurable.NoScroll, Disposable {
 
   public static final String TERMINAL_SETTINGS_HELP_REFERENCE = "reference.settings.terminal";
 
   private BuckSettingsPanel myPanel;
 
-  private final BuckOptionsProvider myOptionsProvider;
+  private final BuckSettingsProvider mySettingsProvider;
   private Project myProject;
 
-  public BuckOptionsConfigurable(Project project) {
-    myOptionsProvider = BuckOptionsProvider.getInstance();
+  public BuckSettingsConfigurable(Project project) {
+    mySettingsProvider = BuckSettingsProvider.getInstance();
     myProject = project;
   }
 
@@ -36,7 +36,6 @@ public class BuckOptionsConfigurable implements SearchableConfigurable, Configur
   public Runnable enableSearch(String option) {
     return null;
   }
-
 
   @Nls
   @Override
@@ -52,7 +51,7 @@ public class BuckOptionsConfigurable implements SearchableConfigurable, Configur
   @Override
   public JComponent createComponent() {
     myPanel = new BuckSettingsPanel();
-    return myPanel.createPanel(myOptionsProvider);
+    return myPanel.createPanel(mySettingsProvider);
   }
 
   @Override

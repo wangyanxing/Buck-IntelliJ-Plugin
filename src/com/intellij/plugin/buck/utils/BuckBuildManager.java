@@ -6,6 +6,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BuckBuildManager {
+
+  private boolean mIsBuilding = false;
 
   public enum Command {
     BUILD,
@@ -76,6 +79,7 @@ public class BuckBuildManager {
    */
   public void build(Command command, Project project, String target) {
     assert mPostponingCommand == null;
+    setBuilding(true);
 
     mPostponingCommand = new BuildCommand();
     mPostponingCommand.command = command;
@@ -93,7 +97,6 @@ public class BuckBuildManager {
     if (mPostponingCommand == null) {
       return;
     }
-
     String[] command = sCommands.get(mPostponingCommand.command).clone();
     for(int i = 0; i < command.length; ++i) {
       if (command[i].equals("$")) {
@@ -111,7 +114,6 @@ public class BuckBuildManager {
           Process process = rt.exec(
               commandForTask,
               null,
-              //new File("/Users/cjlm/fbandroid-hg"));
               new File(mPostponingCommand.project.getBasePath()));
 
           mPostponingCommand = null;
@@ -122,12 +124,29 @@ public class BuckBuildManager {
           while ((s = stdError.readLine()) != null) {
             System.out.println(s);
           }
+          BuckBuildManager.getInstance().setBuilding(false);
         } catch (IOException e) {
           e.printStackTrace();
         }
       }
     };
     ProgressManager.getInstance().run(task);
+  }
+
+  public String getCurrentSavedTarget(Project project) {
+    if (BuckSettingsProvider.getInstance().getState().lastAlias == null) {
+      return null;
+    }
+    return BuckSettingsProvider.getInstance().getState().lastAlias.get(project.getBasePath());
+  }
+
+  public boolean isBuilding() {
+    return mIsBuilding;
+  }
+
+  public synchronized void setBuilding(boolean value) {
+    mIsBuilding = value;
+    BuckToolWindowFactory.updateActionsNow();
   }
 
   /**
@@ -142,7 +161,7 @@ public class BuckBuildManager {
    */
   private void queryPortNumber(Project project, final String projectDir) {
     BuckToolWindowFactory.outputConsoleMessage(
-        "Listening to local buck server ",
+        "Connecting to local buck http server ",
         ConsoleViewContentType.NORMAL_OUTPUT);
 
     final Task task = new Task.Backgroundable(project, QUERY_PORT_MESSAGE, true) {
@@ -155,7 +174,6 @@ public class BuckBuildManager {
         BuckToolWindowFactory.outputConsoleMessage(
             "with port " + port + "\n",
             ConsoleViewContentType.NORMAL_OUTPUT);
-
         try {
           String uri = "ws://localhost:" + port + "/ws/build";
           mProgressListener = new BuckProgressListener(new URI(uri));
