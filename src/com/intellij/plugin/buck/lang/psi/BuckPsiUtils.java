@@ -38,4 +38,47 @@ public class BuckPsiUtils {
     return element.getNode() != null && hasElementType(element.getNode(), types);
   }
 
+  ///////////////////////////
+  public static String getKey(BuckProperty element) {
+    ASTNode keyNode = element.getNode().findChildByType(BuckTypes.KEYWORDS);
+    if (keyNode != null) {
+      return keyNode.getText();
+    } else {
+      return null;
+    }
+  }
+
+  public static String getValue(BuckProperty element) {
+    ASTNode valueNode = element.getNode().findChildByType(BuckTypes.VALUE);
+    if (valueNode != null) {
+      return valueNode.getText();
+    } else {
+      return null;
+    }
+  }
+
+  public static String getName(BuckProperty element) {
+    return getKey(element);
+  }
+
+  public static PsiElement setName(BuckProperty element, String newName) {
+    ASTNode keyNode = element.getNode().findChildByType(BuckTypes.KEYWORDS);
+    if (keyNode != null) {
+
+      BuckProperty property = BuckElementFactory.createProperty(element.getProject(), newName);
+      ASTNode newKeyNode = property.getFirstChild().getNode();
+      element.getNode().replaceChild(keyNode, newKeyNode);
+    }
+    return element;
+  }
+
+  public static PsiElement getNameIdentifier(BuckProperty element) {
+    ASTNode keyNode = element.getNode().findChildByType(BuckTypes.KEYWORDS);
+    if (keyNode != null) {
+      return keyNode.getPsi();
+    } else {
+      return null;
+    }
+  }
+
 }

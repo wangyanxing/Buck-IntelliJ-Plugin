@@ -24,7 +24,7 @@ public class BuckVisitor extends PsiElementVisitor {
   }
 
   public void visitProperty(@NotNull BuckProperty o) {
-    visitPsiElement(o);
+    visitNamedElement(o);
   }
 
   public void visitPropertyLvalue(@NotNull BuckPropertyLvalue o) {
@@ -52,6 +52,10 @@ public class BuckVisitor extends PsiElementVisitor {
   }
 
   public void visitValueArray(@NotNull BuckValueArray o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNamedElement(@NotNull BuckNamedElement o) {
     visitPsiElement(o);
   }
 
