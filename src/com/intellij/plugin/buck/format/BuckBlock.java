@@ -119,7 +119,7 @@ public class BuckBlock implements ASTBlock {
     final TokenSet ALL_BRACES =
         TokenSet.orSet(TokenSet.create(BuckTypes.LBRACE), TokenSet.create(BuckTypes.RBRACE));
 
-    if(hasElementType(myNode, BUCK_CONTAINERS)) {
+    if (hasElementType(myNode, BUCK_CONTAINERS)) {
       if (hasElementType(childNode, BuckTypes.COMMA)) {
         wrap = Wrap.createWrap(WrapType.NONE, true);
       } else if (!hasElementType(childNode, ALL_BRACES)) {
@@ -134,7 +134,7 @@ public class BuckBlock implements ASTBlock {
           alignment = myParent.myParent.myPropertyValueAlignment;
         }
       }
-    } else if (hasElementType(myNode, BuckTypes.PROPERTY) ) {
+    } else if (hasElementType(myNode, BuckTypes.PROPERTY)) {
       if (myPsiElement instanceof BuckProperty) {
         if (!hasElementType(childNode, BUCK_CONTAINERS)) {
           alignment = myParent.myPropertyValueAlignment;

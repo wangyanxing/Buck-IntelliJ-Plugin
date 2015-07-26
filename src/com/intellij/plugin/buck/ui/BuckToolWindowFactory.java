@@ -1,11 +1,14 @@
 package com.intellij.plugin.buck.ui;
 
+import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.impl.ConsoleViewImpl;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunnerLayoutUi;
 import com.intellij.execution.ui.layout.PlaceInGrid;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
@@ -38,6 +41,18 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
   public static synchronized void outputConsoleMessage(String message, ConsoleViewContentType type) {
     if (sConsoleWindow != null) {
       sConsoleWindow.print(message, type);
+    }
+  }
+
+  public static synchronized void outputConsoleHyperlink(String link, HyperlinkInfo linkInfo) {
+    if (sConsoleWindow != null) {
+      sConsoleWindow.printHyperlink(link, linkInfo);
+    }
+  }
+
+  public static synchronized void cleanConsole() {
+    if (sConsoleWindow != null) {
+      sConsoleWindow.clear();
     }
   }
 

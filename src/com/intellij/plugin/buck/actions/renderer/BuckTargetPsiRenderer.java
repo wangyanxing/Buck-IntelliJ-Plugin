@@ -46,7 +46,7 @@ public class BuckTargetPsiRenderer extends PsiElementListCellRenderer<PsiElement
       return false;
     }
 
-    NavigationItem item = (NavigationItem)value;
+    NavigationItem item = (NavigationItem) value;
     TextAttributes attributes = getNavigationItemAttributes(item);
 
     SimpleTextAttributes nameAttributes =

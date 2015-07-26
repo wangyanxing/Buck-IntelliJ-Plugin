@@ -3,7 +3,6 @@ package com.intellij.plugin.buck.config;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.*;
-import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

@@ -18,12 +18,13 @@ public class TargetAliasParser {
 
   /**
    * Get all alias declared in buck config file
+   *
    * @param baseDir The root folder of the project which contains ".buckconfig"
    */
   static public void parseAlias(String baseDir) {
     sTargetAlias.clear();
     String file = baseDir + File.separatorChar + BUCK_CONFIG_FILE;
-    try  {
+    try {
       BufferedReader br = new BufferedReader(new FileReader(file));
       String line;
       boolean seenAliasTag = false;

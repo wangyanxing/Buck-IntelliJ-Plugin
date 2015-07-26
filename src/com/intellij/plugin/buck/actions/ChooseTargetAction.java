@@ -30,7 +30,6 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
-import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.actions.renderer.BuckTargetPsiRenderer;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
@@ -75,7 +74,6 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   private static final int POPUP_MAX_WIDTH = 600;
   private static final int MAX_RECENT_TARGETS = 10;
 
-  private static AtomicBoolean ourShiftIsPressed = new AtomicBoolean(false);
   private static AtomicBoolean showAll = new AtomicBoolean(false);
 
   private final Project myProject;
@@ -1188,5 +1186,4 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       return myProgressIndicator.isCanceled() || myDone.isRejected();
     }
   }
-
 }

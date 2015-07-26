@@ -52,7 +52,8 @@
     <gotoDeclarationHandler
         implementation="com.intellij.plugin.buck.navigation.BuckGotoProvider"
         order="FIRST"/>
-    <annotator language="Buck" implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
+    <annotator language="Buck"
+               implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
     <colorSettingsPage implementation="com.intellij.plugin.buck.config.BuckColorSettingsPage"/>
     <toolWindow
         id="Buck"
@@ -81,7 +82,8 @@
 
   <application-components>
     <component>
-      <implementation-class>com.intellij.plugin.buck.config.BuckSettingsProvider</implementation-class>
+      <implementation-class>com.intellij.plugin.buck.config.BuckSettingsProvider
+      </implementation-class>
     </component>
   </application-components>
 </idea-plugin>

@@ -1,15 +1,13 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.plugin.buck.lang.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.plugin.buck.lang.psi.*;
+import com.intellij.lang.ASTNode;
+import com.intellij.plugin.buck.lang.psi.BuckRuleBlock;
+import com.intellij.plugin.buck.lang.psi.BuckRuleBody;
+import com.intellij.plugin.buck.lang.psi.BuckVisitor;
+import com.intellij.psi.PsiElementVisitor;
+import org.jetbrains.annotations.NotNull;
 
 public class BuckRuleBlockImpl extends ASTWrapperPsiElement implements BuckRuleBlock {
 
@@ -18,7 +16,7 @@ public class BuckRuleBlockImpl extends ASTWrapperPsiElement implements BuckRuleB
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitRuleBlock(this);
+    if (visitor instanceof BuckVisitor) ((BuckVisitor) visitor).visitRuleBlock(this);
     else super.accept(visitor);
   }
 

@@ -43,18 +43,18 @@ public class OrderOptimizer {
       BuckArrayElements arrayElements = array.getArrayElements();
       PsiElement[] arrayValues = arrayElements.getChildren();
       Arrays.sort(arrayValues, new Comparator<PsiElement>() {
-          @Override
-          public int compare(PsiElement e1, PsiElement e2) {
-            return e1.getText().compareTo(e2.getText());
+            @Override
+            public int compare(PsiElement e1, PsiElement e2) {
+              return e1.getText().compareTo(e2.getText());
+            }
           }
-        }
       );
       PsiElement[] oldValues = new PsiElement[arrayValues.length];
-      for (int i = 0 ; i < arrayValues.length; ++i) {
+      for (int i = 0; i < arrayValues.length; ++i) {
         oldValues[i] = arrayValues[i].copy();
       }
 
-      for (int i = 0 ; i < arrayValues.length; ++i) {
+      for (int i = 0; i < arrayValues.length; ++i) {
         arrayElements.getChildren()[i].replace(oldValues[i]);
       }
     }

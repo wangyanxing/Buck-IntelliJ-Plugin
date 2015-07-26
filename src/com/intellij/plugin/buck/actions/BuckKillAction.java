@@ -9,13 +9,10 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.plugin.buck.utils.BuckBuildManager;
-import com.intellij.plugin.buck.utils.CommandUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class BuckKillAction extends DumbAwareAction {
 
