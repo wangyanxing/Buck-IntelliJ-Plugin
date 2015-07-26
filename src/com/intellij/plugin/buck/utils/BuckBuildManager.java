@@ -1,6 +1,5 @@
 package com.intellij.plugin.buck.utils;
 
-import com.google.common.io.Files;
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -47,22 +46,21 @@ public class BuckBuildManager {
   private static BuckBuildManager sInstance;
   private static final String BUCK_BUILD_MESSAGE = "Building with buck";
   private static final Map<Command, String[]> sCommands = new HashMap<Command, String[]>();
-  private static final String sTempFilePath = Files.createTempDir().getAbsoluteFile() + "/buck";
   private static final String[] IGNORED_OUTPUT_LINES = new String[]{
       "Using buckd.",
       "Using watchman.",
-      "\\[-\\] PARSING BUCK FILES[\\s\\S]*$",
-      "^\\[-\\] BUILDING[\\s\\S]*$",
-      "^\\[-\\] INSTALLING[\\s\\S]*$",
   };
   private static final String[] ERROR_PREFIXES = new String[]{
       "BUILD FAILED:",
       "FAIL",
       "Errors:",
+      "No devices found",
+      "NameError",
   };
   private static final String[] SUCCESS_PREFIXES = new String[]{
       "OK ",
       "Successfully",
+      "[-] BUILDING...FINISHED",
   };
 
   private static final Pattern JAVA_FILE_PATTERN =
@@ -79,18 +77,12 @@ public class BuckBuildManager {
           "buck",
           "build",
           "$",
-          "--keep-going",
-          "--build-report",
-          sTempFilePath
       });
       sCommands.put(Command.INSTALL, new String[]{
           "buck",
           "install",
           "$",
-          "--keep-going",
           "--run",
-          "--build-report",
-          sTempFilePath
       });
       sCommands.put(Command.UNINSTALL, new String[]{
           "buck",
@@ -117,6 +109,16 @@ public class BuckBuildManager {
       }
     }
     final String[] commandForTask = command.clone();
+
+    String headMessage = "Running '";
+    for (int i = 0; i < commandForTask.length; ++i) {
+      headMessage += commandForTask[i];
+      headMessage += i == commandForTask.length - 1 ? "'" : " ";
+    }
+    BuckToolWindowFactory.cleanConsole();
+    BuckToolWindowFactory.outputConsoleMessage(headMessage + "\n",
+        ConsoleViewContentType.NORMAL_OUTPUT);
+
     final Task.Backgroundable task = new Task.Backgroundable(
         project, BUCK_BUILD_MESSAGE, true) {
       @Override
@@ -132,7 +134,6 @@ public class BuckBuildManager {
           BufferedReader stdError =
               new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
-          BuckToolWindowFactory.cleanConsole();
           String s;
           while ((s = stdError.readLine()) != null) {
             parseOutputLine(project, s.trim());

@@ -20,7 +20,7 @@ public class BuckCompletionContributor extends CompletionContributor {
     add("deps");
     add("manifest");
     add("package_type");
-    add("keystore");
+    add("glob");
     add("visibility");
     add("aar");
     add("src_target");
@@ -31,6 +31,20 @@ public class BuckCompletionContributor extends CompletionContributor {
     add("contacts");
     add("exported_deps");
     add("excludes");
+    add("main");
+    add("resources");
+    add("javadoc_url");
+    add("store");
+    add("properties");
+    add("assets");
+    add("package");
+    add("proguard_config");
+    add("source_jar");
+    add("aidl");
+    add("import_path");
+    add("annotation_processors");
+    add("annotation_processor_deps");
+    add("keystore");
   }};
 
   public static final ArrayList<String> sRuleNames = new ArrayList<String>() {{
@@ -46,7 +60,6 @@ public class BuckCompletionContributor extends CompletionContributor {
     add("apk_genrule");
     add("cxx_library");
     add("gen_aidl");
-    add("keystore");
     add("ndk_library");
     add("prebuilt_jar");
     add("prebuilt_native_library");
@@ -71,6 +84,7 @@ public class BuckCompletionContributor extends CompletionContributor {
     add("glob");
     add("include_defs");
     add("robolectric_test");
+    add("keystore");
   }};
 
   public BuckCompletionContributor() {
