@@ -6,6 +6,8 @@ import com.intellij.openapi.components.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 @State(
     name = "BuckOptionsProvider",
@@ -14,12 +16,12 @@ import java.io.File;
             file = StoragePathMacros.APP_CONFIG + "/buck.xml"
         )}
 )
-public class BuckOptionsProvider implements PersistentStateComponent<BuckOptionsProvider.State>,
+public class BuckSettingsProvider implements PersistentStateComponent<BuckSettingsProvider.State>,
     ExportableApplicationComponent {
   private State myState = new State();
 
-  public static BuckOptionsProvider getInstance() {
-    return ApplicationManager.getApplication().getComponent(BuckOptionsProvider.class);
+  public static BuckSettingsProvider getInstance() {
+    return ApplicationManager.getApplication().getComponent(BuckSettingsProvider.class);
   }
 
   @Override
@@ -29,6 +31,7 @@ public class BuckOptionsProvider implements PersistentStateComponent<BuckOptions
 
   @Override
   public void loadState(State state) {
+    myState = state;
   }
 
   @Override
@@ -58,5 +61,13 @@ public class BuckOptionsProvider implements PersistentStateComponent<BuckOptions
   }
 
   public static class State {
+
+    private static final String DEFAULT_BUCK_BINARY = "buck";
+
+    // Remember the last used buck alias for each historical project
+    public Map<String, String> lastAlias = new HashMap<String, String>();
+
+    // Default is "buck", but user can set it to a specific one
+    public String buckBinary = DEFAULT_BUCK_BINARY;
   }
 }

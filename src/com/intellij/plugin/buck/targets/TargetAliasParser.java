@@ -1,6 +1,7 @@
 package com.intellij.plugin.buck.targets;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class TargetAliasParser {
    */
   static public void parseAlias(String baseDir) {
     sTargetAlias.clear();
-    String file = baseDir + "/" + BUCK_CONFIG_FILE;
+    String file = baseDir + File.separatorChar + BUCK_CONFIG_FILE;
     try  {
       BufferedReader br = new BufferedReader(new FileReader(file));
       String line;

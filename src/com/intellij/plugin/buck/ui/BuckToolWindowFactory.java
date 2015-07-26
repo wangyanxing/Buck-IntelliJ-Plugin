@@ -12,6 +12,7 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.plugin.buck.actions.*;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
@@ -21,9 +22,13 @@ import org.jetbrains.annotations.NotNull;
 public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
 
   @NonNls
-  private static final String OUTPUT_WINDOW_CONTENT_ID = "OutputWindowContent";
+  private static final String OUTPUT_WINDOW_CONTENT_ID = "BuckOutputWindowContent";
   private static final String TOOL_WINDOW_ID = "Buck";
   private static ConsoleView sConsoleWindow;
+
+  public static ToolWindow getBuckToolWindow(Project project) {
+    return ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID);
+  }
 
   public static void outputConsoleMessage(String message, ConsoleViewContentType type) {
     if (sConsoleWindow != null) {
@@ -33,29 +38,28 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
 
   @Override
   public void createToolWindowContent(@NotNull final Project project, @NotNull ToolWindow toolWindow) {
-    RunnerLayoutUi layoutUi = RunnerLayoutUi.Factory.getInstance(project).create(
-        "buck", "buck", "buck", project);
-
     toolWindow.setAvailable(true, null);
     toolWindow.setToHideOnEmptyContent(true);
     toolWindow.setTitle(TOOL_WINDOW_ID);
 
-    Content consoleContent = createAdbLogsContent(layoutUi, project);
+    RunnerLayoutUi layoutUi = RunnerLayoutUi.Factory.getInstance(project).create(
+        "buck", "buck", "buck", project);
+    Content consoleContent = createConsoleContent(layoutUi, project);
 
     layoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
     layoutUi.getOptions().setLeftToolbar(getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
 
     final ContentManager contentManager = toolWindow.getContentManager();
-    Content c = contentManager.getFactory().createContent(layoutUi.getComponent(), "Build System", true);
-    contentManager.addContent(c);
+    Content content = contentManager.getFactory().createContent(layoutUi.getComponent(), "", true);
+    contentManager.addContent(content);
   }
 
-  private Content createAdbLogsContent(RunnerLayoutUi layoutUi, Project project) {
+  private Content createConsoleContent(RunnerLayoutUi layoutUi, Project project) {
     sConsoleWindow = new ConsoleViewImpl(project, false);
-    Content adbLogsContent = layoutUi.createContent(
+    Content consoleWindowContent = layoutUi.createContent(
         OUTPUT_WINDOW_CONTENT_ID, sConsoleWindow.getComponent(), "Output Logs", null, null);
-    adbLogsContent.setCloseable(false);
-    return adbLogsContent;
+    consoleWindowContent.setCloseable(false);
+    return consoleWindowContent;
   }
 
   @NotNull

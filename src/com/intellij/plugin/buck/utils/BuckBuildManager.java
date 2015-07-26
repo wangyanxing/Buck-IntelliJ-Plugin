@@ -141,7 +141,7 @@ public class BuckBuildManager {
    */
   private void queryPortNumber(Project project, final String projectDir) {
     BuckToolWindowFactory.outputConsoleMessage(
-        "Listening to local buck server ",
+        "Connecting to local buck http server ",
         ConsoleViewContentType.NORMAL_OUTPUT);
 
     final Task task = new Task.Backgroundable(project, QUERY_PORT_MESSAGE, true) {

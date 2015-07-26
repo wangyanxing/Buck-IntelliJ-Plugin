@@ -18,6 +18,7 @@ public class BuckKillAction extends DumbAwareAction {
 
   public BuckKillAction() {
     super("Stop building", "Stop buck building commands", AllIcons.Actions.Suspend);
+    getTemplatePresentation().setEnabled(false);
   }
 
   @Override
@@ -35,5 +36,4 @@ public class BuckKillAction extends DumbAwareAction {
           ConsoleViewContentType.ERROR_OUTPUT);
     }
   }
-
 }
