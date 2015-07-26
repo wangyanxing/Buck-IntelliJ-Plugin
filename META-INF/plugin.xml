@@ -54,6 +54,7 @@
         order="FIRST"/>
     <annotator language="Buck" implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
     <colorSettingsPage implementation="com.intellij.plugin.buck.settings.BuckColorSettingsPage"/>
+    <psi.referenceContributor implementation="com.intellij.plugin.buck.reference.BuckReferenceContributor"/>
   </extensions>
 
   <application-components>
@@ -77,6 +78,7 @@
       <add-to-group anchor="first" group-id="BuildMenu"/>
       <add-to-group anchor="first" group-id="EditorPopupMenu"/>
     </group>
+
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -100,4 +102,5 @@
       </implementation-class>
     </component>
   </application-components>
+
 </idea-plugin>

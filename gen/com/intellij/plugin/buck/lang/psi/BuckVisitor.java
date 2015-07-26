@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.plugin.buck.lang.psi;
 
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
+import org.jetbrains.annotations.NotNull;
 
 public class BuckVisitor extends PsiElementVisitor {
 
@@ -24,7 +24,7 @@ public class BuckVisitor extends PsiElementVisitor {
   }
 
   public void visitProperty(@NotNull BuckProperty o) {
-    visitPsiElement(o);
+    visitNamedElement(o);
   }
 
   public void visitPropertyLvalue(@NotNull BuckPropertyLvalue o) {
@@ -52,6 +52,10 @@ public class BuckVisitor extends PsiElementVisitor {
   }
 
   public void visitValueArray(@NotNull BuckValueArray o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNamedElement(@NotNull BuckNamedElement o) {
     visitPsiElement(o);
   }
 

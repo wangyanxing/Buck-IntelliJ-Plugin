@@ -74,20 +74,26 @@ public class BuckCompletionContributor extends CompletionContributor {
   }};
 
   public BuckCompletionContributor() {
-    extend(CompletionType.BASIC,
+    // Auto completion for basic rule names
+    extend(
+        CompletionType.BASIC,
         PlatformPatterns.psiElement(BuckTypes.IDENTIFIER).withLanguage(BuckLanguage.INSTANCE),
-        new CompletionProvider<CompletionParameters>() {
-          public void addCompletions(@NotNull CompletionParameters parameters,
-                                     ProcessingContext context,
-                                     @NotNull CompletionResultSet resultSet) {
-            for (String card : sKeywords) {
-              resultSet.addElement(LookupElementBuilder.create(card));
-            }
-            for (String card : sRuleNames) {
-              resultSet.addElement(LookupElementBuilder.create(card));
-            }
-          }
-        }
-    );
+        BuckKeywordsCompletionProvider.INSTANCE);
+  }
+
+  private static class BuckKeywordsCompletionProvider extends CompletionProvider<CompletionParameters> {
+    private static final BuckKeywordsCompletionProvider INSTANCE = new BuckKeywordsCompletionProvider();
+
+    @Override
+    protected void addCompletions(@NotNull CompletionParameters parameters,
+                                  ProcessingContext context,
+                                  @NotNull CompletionResultSet result) {
+      for (String card : sKeywords) {
+        result.addElement(LookupElementBuilder.create(card));
+      }
+      for (String card : sRuleNames) {
+        result.addElement(LookupElementBuilder.create(card));
+      }
+    }
   }
 }

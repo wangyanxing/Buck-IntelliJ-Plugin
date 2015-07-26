@@ -1,17 +1,19 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.plugin.buck.lang.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.plugin.buck.lang.psi.BuckProperty;
+import com.intellij.plugin.buck.lang.psi.BuckPropertyLvalue;
+import com.intellij.plugin.buck.lang.psi.BuckValue;
+import com.intellij.plugin.buck.lang.psi.BuckVisitor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.plugin.buck.lang.psi.*;
+import com.intellij.util.IncorrectOperationException;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class BuckPropertyImpl extends ASTWrapperPsiElement implements BuckProperty {
+public class BuckPropertyImpl extends BuckNamedElementImpl implements BuckProperty {
 
   public BuckPropertyImpl(ASTNode node) {
     super(node);
@@ -34,4 +36,14 @@ public class BuckPropertyImpl extends ASTWrapperPsiElement implements BuckProper
     return findNotNullChildByClass(BuckValue.class);
   }
 
+  @Nullable
+  @Override
+  public PsiElement getNameIdentifier() {
+    return null;
+  }
+
+  @Override
+  public PsiElement setName(@NonNls @NotNull String s) throws IncorrectOperationException {
+    return null;
+  }
 }
