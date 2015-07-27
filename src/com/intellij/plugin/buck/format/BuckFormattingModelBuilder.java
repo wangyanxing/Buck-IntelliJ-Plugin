@@ -12,16 +12,19 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BuckFormattingModelBuilder implements FormattingModelBuilderEx, CustomFormattingModelBuilder {
+/**
+ * Implements the code formatting for BUCK files
+ */
+public class BuckFormattingModelBuilder implements
+    FormattingModelBuilderEx, CustomFormattingModelBuilder {
+
   @NotNull
   @Override
   public FormattingModel createModel(@NotNull PsiElement element,
                                      @NotNull CodeStyleSettings settings,
                                      @NotNull FormattingMode mode) {
-    //OrderOptimizer.optimzeDeps(element.getContainingFile());
     final BuckBlock block =
         new BuckBlock(null, element.getNode(), settings, null, Indent.getNoneIndent(), null);
-
     return FormattingModelProvider.createFormattingModelForPsiFile(
         element.getContainingFile(),
         block,

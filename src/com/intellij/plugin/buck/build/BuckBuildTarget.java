@@ -3,6 +3,9 @@ package com.intellij.plugin.buck.build;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
+/**
+ * Represents a buck build target
+ */
 public class BuckBuildTarget {
 
   /**

@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.util.Map;
 
 public class BuckColorSettingsPage implements ColorSettingsPage {
+
   private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
       new AttributesDescriptor("Key", BuckSyntaxHighlighter.KEY),
       new AttributesDescriptor("Value", BuckSyntaxHighlighter.VALUE),
@@ -36,20 +37,22 @@ public class BuckColorSettingsPage implements ColorSettingsPage {
   @NotNull
   @Override
   public String getDemoText() {
-    return "# Thanks for installing IntelliJ IEDA Buck Plugin!\n" +
+    return "# Thanks for installing Buck Plugin for IDEA!\n" +
         "android_library(\n" +
-        "  name = 'adinterfaces',\n" +
+        "  name = 'bar',\n" +
         "  srcs = glob(['**/*.java']),\n" +
         "  deps = [\n" +
-        "    '//android_res/com/facebook/adinterfaces:res',\n" +
-        "    '//android_res/com/facebook/common/strings:res',\n" +
-        "    '//android_res/com/facebook/custom:res'\n" +
+        "    '//android_res/com/foo/interfaces:res',\n" +
+        "    '//android_res/com/foo/common/strings:res',\n" +
+        "    '//android_res/com/foo/custom:res'\n" +
         "  ],\n" +
         "  visibility = [\n" +
         "    'PUBLIC',\n" +
-        "  ],\n\n" +
+        "  ],\n" +
+        ")\n" +
+        "\n" +
         "project_config(" +
-        "  src_target = ':adinterfaces'," +
+        "  src_target = ':bar'," +
         ")";
   }
 

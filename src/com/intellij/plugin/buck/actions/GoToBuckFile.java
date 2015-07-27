@@ -13,6 +13,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
 
+/**
+ * Go to its BUCK file for current source file
+ */
 public class GoToBuckFile extends AnAction {
 
   @Override

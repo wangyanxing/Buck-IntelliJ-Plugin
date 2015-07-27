@@ -14,6 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Run buck kill command
+ * It will force terminate all running buck commands and shut down the buck local http server
+ */
 public class BuckKillAction extends DumbAwareAction {
 
   private boolean mKilling = false;

@@ -12,9 +12,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class BuckSettingsConfigurable implements SearchableConfigurable, Configurable.NoScroll, Disposable {
-
-  public static final String TERMINAL_SETTINGS_HELP_REFERENCE = "reference.settings.terminal";
+public class BuckSettingsConfigurable implements
+    SearchableConfigurable, Configurable.NoScroll, Disposable {
 
   private BuckSettingsPanel myPanel;
 
@@ -45,7 +44,7 @@ public class BuckSettingsConfigurable implements SearchableConfigurable, Configu
 
   @Override
   public String getHelpTopic() {
-    return TERMINAL_SETTINGS_HELP_REFERENCE;
+    return "";
   }
 
   @Override

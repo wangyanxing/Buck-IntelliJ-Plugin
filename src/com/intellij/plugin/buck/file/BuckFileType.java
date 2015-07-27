@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+/**
+ * Buck language type
+ */
 public class BuckFileType extends LanguageFileType {
 
   public static final BuckFileType INSTANCE = new BuckFileType();

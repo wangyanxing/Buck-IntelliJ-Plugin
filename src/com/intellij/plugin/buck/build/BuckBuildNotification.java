@@ -6,6 +6,10 @@ import com.intellij.notification.NotificationType;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Buck build result notification
+ * Currently we only show notifications when build fails and buck tool window is not visible
+ */
 public class BuckBuildNotification extends Notification {
 
   public static final NotificationGroup NOTIFICATION_GROUP_ID = NotificationGroup.toolWindowGroup(

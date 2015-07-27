@@ -5,6 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.plugin.buck.build.BuckBuildManager;
 
+/**
+ * Run buck build command
+ */
 public class BuckBuildAction extends DumbAwareAction {
 
   public BuckBuildAction() {

@@ -775,7 +775,9 @@ public class _BuckLexer implements FlexLexer, BuckTypes {
    * @return the character at position pos
    */
   public final char yycharat(int pos) {
-    return zzBufferArray != null ? zzBufferArray[zzStartRead + pos] : zzBuffer.charAt(zzStartRead + pos);
+    return zzBufferArray != null ?
+        zzBufferArray[zzStartRead + pos] :
+        zzBuffer.charAt(zzStartRead + pos);
   }
 
 
@@ -879,7 +881,8 @@ public class _BuckLexer implements FlexLexer, BuckTypes {
         while (true) {
 
           if (zzCurrentPosL < zzEndReadL)
-            zzInput = (zzBufferArrayL != null ? zzBufferArrayL[zzCurrentPosL++] : zzBufferL.charAt(zzCurrentPosL++));
+            zzInput = (zzBufferArrayL != null ? zzBufferArrayL[zzCurrentPosL++] :
+                zzBufferL.charAt(zzCurrentPosL++));
           else if (zzAtEOF) {
             zzInput = YYEOF;
             break zzForAction;
@@ -897,7 +900,8 @@ public class _BuckLexer implements FlexLexer, BuckTypes {
               zzInput = YYEOF;
               break zzForAction;
             } else {
-              zzInput = (zzBufferArrayL != null ? zzBufferArrayL[zzCurrentPosL++] : zzBufferL.charAt(zzCurrentPosL++));
+              zzInput = (zzBufferArrayL != null ? zzBufferArrayL[zzCurrentPosL++] :
+                  zzBufferL.charAt(zzCurrentPosL++));
             }
           }
           int zzNext = zzTransL[zzRowMapL[zzState] + zzCMapL[zzInput]];

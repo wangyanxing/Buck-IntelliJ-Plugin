@@ -15,7 +15,8 @@ import com.intellij.psi.util.PsiTreeUtil;
  */
 public class BuckAnnotator implements Annotator {
 
-  private static final String ANNOTATOR_ERROR_CANNOT_LOCATE_TARGET = "Cannot locate the Buck target";
+  private static final String ANNOTATOR_ERROR_CANNOT_LOCATE_TARGET =
+      "Cannot locate the Buck target";
 
   @Override
   public void annotate(PsiElement psiElement, AnnotationHolder annotationHolder) {
@@ -37,8 +38,8 @@ public class BuckAnnotator implements Annotator {
     if (!BuckBuildTargetUtil.isValidAbsoluteTarget(target)) {
       return;
     }
-    VirtualFile buckDir =
-        project.getBaseDir().findFileByRelativePath(BuckBuildTargetUtil.extractAbsoluteTarget(target));
+    VirtualFile buckDir = project.getBaseDir().findFileByRelativePath(
+        BuckBuildTargetUtil.extractAbsoluteTarget(target));
     VirtualFile targetBuckFile = buckDir != null ? buckDir.findChild("BUCK") : null;
 
     // Show error annotate if can't find this buck target

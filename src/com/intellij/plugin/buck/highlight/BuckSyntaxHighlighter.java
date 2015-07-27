@@ -15,6 +15,9 @@ import java.awt.*;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
+/**
+ * Syntax highlighter for buck PSI elements
+ */
 public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
 
   public static final TextAttributesKey KEY = createTextAttributesKey(
@@ -95,5 +98,4 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
       return EMPTY_KEYS;
     }
   }
-
 }

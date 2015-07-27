@@ -8,6 +8,9 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * BUCK code style settings
+ */
 public class BuckLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
 
   @NotNull
@@ -33,13 +36,13 @@ public class BuckLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSett
     defaultSettings.ALIGN_MULTILINE_PARAMETERS_IN_CALLS = true;
     defaultSettings.KEEP_BLANK_LINES_IN_DECLARATIONS = 1;
     defaultSettings.KEEP_BLANK_LINES_IN_CODE = 1;
-    defaultSettings.RIGHT_MARGIN = 99;
+    defaultSettings.RIGHT_MARGIN = 100;
     return defaultSettings;
   }
 
   @Override
   public String getCodeSample(@NotNull SettingsType settingsType) {
-    return "# Thanks for installing IntelliJ IEDA Buck Plugin!\n" +
+    return "# Thanks for installing Buck Plugin for IDEA!\n" +
         "android_library(\n" +
         "  name = 'bar',\n" +
         "  srcs = glob(['**/*.java']),\n" +
@@ -50,7 +53,9 @@ public class BuckLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSett
         "  ],\n" +
         "  visibility = [\n" +
         "    'PUBLIC',\n" +
-        "  ],\n\n" +
+        "  ],\n" +
+        ")\n" +
+        "\n" +
         "project_config(" +
         "  src_target = ':bar'," +
         ")";

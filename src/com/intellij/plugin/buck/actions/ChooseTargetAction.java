@@ -66,6 +66,9 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Pop up a GUI for choose buck targets (alias)
+ */
 public class ChooseTargetAction extends DumbAwareAction implements DataProvider {
 
   public static final String SE_HISTORY_KEY = "BuckTargetHistoryKey";

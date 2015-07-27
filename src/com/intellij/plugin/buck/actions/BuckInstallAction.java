@@ -5,6 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.plugin.buck.build.BuckBuildManager;
 
+/**
+ * Run buck install command
+ */
 public class BuckInstallAction extends DumbAwareAction {
 
   public BuckInstallAction() {
@@ -28,5 +31,4 @@ public class BuckInstallAction extends DumbAwareAction {
         e.getProject(),
         target);
   }
-
 }

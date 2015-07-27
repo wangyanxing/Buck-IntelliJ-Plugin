@@ -9,6 +9,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Load and save buck setting states across IDE restarts
+ */
 @State(
     name = "BuckOptionsProvider",
     storages = {
@@ -60,6 +63,9 @@ public class BuckSettingsProvider implements PersistentStateComponent<BuckSettin
     return "BuckOptionsProvider";
   }
 
+  /**
+   * All settings are stored in this inner class
+   */
   public static class State {
 
     private static final String DEFAULT_BUCK_BINARY = "buck";

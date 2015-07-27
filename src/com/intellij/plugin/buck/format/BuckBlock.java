@@ -23,7 +23,10 @@ import java.util.List;
 
 import static com.intellij.plugin.buck.lang.psi.BuckPsiUtils.hasElementType;
 
-
+/**
+ * A BuckBlock is actually a abstract syntax tree block, which mainly used for formatting a buck
+ * code block.
+ */
 public class BuckBlock implements ASTBlock {
 
   private static final TokenSet BUCK_CONTAINERS =
@@ -88,6 +91,9 @@ public class BuckBlock implements ASTBlock {
     return new ArrayList<Block>(mySubBlocks);
   }
 
+  /**
+   * Recursively build sub blocks
+   */
   private List<BuckBlock> buildSubBlocks() {
     final List<BuckBlock> blocks = new ArrayList<BuckBlock>();
     for (ASTNode child = myNode.getFirstChildNode(); child != null; child = child.getTreeNext()) {
@@ -198,4 +204,3 @@ public class BuckBlock implements ASTBlock {
     return myNode.getFirstChildNode() == null;
   }
 }
-

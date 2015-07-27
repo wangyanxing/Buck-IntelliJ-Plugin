@@ -1,6 +1,5 @@
 package com.intellij.plugin.buck.lang.psi;
 
-
 import com.intellij.openapi.project.Project;
 import com.intellij.plugin.buck.file.BuckFileType;
 import com.intellij.plugin.buck.lang.BuckFile;

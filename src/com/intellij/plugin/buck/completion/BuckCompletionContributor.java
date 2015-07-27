@@ -10,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+/**
+ * Auto-completion for keywords and rule names
+ */
 public class BuckCompletionContributor extends CompletionContributor {
 
   public static final ArrayList<String> sKeywords = new ArrayList<String>() {{

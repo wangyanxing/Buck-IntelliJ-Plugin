@@ -15,6 +15,9 @@ import com.intellij.ui.SimpleTextAttributes;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Used for rendering cells in "choose buck targets" GUI
+ */
 public class BuckTargetPsiRenderer extends PsiElementListCellRenderer<PsiElement> {
 
   private String mAlias;

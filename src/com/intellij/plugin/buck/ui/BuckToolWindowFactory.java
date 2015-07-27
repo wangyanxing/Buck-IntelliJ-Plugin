@@ -44,7 +44,8 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
     return toolWindow.isVisible();
   }
 
-  public static synchronized void outputConsoleMessage(String message, ConsoleViewContentType type) {
+  public static synchronized void outputConsoleMessage(
+      String message, ConsoleViewContentType type) {
     if (sConsoleWindow != null) {
       sConsoleWindow.print(message, type);
     }
@@ -74,7 +75,8 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
   }
 
   @Override
-  public void createToolWindowContent(@NotNull final Project project, @NotNull ToolWindow toolWindow) {
+  public void createToolWindowContent(
+      @NotNull final Project project, @NotNull ToolWindow toolWindow) {
     toolWindow.setAvailable(true, null);
     toolWindow.setToHideOnEmptyContent(true);
 
@@ -83,12 +85,14 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
     Content consoleContent = createConsoleContent(sRunnerLayoutUi, project);
 
     sRunnerLayoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
-    sRunnerLayoutUi.getOptions().setLeftToolbar(getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
+    sRunnerLayoutUi.getOptions().setLeftToolbar(
+        getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
 
     sRunnerLayoutUi.updateActionsNow();
 
     final ContentManager contentManager = toolWindow.getContentManager();
-    Content content = contentManager.getFactory().createContent(sRunnerLayoutUi.getComponent(), "", true);
+    Content content = contentManager.getFactory().createContent(
+        sRunnerLayoutUi.getComponent(), "", true);
     contentManager.addContent(content);
 
     updateBuckToolWindowTitle(project);

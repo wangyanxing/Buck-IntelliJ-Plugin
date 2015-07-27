@@ -10,8 +10,9 @@ public class BuckPsiUtils {
   /**
    * Check that element type of the given AST node belongs to the token set.
    * <p/>
-   * It slightly less verbose than {@code set.contains(node.getElementType())} and overloaded methods with the same name
-   * allow check ASTNode/PsiElement against both concrete element types and token sets in uniform way.
+   * It slightly less verbose than {@code set.contains(node.getElementType())}
+   * and overloaded methods with the same name allow check ASTNode/PsiElement against both concrete
+   * element types and token sets in uniform way.
    */
   public static boolean hasElementType(@NotNull ASTNode node, @NotNull TokenSet set) {
     return set.contains(node.getElementType());
@@ -80,5 +81,4 @@ public class BuckPsiUtils {
       return null;
     }
   }
-
 }

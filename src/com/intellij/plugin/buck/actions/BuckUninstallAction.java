@@ -5,6 +5,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.plugin.buck.build.BuckBuildManager;
 
+/**
+ * Run buck uninstall command
+ */
 public class BuckUninstallAction extends DumbAwareAction {
   public BuckUninstallAction() {
     super("Run buck uninstall", "Run buck uninstall command", AllIcons.Actions.Delete);

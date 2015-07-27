@@ -9,9 +9,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class OrderOptimizer {
+/**
+ * A utility class for sorting buck dependencies alphabetically
+ */
+public class DependenciesOptimizer {
 
-  private static String DEPS_KEYWORD = "deps";
+  private static String DEPENDENCIES_KEYWORD = "deps";
 
   public static void optimzeDeps(@NotNull PsiFile file) {
     final PropertyVisitor visitor = new PropertyVisitor();
@@ -32,7 +35,7 @@ public class OrderOptimizer {
     @Override
     public void visitProperty(@NotNull BuckProperty property) {
       BuckPropertyLvalue lValue = property.getPropertyLvalue();
-      if (lValue == null || !lValue.getText().equals(DEPS_KEYWORD)) {
+      if (lValue == null || !lValue.getText().equals(DEPENDENCIES_KEYWORD)) {
         return;
       }
       BuckValueArray array = property.getValue().getValueArray();
