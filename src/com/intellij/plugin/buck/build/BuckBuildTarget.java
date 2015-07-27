@@ -1,9 +1,9 @@
-package com.intellij.plugin.buck.targets;
+package com.intellij.plugin.buck.build;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class BuckTarget {
+public class BuckBuildTarget {
 
   /**
    * The alias of a target, defined in .buckconfig. For example, fb4a
@@ -20,10 +20,10 @@ public class BuckTarget {
    */
   private VirtualFile virtualFile;
 
-  public BuckTarget(Project project, String target, String alias) {
+  public BuckBuildTarget(Project project, String target, String alias) {
     this.alias = alias;
     this.target = target;
-    this.virtualFile = BuckTargetUtil.getBuckFileFromAbsoluteTarget(project, target);
+    this.virtualFile = BuckBuildTargetUtil.getBuckFileFromAbsoluteTarget(project, target);
   }
 
   public String getAlias() {

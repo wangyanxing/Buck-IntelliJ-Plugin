@@ -17,7 +17,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.plugin.buck.actions.ChooseTargetAction;
-import com.intellij.plugin.buck.utils.BuckBuildManager;
+import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NonNls;
@@ -27,9 +27,9 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
 
   @NonNls
   private static final String OUTPUT_WINDOW_CONTENT_ID = "BuckOutputWindowContent";
-  private static final String TOOL_WINDOW_ID = "Buck";
   private static ConsoleView sConsoleWindow;
   private static RunnerLayoutUi sRunnerLayoutUi;
+  public static final String TOOL_WINDOW_ID = "Buck";
 
   public static void updateBuckToolWindowTitle(Project project) {
     ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID);
@@ -37,6 +37,11 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
     if (target != null) {
       toolWindow.setTitle("Target: " + target);
     }
+  }
+
+  public static boolean isToolWindowVisible(Project project) {
+    ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID);
+    return toolWindow.isVisible();
   }
 
   public static synchronized void outputConsoleMessage(String message, ConsoleViewContentType type) {
@@ -61,7 +66,9 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
     ApplicationManager.getApplication().invokeLater(new Runnable() {
       @Override
       public void run() {
-        sRunnerLayoutUi.updateActionsNow();
+        if (sRunnerLayoutUi != null) {
+          sRunnerLayoutUi.updateActionsNow();
+        }
       }
     });
   }

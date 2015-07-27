@@ -1,4 +1,4 @@
-package com.intellij.plugin.buck.utils;
+package com.intellij.plugin.buck.build;
 
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.ui.ConsoleViewContentType;
@@ -19,6 +19,7 @@ import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.util.OpenSourceUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -57,8 +58,10 @@ public class BuckBuildManager {
       "Using buckd.",
       "Using watchman.",
   };
+  private static final String UNKNOWN_ERROR_MESSAGE = "Unknown error";
+  private static final String ERROR_PREFIX_FOR_MESSAGE = "BUILD FAILED:";
   private static final String[] ERROR_PREFIXES = new String[]{
-      "BUILD FAILED:",
+      ERROR_PREFIX_FOR_MESSAGE,
       "FAIL",
       "Errors:",
       "No devices found",
@@ -77,6 +80,7 @@ public class BuckBuildManager {
 
   private ProgressIndicator mProgressIndicator;
   private boolean mIsBuilding = false;
+  private String mCurrentErrorMessage;
 
   public static synchronized BuckBuildManager getInstance() {
     if (sInstance == null) {
@@ -105,7 +109,7 @@ public class BuckBuildManager {
    * Run build build command in background threads
    * We also get a ProgressIndicator here and use it to set progress later
    */
-  public void build(Command buildCommand, final Project project, String target) {
+  public void build(final Command buildCommand, final Project project, String target) {
     setBuilding(true);
     FileDocumentManager.getInstance().saveAllDocuments();
 
@@ -125,6 +129,7 @@ public class BuckBuildManager {
     BuckToolWindowFactory.cleanConsole();
     BuckToolWindowFactory.outputConsoleMessage(headMessage + "\n",
         ConsoleViewContentType.NORMAL_OUTPUT);
+    mCurrentErrorMessage = null;
 
     final Task.Backgroundable task = new Task.Backgroundable(
         project, BUCK_BUILD_MESSAGE, true) {
@@ -141,11 +146,26 @@ public class BuckBuildManager {
           BufferedReader stdError =
               new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
+          boolean showFailedNotification = false;
           String s;
           while ((s = stdError.readLine()) != null) {
-            parseOutputLine(project, s.trim());
+            boolean failed = parseOutputLine(project, s.trim());
+            if (!showFailedNotification) {
+              showFailedNotification = failed;
+            }
           }
           BuckBuildManager.getInstance().setBuilding(false);
+
+          // Popup notification if needed
+          if (showFailedNotification && !BuckToolWindowFactory.isToolWindowVisible(project)) {
+            if (mCurrentErrorMessage == null) {
+              mCurrentErrorMessage = UNKNOWN_ERROR_MESSAGE;
+            } else {
+              mCurrentErrorMessage = mCurrentErrorMessage.replaceAll(ERROR_PREFIX_FOR_MESSAGE, "");
+            }
+            BuckBuildNotification.createBuildFailedNotification(
+                buildCommand, mCurrentErrorMessage).notify(project);
+          }
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -181,6 +201,10 @@ public class BuckBuildManager {
     BuckToolWindowFactory.updateActionsNow();
   }
 
+  /**
+   * Print "no selected target" error message to console window
+   * Also provide a hyperlink which can directly jump to "Choose Target" GUI window
+   */
   public void showNoTargetMessage() {
     BuckToolWindowFactory.outputConsoleMessage("Please ", ConsoleViewContentType.ERROR_OUTPUT);
     BuckToolWindowFactory.outputConsoleHyperlink(
@@ -188,7 +212,6 @@ public class BuckBuildManager {
         new HyperlinkInfo() {
           @Override
           public void navigate(Project project) {
-            // Jump to "Choose target" UI
             JComponent frame = WindowManager.getInstance().getIdeFrame(project).getComponent();
             AnAction action = ActionManager.getInstance().getAction("buck.ChooseTarget");
             action.actionPerformed(
@@ -205,11 +228,13 @@ public class BuckBuildManager {
    * 1. Calculate the progress
    * 2. Ignore unused lines, for example "Using buckd."
    * 3. Print to console window with different colors
+   *
+   * @return boolean failed or not
    */
-  private void parseOutputLine(Project project, String line) {
+  private boolean parseOutputLine(Project project, String line) {
     for (String ignored : IGNORED_OUTPUT_LINES) {
       if (line.matches(ignored)) {
-        return;
+        return false;
       }
     }
 
@@ -219,7 +244,7 @@ public class BuckBuildManager {
       double finishedJob = Double.parseDouble(matcher.group(1));
       double totalJob = Double.parseDouble(matcher.group(2));
       setProgress(finishedJob / totalJob);
-      return;
+      return false;
     }
 
     // Red color
@@ -227,7 +252,10 @@ public class BuckBuildManager {
       if (line.startsWith(errorPrefix)) {
         BuckToolWindowFactory.outputConsoleMessage(
             line + "\n", ConsoleViewContentType.ERROR_OUTPUT);
-        return;
+        if (mCurrentErrorMessage == null && errorPrefix.equals(ERROR_PREFIX_FOR_MESSAGE)) {
+          mCurrentErrorMessage = line;
+        }
+        return true;
       }
     }
 
@@ -236,7 +264,7 @@ public class BuckBuildManager {
       if (line.startsWith(successPrefix)) {
         BuckToolWindowFactory.outputConsoleMessage(
             line + "\n", ConsoleViewContentType.USER_INPUT);
-        return;
+        return false;
       }
     }
 
@@ -267,9 +295,12 @@ public class BuckBuildManager {
       BuckToolWindowFactory.outputConsoleMessage(
           line + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
     }
+    return false;
   }
 
-  private VirtualFile pathToVirtualFile(Project project, String relativePath) {
+  private
+  @Nullable
+  VirtualFile pathToVirtualFile(Project project, String relativePath) {
     VirtualFile projectPath = project.getBaseDir();
     return projectPath.findFileByRelativePath(relativePath);
   }

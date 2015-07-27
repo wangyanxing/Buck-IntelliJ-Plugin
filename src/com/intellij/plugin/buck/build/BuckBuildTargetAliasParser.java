@@ -1,4 +1,4 @@
-package com.intellij.plugin.buck.targets;
+package com.intellij.plugin.buck.build;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TargetAliasParser {
+public class BuckBuildTargetAliasParser {
 
   static private String BUCK_CONFIG_FILE = ".buckconfig";
   static private String ALIAS_PREFIX = "[";

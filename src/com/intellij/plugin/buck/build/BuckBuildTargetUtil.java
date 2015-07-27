@@ -1,9 +1,9 @@
-package com.intellij.plugin.buck.targets;
+package com.intellij.plugin.buck.build;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class BuckTargetUtil {
+public class BuckBuildTargetUtil {
 
   public static boolean isValidAbsoluteTarget(String target) {
     return target.matches("^//[\\s\\S]*:[\\s\\S]*$");

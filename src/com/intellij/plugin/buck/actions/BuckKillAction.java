@@ -7,8 +7,8 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
-import com.intellij.plugin.buck.utils.BuckBuildManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

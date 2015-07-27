@@ -4,9 +4,9 @@ import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandlerBase;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.plugin.buck.build.BuckBuildTargetUtil;
 import com.intellij.plugin.buck.lang.BuckLanguage;
 import com.intellij.plugin.buck.lang.psi.BuckValue;
-import com.intellij.plugin.buck.targets.BuckTargetUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -32,7 +32,7 @@ public class BuckGotoProvider extends GotoDeclarationHandlerBase {
         target = target.substring(1, target.length() - 1);
       }
       VirtualFile targetBuckFile =
-          BuckTargetUtil.getBuckFileFromAbsoluteTarget(project, target);
+          BuckBuildTargetUtil.getBuckFileFromAbsoluteTarget(project, target);
       if (targetBuckFile == null) {
         return null;
       }

@@ -32,9 +32,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.actions.renderer.BuckTargetPsiRenderer;
+import com.intellij.plugin.buck.build.BuckBuildTarget;
+import com.intellij.plugin.buck.build.BuckBuildTargetAliasParser;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
-import com.intellij.plugin.buck.targets.BuckTarget;
-import com.intellij.plugin.buck.targets.TargetAliasParser;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
@@ -119,7 +119,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   @Override
   public void actionPerformed(AnActionEvent e) {
     String path = e.getProject().getBasePath();
-    TargetAliasParser.parseAlias(path);
+    BuckBuildTargetAliasParser.parseAlias(path);
 
     if (myBalloon != null && myBalloon.isVisible()) {
       showAll.set(!showAll.get());
@@ -602,9 +602,9 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
 
   private void chooseTarget(final int index) {
     final Object value = myList.getSelectedValue();
-    if (value instanceof BuckTarget) {
+    if (value instanceof BuckBuildTarget) {
       // Save history
-      String alias = ((BuckTarget) value).getAlias();
+      String alias = ((BuckBuildTarget) value).getAlias();
 
       if (BuckSettingsProvider.getInstance().getState().lastAlias != null) {
         BuckSettingsProvider.getInstance().getState().lastAlias.put(myProject.getBasePath(), alias);
@@ -862,13 +862,13 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       String pattern = "*" + myPopupField.getText();
       Matcher matcher = NameUtil.buildMatcher(pattern, 0, true, true);
 
-      VirtualFile buckFile = ((BuckTarget) value).getVirtualFile();
+      VirtualFile buckFile = ((BuckBuildTarget) value).getVirtualFile();
       if (buckFile != null && myProject != null && ((buckFile.isDirectory() &&
           (file = PsiManager.getInstance(myProject).findDirectory(buckFile)) != null) ||
           (file = PsiManager.getInstance(myProject).findFile(buckFile)) != null)) {
         myTargetRenderer.setPatternMatcher(matcher);
-        myTargetRenderer.setAlias(((BuckTarget) value).getAlias());
-        myTargetRenderer.setTarget(((BuckTarget) value).getTarget());
+        myTargetRenderer.setAlias(((BuckBuildTarget) value).getAlias());
+        myTargetRenderer.setTarget(((BuckBuildTarget) value).getTarget());
         cmp = myTargetRenderer.getListCellRendererComponent(
             list, file, index, isSelected, cellHasFocus);
       } else {
@@ -1014,14 +1014,14 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       final MinusculeMatcher matcher =
           new MinusculeMatcher("*" + pattern, NameUtil.MatchingCaseSensitivity.NONE);
 
-      final ArrayList<BuckTarget> targets =
-          new ArrayList<BuckTarget>();
+      final ArrayList<BuckBuildTarget> targets =
+          new ArrayList<BuckBuildTarget>();
 
-      for (Map.Entry<String, String> entry : TargetAliasParser.sTargetAlias.entrySet()) {
+      for (Map.Entry<String, String> entry : BuckBuildTargetAliasParser.sTargetAlias.entrySet()) {
         String alias = entry.getKey();
         String path = entry.getValue();
         if (StringUtil.isEmptyOrSpaces(pattern) || matcher.matches(alias)) {
-          BuckTarget target = new BuckTarget(myProject, path, alias);
+          BuckBuildTarget target = new BuckBuildTarget(myProject, path, alias);
           if (target.getVirtualFile() != null) {
             targets.add(target);
           }
