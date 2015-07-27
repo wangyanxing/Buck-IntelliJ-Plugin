@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>intellij.buck.plugin</id>
   <name>Buck for IDEA</name>
-  <version>1.1</version>
+  <version>1.2</version>
   <vendor email="demiwangya@gmail.com" url="https://github.com/wangyanxing/buck_idea_plugin">
     Yanxing Wang
   </vendor>
@@ -15,13 +15,15 @@
         <li>Keywords auto completion</li>
         <li>Go to buck file with one click</li>
         <li>Go to to paths of dependencies with one click</li>
+        <li>Buck file formatter</li>
+        <li>Build panel with output console window and all quick commands</li>
       </ul>
     ]]></description>
 
   <change-notes><![CDATA[
-      1. BNF and flex file revised.<br>
-      2. **_android_binary rule name supported.<br>
-      3. Macro type added.<br>
+      1. Build panel with output console window and all quick commands
+      2. Formatter for buck file
+      3. Annotator for wrong buck dependency target
     ]]>
   </change-notes>
 
@@ -55,8 +57,10 @@
     <annotator language="Buck"
                implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
     <colorSettingsPage implementation="com.intellij.plugin.buck.config.BuckColorSettingsPage"/>
-    <psi.referenceContributor implementation="com.intellij.plugin.buck.reference.BuckReferenceContributor"/>
-    <lang.commenter language="Buck" implementationClass="com.intellij.plugin.buck.commenter.BuckCommenter"/>
+    <psi.referenceContributor
+        implementation="com.intellij.plugin.buck.reference.BuckReferenceContributor"/>
+    <lang.commenter language="Buck"
+                    implementationClass="com.intellij.plugin.buck.commenter.BuckCommenter"/>
     <toolWindow
         id="Buck"
         anchor="bottom"
@@ -76,9 +80,29 @@
           id="buck.GoToBuckFile"
           class="com.intellij.plugin.buck.actions.GoToBuckFile"
           text="Go to Buck file"
-          description="Go to Buck file for this source file."/>
+          description="Go to Buck file for this source file.">
+        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Z"/>
+      </action>
       <add-to-group anchor="first" group-id="BuildMenu"/>
       <add-to-group anchor="first" group-id="EditorPopupMenu"/>
+    </group>
+
+    <group id="buck.BuildGroup">
+      <action class="com.intellij.plugin.buck.actions.ChooseTargetAction" id="buck.ChooseTarget">
+        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift T"/>
+      </action>
+      <action class="com.intellij.plugin.buck.actions.BuckInstallAction" id="buck.Install">
+        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift X"/>
+      </action>
+      <action class="com.intellij.plugin.buck.actions.BuckBuildAction" id="buck.Build">
+        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift S"/>
+      </action>
+      <action class="com.intellij.plugin.buck.actions.BuckKillAction" id="buck.Kill">
+        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift L"/>
+      </action>
+      <action class="com.intellij.plugin.buck.actions.BuckUninstallAction" id="buck.Uninstall">
+        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift M"/>
+      </action>
     </group>
   </actions>
 

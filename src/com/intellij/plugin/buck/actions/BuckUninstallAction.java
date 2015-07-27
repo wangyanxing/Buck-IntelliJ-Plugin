@@ -1,10 +1,8 @@
 package com.intellij.plugin.buck.actions;
 
-import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.plugin.buck.utils.BuckBuildManager;
 
 public class BuckUninstallAction extends DumbAwareAction {
@@ -21,8 +19,7 @@ public class BuckUninstallAction extends DumbAwareAction {
   public void actionPerformed(AnActionEvent e) {
     String target = BuckBuildManager.getInstance().getCurrentSavedTarget(e.getProject());
     if (target == null) {
-      BuckToolWindowFactory.outputConsoleMessage(
-          "Please choose a build target!\n", ConsoleViewContentType.ERROR_OUTPUT);
+      BuckBuildManager.getInstance().showNoTargetMessage();
       return;
     }
     BuckBuildManager.getInstance().build(

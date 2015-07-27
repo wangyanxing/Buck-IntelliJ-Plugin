@@ -7,6 +7,7 @@ import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunnerLayoutUi;
 import com.intellij.execution.ui.layout.PlaceInGrid;
 import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
@@ -15,7 +16,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.plugin.buck.actions.*;
+import com.intellij.plugin.buck.actions.ChooseTargetAction;
 import com.intellij.plugin.buck.utils.BuckBuildManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
@@ -96,13 +97,18 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
 
   @NotNull
   public ActionGroup getLeftToolbarActions(final Project project) {
+    ActionManager actionManager = ActionManager.getInstance();
+
+    ChooseTargetAction chooseTargetAction = (ChooseTargetAction) actionManager.getAction(
+        "buck.ChooseTarget");
+
     DefaultActionGroup group = new DefaultActionGroup();
-    group.add(new ChooseTargetAction(project));
+    group.add(chooseTargetAction.init(project));
     group.addSeparator();
-    group.add(new BuckInstallAction());
-    group.add(new BuckBuildAction());
-    group.add(new BuckKillAction());
-    group.add(new BuckUninstallAction());
+    group.add(actionManager.getAction("buck.Install"));
+    group.add(actionManager.getAction("buck.Build"));
+    group.add(actionManager.getAction("buck.Kill"));
+    group.add(actionManager.getAction("buck.Uninstall"));
     return group;
   }
 }

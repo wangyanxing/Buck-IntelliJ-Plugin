@@ -76,7 +76,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
 
   private static AtomicBoolean showAll = new AtomicBoolean(false);
 
-  private final Project myProject;
+  private Project myProject;
   private MySearchTextField myPopupField;
   private HistoryItem myHistoryItem;
   private int myHistoryIndex = 0;
@@ -96,8 +96,11 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   private Component myContextComponent;
   private AnActionEvent myActionEvent;
 
-  public ChooseTargetAction(Project project) {
+  public ChooseTargetAction() {
     super("Choose target", "Choose build target", AllIcons.Actions.Preview);
+  }
+
+  public ChooseTargetAction init(Project project) {
     myProject = project;
 
     updateComponents();
@@ -106,6 +109,7 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
         onFocusLost();
       }
     });
+    return this;
   }
 
   private static Font getTitleFont() {

@@ -2,6 +2,11 @@ package com.intellij.plugin.buck.utils;
 
 import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -9,11 +14,13 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.util.OpenSourceUtil;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -172,6 +179,25 @@ public class BuckBuildManager {
   public synchronized void setBuilding(boolean value) {
     mIsBuilding = value;
     BuckToolWindowFactory.updateActionsNow();
+  }
+
+  public void showNoTargetMessage() {
+    BuckToolWindowFactory.outputConsoleMessage("Please ", ConsoleViewContentType.ERROR_OUTPUT);
+    BuckToolWindowFactory.outputConsoleHyperlink(
+        "choose a build target!\n",
+        new HyperlinkInfo() {
+          @Override
+          public void navigate(Project project) {
+            // Jump to "Choose target" UI
+            JComponent frame = WindowManager.getInstance().getIdeFrame(project).getComponent();
+            AnAction action = ActionManager.getInstance().getAction("buck.ChooseTarget");
+            action.actionPerformed(
+                new AnActionEvent(null, DataManager.getInstance().getDataContext(frame),
+                    ActionPlaces.UNKNOWN, action.getTemplatePresentation(),
+                    ActionManager.getInstance(), 0)
+            );
+          }
+        });
   }
 
   /**

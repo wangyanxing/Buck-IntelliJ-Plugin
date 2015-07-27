@@ -20,7 +20,7 @@ public class BuckPropertyImpl extends BuckNamedElementImpl implements BuckProper
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitProperty(this);
+    if (visitor instanceof BuckVisitor) ((BuckVisitor) visitor).visitProperty(this);
     else super.accept(visitor);
   }
 

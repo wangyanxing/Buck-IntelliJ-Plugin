@@ -29,6 +29,7 @@ public class BuckKillAction extends DumbAwareAction {
 
   @Override
   public void actionPerformed(final AnActionEvent e) {
+    final File basePath = new File(e.getProject().getBasePath());
     final String[] commandForTask = {"buck", "kill"};
     mKilling = true;
     final Task task = new Task.Backgroundable(
@@ -37,7 +38,7 @@ public class BuckKillAction extends DumbAwareAction {
       public void run(@NotNull final ProgressIndicator indicator) {
         try {
           Runtime rt = Runtime.getRuntime();
-          rt.exec(commandForTask, null, new File(e.getProject().getBasePath()));
+          rt.exec(commandForTask, null, basePath);
           BuckBuildManager.getInstance().setBuilding(false);
           BuckToolWindowFactory.outputConsoleMessage("Build aborted\n", ConsoleViewContentType.ERROR_OUTPUT);
           mKilling = false;
