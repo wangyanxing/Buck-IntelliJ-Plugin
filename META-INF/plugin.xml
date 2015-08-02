@@ -85,7 +85,8 @@
           id="buck.GoToBuckFile"
           class="com.intellij.plugin.buck.actions.GoToBuckFile"
           text="Go to Buck file"
-          description="Go to Buck file for this source file.">
+          description="Go to Buck file for this source file."
+          icon="BuckIcons.BUCK_TOOL_WINDOW_ICON">
         <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Z"/>
       </action>
       <add-to-group anchor="first" group-id="BuildMenu"/>
@@ -109,6 +110,24 @@
         <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift M"/>
       </action>
     </group>
+
+    <group id="BuckToolsGroup" popup="true" text="Buck" icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
+         class="com.intellij.plugin.buck.toolbar.BuckToolsActionGroup">
+      <action id="Buck.InstallAction" class="com.intellij.plugin.buck.actions.BuckInstallAction" icon="BuckIcons.BUCK_INSTALL"/>
+      <action id="Buck.BuckKillAction" class="com.intellij.plugin.buck.actions.BuckKillAction" icon="BuckIcons.BUCK_KILL"/>
+      <action id="Buck.GoToBuckFile" class="com.intellij.plugin.buck.actions.GoToBuckFile" icon="BuckIcons.GOTO_BUCK_FILE"/>
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </group>
+
+    <group id="Buck.MainToolBarActionGroup">
+      <separator/>
+      <reference id="Buck.InstallAction" />
+      <reference id="Buck.BuckKillAction" />
+      <reference id="Buck.GoToBuckFile" />
+      <separator/>
+      <add-to-group group-id="MainToolBar" anchor="before" relative-to-action="HelpTopics" />
+    </group>
+
   </actions>
 
   <application-components>
