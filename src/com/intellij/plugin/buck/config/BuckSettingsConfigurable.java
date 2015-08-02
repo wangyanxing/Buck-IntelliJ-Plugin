@@ -1,34 +1,24 @@
 package com.intellij.plugin.buck.config;
 
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
-import com.intellij.plugin.buck.ui.BuckSettingsPanel;
+import com.intellij.plugin.buck.ui.BuckSettingsUI;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class BuckSettingsConfigurable implements
-    SearchableConfigurable, Configurable.NoScroll, Disposable {
+public class BuckSettingsConfigurable implements SearchableConfigurable {
 
-  private BuckSettingsPanel myPanel;
+  private BuckSettingsUI myPanel;
 
-  private final BuckSettingsProvider mySettingsProvider;
-  private Project myProject;
-
-  public BuckSettingsConfigurable(Project project) {
-    mySettingsProvider = BuckSettingsProvider.getInstance();
-    myProject = project;
+  public BuckSettingsConfigurable() {
   }
 
   @NotNull
   @Override
   public String getId() {
-    return "buck";
+    return getHelpTopic();
   }
 
   @Override
@@ -44,37 +34,36 @@ public class BuckSettingsConfigurable implements
 
   @Override
   public String getHelpTopic() {
-    return "";
+    return "buck.settings";
   }
 
   @Override
   public JComponent createComponent() {
-    myPanel = new BuckSettingsPanel();
-    return myPanel.createPanel(mySettingsProvider);
+    myPanel = new BuckSettingsUI();
+    return myPanel;
   }
 
   @Override
   public boolean isModified() {
-    return myPanel.isModified();
+    return myPanel != null && myPanel.isModified();
   }
 
   @Override
   public void apply() throws ConfigurationException {
-    myPanel.apply();
+    if (myPanel != null) {
+      myPanel.apply();
+    }
   }
 
   @Override
   public void reset() {
-    myPanel.reset();
+    if (myPanel != null) {
+      myPanel.reset();
+    }
   }
 
   @Override
   public void disposeUIResources() {
-    Disposer.dispose(this);
-  }
-
-  @Override
-  public void dispose() {
     myPanel = null;
   }
 }

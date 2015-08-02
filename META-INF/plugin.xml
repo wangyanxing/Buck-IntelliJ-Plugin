@@ -29,14 +29,15 @@
     ]]>
   </change-notes>
 
-  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges -->
   <idea-version since-build="131"/>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.lang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="com.intellij.plugin.buck.file.BuckFileTypeFactory"/>
+    <fileTypeFactory
+        implementation="com.intellij.plugin.buck.file.BuckFileTypeFactory"/>
     <lang.parserDefinition
         language="Buck"
         implementationClass="com.intellij.plugin.buck.lang.BuckParserDefinition"/>
@@ -52,7 +53,9 @@
     <lang.braceMatcher
         language="Buck"
         implementationClass="com.intellij.plugin.buck.format.BuckBraceMatcher"/>
-    <quoteHandler fileType="Buck" className="com.intellij.plugin.buck.format.BuckQuoteHandler"/>
+    <quoteHandler
+        fileType="Buck"
+        className="com.intellij.plugin.buck.format.BuckQuoteHandler"/>
     <completion.contributor
         language="Buck"
         implementationClass="com.intellij.plugin.buck.completion.BuckCompletionContributor"/>
@@ -65,23 +68,22 @@
         order="FIRST"/>
     <copyPastePreProcessor
         implementation="com.intellij.plugin.buck.format.BuckCopyPasteProcessor"/>
-    <annotator language="Buck"
-               implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
+    <annotator
+        language="Buck"
+        implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
     <colorSettingsPage implementation="com.intellij.plugin.buck.config.BuckColorSettingsPage"/>
-    <!--<psi.referenceContributor
-        implementation="com.intellij.plugin.buck.reference.BuckReferenceContributor"/>-->
-    <lang.commenter language="Buck"
-                    implementationClass="com.intellij.plugin.buck.commenter.BuckCommenter"/>
+    <lang.commenter
+        language="Buck"
+        implementationClass="com.intellij.plugin.buck.commenter.BuckCommenter"/>
     <toolWindow
         id="Buck"
         anchor="bottom"
         icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
         factoryClass="com.intellij.plugin.buck.ui.BuckToolWindowFactory"/>
-    <projectConfigurable
+    <applicationConfigurable
         groupId="tools"
-        groupWeight="130"
         displayName="Buck"
-        id="buck"
+        id="buck.settings"
         instance="com.intellij.plugin.buck.config.BuckSettingsConfigurable"/>
   </extensions>
 
@@ -95,7 +97,6 @@
           icon="BuckIcons.BUCK_TOOL_WINDOW_ICON">
         <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift W"/>
       </action>
-      <add-to-group anchor="first" group-id="BuildMenu"/>
       <add-to-group anchor="first" group-id="EditorPopupMenu"/>
     </group>
 
@@ -119,9 +120,15 @@
 
     <group id="BuckToolsGroup" popup="true" text="Buck" icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
          class="com.intellij.plugin.buck.toolbar.BuckToolsActionGroup">
-      <action id="Buck.InstallAction" class="com.intellij.plugin.buck.actions.BuckInstallAction" icon="BuckIcons.BUCK_INSTALL"/>
-      <action id="Buck.BuckKillAction" class="com.intellij.plugin.buck.actions.BuckKillAction" icon="BuckIcons.BUCK_KILL"/>
-      <action id="Buck.GoToBuckFile" class="com.intellij.plugin.buck.actions.GoToBuckFile" icon="BuckIcons.GOTO_BUCK_FILE"/>
+      <action id="Buck.InstallAction"
+              class="com.intellij.plugin.buck.actions.BuckInstallAction"
+              icon="BuckIcons.BUCK_INSTALL"/>
+      <action id="Buck.BuckKillAction"
+              class="com.intellij.plugin.buck.actions.BuckKillAction"
+              icon="BuckIcons.BUCK_KILL"/>
+      <action id="Buck.GoToBuckFile"
+              class="com.intellij.plugin.buck.actions.GoToBuckFile"
+              icon="BuckIcons.GOTO_BUCK_FILE"/>
       <add-to-group group-id="ToolsMenu" anchor="last"/>
     </group>
 
