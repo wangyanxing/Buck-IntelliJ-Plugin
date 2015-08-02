@@ -34,8 +34,6 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
       "BUCK_BRACES", DefaultLanguageHighlighterColors.BRACES);
   public static final TextAttributesKey BUCK_COMMA = createTextAttributesKey(
       "BUCK_COMMA", DefaultLanguageHighlighterColors.COMMA);
-  public static final TextAttributesKey BUCK_SEMICOLON = createTextAttributesKey(
-      "BUCK_SEMICOLON", DefaultLanguageHighlighterColors.SEMICOLON);
   public static final TextAttributesKey BUCK_EQUAL = createTextAttributesKey(
       "BUCK_EQUAL", DefaultLanguageHighlighterColors.OPERATION_SIGN);
   public static final TextAttributesKey BUCK_MACRO = createTextAttributesKey(
@@ -52,7 +50,6 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
   private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{BUCK_STRING};
   private static final TextAttributesKey[] BRACES_KEYS = new TextAttributesKey[]{BUCK_BRACES};
   private static final TextAttributesKey[] COMMA_KEYS = new TextAttributesKey[]{BUCK_COMMA};
-  private static final TextAttributesKey[] SEMICOLON_KEYS = new TextAttributesKey[]{BUCK_SEMICOLON};
   private static final TextAttributesKey[] EQUAL_KEYS = new TextAttributesKey[]{BUCK_EQUAL};
   private static final TextAttributesKey[] MACROS_KEYS = new TextAttributesKey[]{BUCK_MACRO};
   private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
@@ -78,14 +75,16 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
       return KEY_KEYS;
     } else if (tokenType.equals(BuckTypes.VALUE_NONE)) {
       return KEY_KEYS;
-    } else if (tokenType.equals(BuckTypes.LBRACE)) {
+    } else if (tokenType.equals(BuckTypes.L_BRACKET)) {
       return BRACES_KEYS;
-    } else if (tokenType.equals(BuckTypes.RBRACE)) {
+    } else if (tokenType.equals(BuckTypes.L_PARENTHESES)) {
+      return BRACES_KEYS;
+    } else if (tokenType.equals(BuckTypes.R_BRACKET)) {
+      return BRACES_KEYS;
+    } else if (tokenType.equals(BuckTypes.R_PARENTHESES)) {
       return BRACES_KEYS;
     } else if (tokenType.equals(BuckTypes.COMMA)) {
       return COMMA_KEYS;
-    } else if (tokenType.equals(BuckTypes.SEMICOLON)) {
-      return SEMICOLON_KEYS;
     } else if (tokenType.equals(BuckTypes.EQUAL)) {
       return EQUAL_KEYS;
     } else if (tokenType.equals(BuckTypes.COMMENT)) {

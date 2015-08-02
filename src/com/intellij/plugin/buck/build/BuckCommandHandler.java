@@ -3,7 +3,6 @@ package com.intellij.plugin.buck.build;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.*;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
@@ -197,13 +196,8 @@ public abstract class BuckCommandHandler {
 
       public void processTerminated(final ProcessEvent event) {
         final int exitCode = event.getExitCode();
-        try {
-          setExitCode(exitCode);
-          //cleanupEnv();
-          BuckCommandHandler.this.processTerminated(exitCode);
-        } finally {
-          //listeners().processTerminated(exitCode);
-        }
+        setExitCode(exitCode);
+        BuckCommandHandler.this.processTerminated(exitCode);
       }
 
       public void processWillTerminate(final ProcessEvent event, final boolean willBeDestroyed) {

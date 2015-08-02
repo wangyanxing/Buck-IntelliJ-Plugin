@@ -110,11 +110,13 @@ STRING_SINGLE_QUOTED = \'([^\\\'\r\n]|{WHITE_SPACE})*(\'|\\)? | \'\'\' ( (\'(\')
 STRING_DOUBLE_QUOTED = \"([^\\\"\r\n]|{WHITE_SPACE})*(\"|\\)? | \"\"\" ( (\"(\")?)? [^\"] )* \"\"\"
 STRING = {STRING_SINGLE_QUOTED} | {STRING_DOUBLE_QUOTED}
 
-LBRACE = "(" | "{" | "["
-RBRACE = ")" | "}" | "]"
 COMMA = ","
-SEMICOLON = ";"
 EQUAL = "="
+
+L_PARENTHESES = "("
+L_BRACKET = "["
+R_PARENTHESES = ")"
+R_BRACKET = "]"
 
 %state WAITING_VALUE, DOUBLE_QUOTE_STRING, SINGLE_QUOTE_STRING
 
@@ -132,13 +134,15 @@ EQUAL = "="
 
 {STRING_DOUBLE_QUOTED}  { return VALUE_STRING; }
 
-{LBRACE}                { return LBRACE; }
+{L_PARENTHESES}         { return L_PARENTHESES; }
 
-{RBRACE}                { return RBRACE; }
+{L_BRACKET}             { return L_BRACKET; }
+
+{R_PARENTHESES}         { return R_PARENTHESES; }
+
+{R_BRACKET}             { return R_BRACKET; }
 
 {COMMA}                 { return COMMA; }
-
-{SEMICOLON}             { return SEMICOLON; }
 
 {EQUAL}                 { return EQUAL; }
 

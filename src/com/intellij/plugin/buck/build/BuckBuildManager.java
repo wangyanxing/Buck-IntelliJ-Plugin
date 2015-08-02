@@ -132,6 +132,16 @@ public class BuckBuildManager {
     // Always save files
     FileDocumentManager.getInstance().saveAllDocuments();
 
+    String exec = BuckSettingsProvider.getInstance().getState().buckExecutable;
+    if (exec == null) {
+      BuckToolWindowFactory.outputConsoleMessage("Please specify the buck executable path!\n",
+          ConsoleViewContentType.ERROR_OUTPUT);
+      BuckToolWindowFactory.outputConsoleMessage(
+          "Preference -> Tools -> Buck -> Path to Buck executable\n",
+          ConsoleViewContentType.NORMAL_OUTPUT);
+      return;
+    }
+
     final ProgressManager manager = ProgressManager.getInstance();
     manager.run(new Task.Backgroundable(handler.project(), operationTitle, true) {
       public void run(@NotNull final ProgressIndicator indicator) {

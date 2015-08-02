@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.intellij.plugin.buck.lang.psi.BuckPsiUtils.hasElementType;
+import static com.intellij.plugin.buck.format.BuckFormatUtil.hasElementType;
 
 /**
  * A BuckBlock is actually a abstract syntax tree block, which mainly used for formatting a buck
@@ -31,6 +31,13 @@ public class BuckBlock implements ASTBlock {
 
   private static final TokenSet BUCK_CONTAINERS =
       TokenSet.create(BuckTypes.VALUE_ARRAY, BuckTypes.RULE_BODY);
+
+  private static final TokenSet BUCK_OPEN_BRACES =
+      TokenSet.create(BuckTypes.L_BRACKET, BuckTypes.L_PARENTHESES);
+  private static final TokenSet BUCK_CLOSE_BRACES =
+      TokenSet.create(BuckTypes.R_BRACKET, BuckTypes.R_PARENTHESES);
+  private static final TokenSet BUCK_ALL_BRACES =
+      TokenSet.orSet(BUCK_OPEN_BRACES, BUCK_CLOSE_BRACES);
 
   private final BuckBlock myParent;
   private final Alignment myAlignment;
@@ -122,17 +129,14 @@ public class BuckBlock implements ASTBlock {
     Alignment alignment = null;
     Wrap wrap = null;
 
-    final TokenSet ALL_BRACES =
-        TokenSet.orSet(TokenSet.create(BuckTypes.LBRACE), TokenSet.create(BuckTypes.RBRACE));
-
     if (hasElementType(myNode, BUCK_CONTAINERS)) {
       if (hasElementType(childNode, BuckTypes.COMMA)) {
         wrap = Wrap.createWrap(WrapType.NONE, true);
-      } else if (!hasElementType(childNode, ALL_BRACES)) {
+      } else if (!hasElementType(childNode, BUCK_ALL_BRACES)) {
         assert myChildWrap != null;
         wrap = myChildWrap;
         indent = Indent.getNormalIndent();
-      } else if (hasElementType(childNode, TokenSet.create(BuckTypes.LBRACE))) {
+      } else if (hasElementType(childNode, BUCK_OPEN_BRACES)) {
         if (myPsiElement instanceof BuckProperty) {
           assert myParent != null &&
               myParent.myParent != null &&
@@ -192,9 +196,9 @@ public class BuckBlock implements ASTBlock {
     final ASTNode lastChildNode = myNode.getLastChildNode();
 
     if (hasElementType(myNode, TokenSet.create(BuckTypes.VALUE_ARRAY))) {
-      return lastChildNode != null && lastChildNode.getElementType() != BuckTypes.RBRACE;
+      return lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_BRACKET;
     } else if (hasElementType(myNode, TokenSet.create(BuckTypes.RULE_BODY))) {
-      return lastChildNode != null && lastChildNode.getElementType() != BuckTypes.RBRACE;
+      return lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_PARENTHESES;
     }
     return false;
   }

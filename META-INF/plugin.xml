@@ -49,6 +49,10 @@
     <lang.importOptimizer
         language="Buck"
         implementationClass="com.intellij.plugin.buck.format.BuckImportOptimizer"/>
+    <lang.braceMatcher
+        language="Buck"
+        implementationClass="com.intellij.plugin.buck.format.BuckBraceMatcher"/>
+    <quoteHandler fileType="Buck" className="com.intellij.plugin.buck.format.BuckQuoteHandler"/>
     <completion.contributor
         language="Buck"
         implementationClass="com.intellij.plugin.buck.completion.BuckCompletionContributor"/>
