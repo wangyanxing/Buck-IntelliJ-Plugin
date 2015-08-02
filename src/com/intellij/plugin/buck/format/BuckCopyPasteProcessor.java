@@ -139,9 +139,7 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
   }
 
   private String buildBuckDependencyPath(String path){
-    // Todo check if the path is valid
-    boolean valid = true;
-    if (valid) {
+    if (isPathVaild(path)) {
       path = path.replaceFirst("import ", "");
       path = path.replace('.', '/');
       CharSequence cs = path.subSequence(0, path.lastIndexOf("/"));
@@ -149,5 +147,9 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
       path =  "//" + cs.toString() + ":" + lastWord.toString();
     }
     return path;
+  }
+
+  private boolean isPathVaild(String path) {
+    return path.matches("^import\\s*[\\w+\\.{1}]+[\\w+;{1}]{1}") || path.matches("[a-zA-Z]+[\\w*\\.{1}]+[\\w+;{1}]{1}");
   }
 }
