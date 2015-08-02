@@ -11,6 +11,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.pom.Navigatable;
 
 /**
@@ -20,6 +21,12 @@ public class GoToBuckFile extends AnAction {
 
   public GoToBuckFile() {
     super("Go to Buck file", "Open the buck file of current file", null);
+  }
+
+  @Override
+  public void update(AnActionEvent e) {
+    boolean isBuckProject = BuckBuildManager.getInstance().isBuckProject(e.getProject());
+    e.getPresentation().setEnabled(isBuckProject);
   }
 
   @Override
