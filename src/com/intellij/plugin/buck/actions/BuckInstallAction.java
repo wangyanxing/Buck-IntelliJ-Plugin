@@ -7,6 +7,7 @@ import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckBuildCommandHandler;
 import com.intellij.plugin.buck.build.BuckBuildUtil;
 import com.intellij.plugin.buck.build.BuckCommand;
+import com.intellij.plugin.buck.config.BuckSettingsProvider;
 
 /**
  * Run buck install command
@@ -38,7 +39,15 @@ public class BuckInstallAction extends DumbAwareAction {
         e.getProject(),
         e.getProject().getBaseDir(),
         BuckCommand.INSTALL);
-    handler.command().addParameter("--run");
+    if (BuckSettingsProvider.getInstance().getState().runAfterInstall) {
+      handler.command().addParameter("-r");
+    }
+    if (BuckSettingsProvider.getInstance().getState().multiInstallMode) {
+      handler.command().addParameter("-x");
+    }
+    if (BuckSettingsProvider.getInstance().getState().uninstallBeforeInstalling) {
+      handler.command().addParameter("-u");
+    }
     handler.command().addParameter(target);
     BuckBuildManager.getInstance().runBuckCommand(handler, ACTION_TITLE);
   }

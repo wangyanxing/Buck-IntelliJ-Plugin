@@ -13,6 +13,9 @@ public class BuckSettingsPanel {
 
   private JPanel myWholePanel;
   private TextFieldWithBrowseButton myBuckPathField;
+  private JCheckBox myRunAfterInstall;
+  private JCheckBox myMultiInstallMode;
+  private JCheckBox myUninstallBeforeInstall;
   private BuckSettingsProvider myOptionsProvider;
 
   public JComponent createPanel(@NotNull BuckSettingsProvider provider) {
@@ -28,19 +31,29 @@ public class BuckSettingsPanel {
         TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT,
         false
     );
-
     return myWholePanel;
   }
 
   public boolean isModified() {
-    return !Comparing.equal(myBuckPathField.getText(), myOptionsProvider.getState().buckExecutable);
+    return !Comparing.equal(myBuckPathField.getText(),
+        myOptionsProvider.getState().buckExecutable) ||
+        myOptionsProvider.getState().runAfterInstall != myRunAfterInstall.isSelected() ||
+        myOptionsProvider.getState().multiInstallMode != myMultiInstallMode.isSelected() ||
+        myOptionsProvider.getState().uninstallBeforeInstalling !=
+            myUninstallBeforeInstall.isSelected();
   }
 
   public void apply() {
     myOptionsProvider.getState().buckExecutable = myBuckPathField.getText();
+    myOptionsProvider.getState().runAfterInstall = myRunAfterInstall.isSelected();
+    myOptionsProvider.getState().multiInstallMode = myMultiInstallMode.isSelected();
+    myOptionsProvider.getState().uninstallBeforeInstalling = myUninstallBeforeInstall.isSelected();
   }
 
   public void reset() {
     myBuckPathField.setText(myOptionsProvider.getState().buckExecutable);
+    myRunAfterInstall.setSelected(myOptionsProvider.getState().runAfterInstall);
+    myMultiInstallMode.setSelected(myOptionsProvider.getState().multiInstallMode);
+    myUninstallBeforeInstall.setSelected(myOptionsProvider.getState().uninstallBeforeInstalling);
   }
 }

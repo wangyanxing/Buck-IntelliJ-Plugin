@@ -73,5 +73,11 @@ public class BuckSettingsProvider implements PersistentStateComponent<BuckSettin
 
     // Path to buck executable
     public String buckExecutable = BuckExecutableDetector.detect();
+
+    public Boolean runAfterInstall = true;
+
+    public Boolean multiInstallMode = false;
+
+    public Boolean uninstallBeforeInstalling = false;
   }
 }
