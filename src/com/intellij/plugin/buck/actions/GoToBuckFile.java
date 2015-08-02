@@ -18,6 +18,10 @@ import com.intellij.pom.Navigatable;
  */
 public class GoToBuckFile extends AnAction {
 
+  public GoToBuckFile() {
+    super("Go to Buck file", "Open the buck file of current file", null);
+  }
+
   @Override
   public void actionPerformed(AnActionEvent e) {
     final Project project = e.getProject();
