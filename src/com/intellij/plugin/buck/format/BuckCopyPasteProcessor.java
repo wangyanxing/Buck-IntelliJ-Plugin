@@ -145,11 +145,12 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
       CharSequence cs = path.subSequence(0, path.lastIndexOf("/"));
       CharSequence lastWord = cs.subSequence(cs.toString().lastIndexOf("/") + 1, cs.length());
       path =  "//" + cs.toString() + ":" + lastWord.toString();
+      path = path.replace(" ", "");
     }
     return path;
   }
 
   private boolean isPathVaild(String path) {
-    return path.matches("^import\\s*[\\w+\\.{1}]+[\\w+;{1}]{1}") || path.matches("[a-zA-Z]+[\\w*\\.{1}]+[\\w+;{1}]{1}");
+    return path.matches("^import\\s*[\\w+\\.{1}]+[\\w+;{?}]{1}") || path.matches("[a-zA-Z]+[\\w*\\.{1}]+[\\w+;{?}]{1}");
   }
 }
