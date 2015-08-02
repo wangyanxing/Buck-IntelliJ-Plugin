@@ -3,9 +3,8 @@ package com.intellij.plugin.buck.actions;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckBuildCommandHandler;
-import com.intellij.plugin.buck.build.BuckBuildUtil;
+import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckCommand;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 

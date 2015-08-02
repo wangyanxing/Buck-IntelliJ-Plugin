@@ -135,7 +135,19 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
     if (!checkToken(token)) {
       return s;
     }
-    // TODO "com.example.activity" -> "com/example/activity"
-    return s;
+    return buildBuckDependencyPath(s);
+  }
+
+  private String buildBuckDependencyPath(String path){
+    // Todo check if the path is valid
+    boolean valid = true;
+    if (valid) {
+      path = path.replaceFirst("import ", "");
+      path = path.replace('.', '/');
+      CharSequence cs = path.subSequence(0, path.lastIndexOf("/"));
+      CharSequence lastWord = cs.subSequence(cs.toString().lastIndexOf("/") + 1, cs.length());
+      path =  "//" + cs.toString() + ":" + lastWord.toString();
+    }
+    return path;
   }
 }
