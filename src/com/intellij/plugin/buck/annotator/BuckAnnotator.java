@@ -30,7 +30,7 @@ public class BuckAnnotator implements Annotator {
     }
 
     String target = psiElement.getText();
-    if (target.startsWith("'") && target.endsWith("'")) {
+    if (!target.isEmpty() && target.startsWith("'") && target.endsWith("'")) {
       target = target.substring(1, target.length() - 1);
     } else {
       return;

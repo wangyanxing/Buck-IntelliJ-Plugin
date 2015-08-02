@@ -63,6 +63,8 @@
     <gotoDeclarationHandler
         implementation="com.intellij.plugin.buck.navigation.BuckGotoProvider"
         order="FIRST"/>
+    <copyPastePreProcessor
+        implementation="com.intellij.plugin.buck.format.BuckCopyPasteProcessor"/>
     <annotator language="Buck"
                implementationClass="com.intellij.plugin.buck.annotator.BuckAnnotator"/>
     <colorSettingsPage implementation="com.intellij.plugin.buck.config.BuckColorSettingsPage"/>
