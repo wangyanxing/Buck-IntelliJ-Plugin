@@ -32,8 +32,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.actions.renderer.BuckTargetPsiRenderer;
+import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckBuildTarget;
 import com.intellij.plugin.buck.build.BuckBuildTargetAliasParser;
+import com.intellij.plugin.buck.build.BuckBuildUtil;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.psi.PsiElement;
@@ -72,8 +74,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ChooseTargetAction extends DumbAwareAction implements DataProvider {
 
   public static final String SE_HISTORY_KEY = "BuckTargetHistoryKey";
-
   public static final int SEARCH_FIELD_COLUMNS = 25;
+
   private static final int POPUP_MAX_WIDTH = 600;
   private static final int MAX_RECENT_TARGETS = 10;
 
@@ -117,6 +119,11 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
 
   private static Font getTitleFont() {
     return UIUtil.getLabelFont().deriveFont(UIUtil.getFontSize(UIUtil.FontSize.SMALL));
+  }
+
+  @Override
+  public void update(AnActionEvent e) {
+    e.getPresentation().setEnabled(BuckBuildManager.getInstance().isBuckProject(e.getProject()));
   }
 
   @Override

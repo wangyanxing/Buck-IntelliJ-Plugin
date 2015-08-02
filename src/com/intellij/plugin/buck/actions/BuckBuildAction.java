@@ -4,19 +4,26 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.plugin.buck.build.BuckBuildManager;
+import com.intellij.plugin.buck.build.BuckBuildCommandHandler;
+import com.intellij.plugin.buck.build.BuckBuildUtil;
+import com.intellij.plugin.buck.build.BuckCommand;
 
 /**
  * Run buck build command
  */
 public class BuckBuildAction extends DumbAwareAction {
 
+  public static final String ACTION_TITLE = "Run buck build";
+  public static final String ACTION_DESCRIPTION = "Run buck build command";
+
   public BuckBuildAction() {
-    super("Run buck build", "Run buck build command", AllIcons.Actions.Download);
+    super(ACTION_TITLE, ACTION_DESCRIPTION, AllIcons.Actions.Download);
   }
 
   @Override
   public void update(AnActionEvent e) {
-    e.getPresentation().setEnabled(!BuckBuildManager.getInstance().isBuilding());
+    boolean isBuckProject = BuckBuildManager.getInstance().isBuckProject(e.getProject());
+    e.getPresentation().setEnabled(isBuckProject && !BuckBuildManager.getInstance().isBuilding());
   }
 
   @Override
@@ -26,9 +33,12 @@ public class BuckBuildAction extends DumbAwareAction {
       BuckBuildManager.getInstance().showNoTargetMessage();
       return;
     }
-    BuckBuildManager.getInstance().build(
-        BuckBuildManager.Command.BUILD,
+
+    BuckBuildCommandHandler handler = new BuckBuildCommandHandler(
         e.getProject(),
-        target);
+        e.getProject().getBaseDir(),
+        BuckCommand.BUILD);
+    handler.command().addParameter(target);
+    BuckBuildManager.getInstance().runBuckCommand(handler, ACTION_TITLE);
   }
 }

@@ -4,18 +4,26 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.plugin.buck.build.BuckBuildManager;
+import com.intellij.plugin.buck.build.BuckBuildCommandHandler;
+import com.intellij.plugin.buck.build.BuckBuildUtil;
+import com.intellij.plugin.buck.build.BuckCommand;
 
 /**
  * Run buck uninstall command
  */
 public class BuckUninstallAction extends DumbAwareAction {
+
+  public static final String ACTION_TITLE = "Run buck uninstall";
+  public static final String ACTION_DESCRIPTION = "Run buck uninstall command";
+
   public BuckUninstallAction() {
-    super("Run buck uninstall", "Run buck uninstall command", AllIcons.Actions.Delete);
+    super(ACTION_TITLE, ACTION_DESCRIPTION, AllIcons.Actions.Delete);
   }
 
   @Override
   public void update(AnActionEvent e) {
-    e.getPresentation().setEnabled(!BuckBuildManager.getInstance().isBuilding());
+    boolean isBuckProject = BuckBuildManager.getInstance().isBuckProject(e.getProject());
+    e.getPresentation().setEnabled(isBuckProject && !BuckBuildManager.getInstance().isBuilding());
   }
 
   @Override
@@ -25,9 +33,12 @@ public class BuckUninstallAction extends DumbAwareAction {
       BuckBuildManager.getInstance().showNoTargetMessage();
       return;
     }
-    BuckBuildManager.getInstance().build(
-        BuckBuildManager.Command.UNINSTALL,
+
+    BuckBuildCommandHandler handler = new BuckBuildCommandHandler(
         e.getProject(),
-        target);
+        e.getProject().getBaseDir(),
+        BuckCommand.UNINSTALL);
+    handler.command().addParameter(target);
+    BuckBuildManager.getInstance().runBuckCommand(handler, ACTION_TITLE);
   }
 }

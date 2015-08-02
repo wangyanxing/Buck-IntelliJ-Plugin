@@ -8,7 +8,6 @@ import java.util.Map;
 
 public class BuckBuildTargetAliasParser {
 
-  static private String BUCK_CONFIG_FILE = ".buckconfig";
   static private String ALIAS_PREFIX = "[";
   static private String ALIAS_TAG = "[alias]";
   static private String COMMENT_PREFIX = "#";
@@ -23,7 +22,7 @@ public class BuckBuildTargetAliasParser {
    */
   static public void parseAlias(String baseDir) {
     sTargetAlias.clear();
-    String file = baseDir + File.separatorChar + BUCK_CONFIG_FILE;
+    String file = baseDir + File.separatorChar + BuckBuildUtil.BUCK_CONFIG_FILE;
     try {
       BufferedReader br = new BufferedReader(new FileReader(file));
       String line;

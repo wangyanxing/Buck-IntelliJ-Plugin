@@ -68,12 +68,10 @@ public class BuckSettingsProvider implements PersistentStateComponent<BuckSettin
    */
   public static class State {
 
-    private static final String DEFAULT_BUCK_BINARY = "buck";
-
     // Remember the last used buck alias for each historical project
     public Map<String, String> lastAlias = new HashMap<String, String>();
 
-    // Default is "buck", but user can set it to a specific one
-    public String buckBinary = DEFAULT_BUCK_BINARY;
+    // Path to buck executable
+    public String buckExecutable = BuckExecutableDetector.detect();
   }
 }

@@ -96,6 +96,10 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
     contentManager.addContent(content);
 
     updateBuckToolWindowTitle(project);
+
+//    if (!BuckBuildUtil.isBuckProject(project)) {
+//      outputConsoleMessage("Not a Buck project!", ConsoleViewContentType.ERROR_OUTPUT);
+//    }
   }
 
   private Content createConsoleContent(RunnerLayoutUi layoutUi, Project project) {

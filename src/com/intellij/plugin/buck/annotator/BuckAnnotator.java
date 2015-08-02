@@ -5,7 +5,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.plugin.buck.build.BuckBuildTargetUtil;
+import com.intellij.plugin.buck.build.BuckBuildUtil;
 import com.intellij.plugin.buck.lang.psi.BuckValue;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -35,11 +35,11 @@ public class BuckAnnotator implements Annotator {
     } else {
       return;
     }
-    if (!BuckBuildTargetUtil.isValidAbsoluteTarget(target)) {
+    if (!BuckBuildUtil.isValidAbsoluteTarget(target)) {
       return;
     }
     VirtualFile buckDir = project.getBaseDir().findFileByRelativePath(
-        BuckBuildTargetUtil.extractAbsoluteTarget(target));
+        BuckBuildUtil.extractAbsoluteTarget(target));
     VirtualFile targetBuckFile = buckDir != null ? buckDir.findChild("BUCK") : null;
 
     // Show error annotate if can't find this buck target

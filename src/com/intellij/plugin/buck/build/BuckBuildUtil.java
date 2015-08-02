@@ -3,7 +3,9 @@ package com.intellij.plugin.buck.build;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class BuckBuildTargetUtil {
+public class BuckBuildUtil {
+
+  static public String BUCK_CONFIG_FILE = ".buckconfig";
 
   public static boolean isValidAbsoluteTarget(String target) {
     return target.matches("^//[\\s\\S]*:[\\s\\S]*$");
