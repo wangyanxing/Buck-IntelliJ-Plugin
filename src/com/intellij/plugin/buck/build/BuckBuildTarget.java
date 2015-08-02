@@ -26,7 +26,7 @@ public class BuckBuildTarget {
   public BuckBuildTarget(Project project, String target, String alias) {
     this.alias = alias;
     this.target = target;
-    this.virtualFile = BuckBuildTargetUtil.getBuckFileFromAbsoluteTarget(project, target);
+    this.virtualFile = BuckBuildUtil.getBuckFileFromAbsoluteTarget(project, target);
   }
 
   public String getAlias() {

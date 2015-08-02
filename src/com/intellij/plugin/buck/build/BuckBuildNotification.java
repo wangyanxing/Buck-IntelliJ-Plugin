@@ -25,9 +25,9 @@ public class BuckBuildNotification extends Notification {
 
   @NotNull
   public static BuckBuildNotification createBuildFailedNotification(
-      BuckBuildManager.Command buildCommand,
+      String buildCommand,
       String description) {
-    String title = "Buck " + buildCommand.name().toLowerCase() + " failed";
+    String title = "Buck " + buildCommand + " failed";
     return new BuckBuildNotification(
         NOTIFICATION_GROUP_ID.getDisplayId(),
         title, description,

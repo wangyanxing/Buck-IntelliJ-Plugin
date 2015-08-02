@@ -8,28 +8,17 @@ import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
-import com.intellij.util.OpenSourceUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Run buck build commands in background thread, then parse the output from stderr and print to
@@ -42,136 +31,22 @@ import java.util.regex.Pattern;
  */
 public class BuckBuildManager {
 
-  /**
-   * Build command types
-   */
-  public enum Command {
-    BUILD,
-    INSTALL,
-    UNINSTALL,
-  }
-
   private static BuckBuildManager sInstance;
-  private static final String BUCK_BUILD_MESSAGE = "Building with buck";
-  private static final Map<Command, String[]> sCommands = new HashMap<Command, String[]>();
-  private static final String[] IGNORED_OUTPUT_LINES = new String[]{
-      "Using buckd.",
-      "Using watchman.",
-  };
-  private static final String UNKNOWN_ERROR_MESSAGE = "Unknown error";
-  private static final String ERROR_PREFIX_FOR_MESSAGE = "BUILD FAILED:";
-  private static final String[] ERROR_PREFIXES = new String[]{
-      ERROR_PREFIX_FOR_MESSAGE,
-      "FAIL",
-      "Errors:",
-      "No devices found",
-      "NameError",
-  };
-  private static final String[] SUCCESS_PREFIXES = new String[]{
-      "OK ",
-      "Successfully",
-      "[-] BUILDING...FINISHED",
-  };
-
-  private static final Pattern JAVA_FILE_PATTERN =
-      Pattern.compile("^([\\s\\S]*\\.java):([0-9]+)([\\s\\S]*)$");
-  private static final Pattern BUILD_PROGRESS_PATTERN =
-      Pattern.compile("^BUILT //[\\s\\S]*\\(([0-9]+)/([0-9]+) JOBS\\)$");
 
   private ProgressIndicator mProgressIndicator;
   private boolean mIsBuilding = false;
-  private String mCurrentErrorMessage;
+  private boolean mIsKilling = false;
+  private Boolean mIsBuckProject;
+
+  private BuckBuildManager() {
+    new BuckProjectListener();
+  }
 
   public static synchronized BuckBuildManager getInstance() {
     if (sInstance == null) {
-      sCommands.put(Command.BUILD, new String[]{
-          "buck",
-          "build",
-          "$",
-      });
-      sCommands.put(Command.INSTALL, new String[]{
-          "buck",
-          "install",
-          "$",
-          "--run",
-      });
-      sCommands.put(Command.UNINSTALL, new String[]{
-          "buck",
-          "uninstall",
-          "$"
-      });
       sInstance = new BuckBuildManager();
     }
     return sInstance;
-  }
-
-  /**
-   * Run build build command in background threads
-   * We also get a ProgressIndicator here and use it to set progress later
-   */
-  public void build(final Command buildCommand, final Project project, String target) {
-    setBuilding(true);
-    FileDocumentManager.getInstance().saveAllDocuments();
-
-    String[] command = sCommands.get(buildCommand).clone();
-    for (int i = 0; i < command.length; ++i) {
-      if (command[i].equals("$")) {
-        command[i] = target;
-      }
-    }
-    final String[] commandForTask = command.clone();
-
-    String headMessage = "Running '";
-    for (int i = 0; i < commandForTask.length; ++i) {
-      headMessage += commandForTask[i];
-      headMessage += i == commandForTask.length - 1 ? "'" : " ";
-    }
-    BuckToolWindowFactory.cleanConsole();
-    BuckToolWindowFactory.outputConsoleMessage(headMessage + "\n",
-        ConsoleViewContentType.NORMAL_OUTPUT);
-    mCurrentErrorMessage = null;
-
-    final Task.Backgroundable task = new Task.Backgroundable(
-        project, BUCK_BUILD_MESSAGE, true) {
-      @Override
-      public void run(@NotNull final ProgressIndicator indicator) {
-        mProgressIndicator = indicator;
-        try {
-          Runtime rt = Runtime.getRuntime();
-          Process process = rt.exec(
-              commandForTask,
-              null,
-              new File(project.getBasePath()));
-
-          BufferedReader stdError =
-              new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-          boolean showFailedNotification = false;
-          String s;
-          while ((s = stdError.readLine()) != null) {
-            boolean failed = parseOutputLine(project, s.trim());
-            if (!showFailedNotification) {
-              showFailedNotification = failed;
-            }
-          }
-          BuckBuildManager.getInstance().setBuilding(false);
-
-          // Popup notification if needed
-          if (showFailedNotification && !BuckToolWindowFactory.isToolWindowVisible(project)) {
-            if (mCurrentErrorMessage == null) {
-              mCurrentErrorMessage = UNKNOWN_ERROR_MESSAGE;
-            } else {
-              mCurrentErrorMessage = mCurrentErrorMessage.replaceAll(ERROR_PREFIX_FOR_MESSAGE, "");
-            }
-            BuckBuildNotification.createBuildFailedNotification(
-                buildCommand, mCurrentErrorMessage).notify(project);
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    };
-    ProgressManager.getInstance().run(task);
   }
 
   public synchronized void setProgress(double fraction) {
@@ -201,6 +76,29 @@ public class BuckBuildManager {
     BuckToolWindowFactory.updateActionsNow();
   }
 
+  public boolean isKilling() {
+    return mIsKilling;
+  }
+
+  public synchronized void setKilling(boolean value) {
+    mIsKilling = value;
+    BuckToolWindowFactory.updateActionsNow();
+  }
+
+  public boolean isBuckProject(Project project) {
+    if (project == null) {
+      return false;
+    }
+    if (mIsBuckProject == null) {
+      mIsBuckProject = project.getBaseDir().findChild(BuckBuildUtil.BUCK_CONFIG_FILE) != null;
+    }
+    return mIsBuckProject;
+  }
+
+  public void setBuckProject(boolean isBuckProject) {
+    mIsBuckProject = isBuckProject;
+  }
+
   /**
    * Print "no selected target" error message to console window
    * Also provide a hyperlink which can directly jump to "Choose Target" GUI window
@@ -224,84 +122,58 @@ public class BuckBuildManager {
   }
 
   /**
-   * Parse a line of the buck command output for:
-   * 1. Calculate the progress
-   * 2. Ignore unused lines, for example "Using buckd."
-   * 3. Print to console window with different colors
+   * Execute simple process asynchronously with progress
    *
-   * @return boolean failed or not
+   * @param handler        a handler
+   * @param operationTitle an operation title shown in progress dialog
    */
-  private boolean parseOutputLine(Project project, String line) {
-    for (String ignored : IGNORED_OUTPUT_LINES) {
-      if (line.matches(ignored)) {
-        return false;
+  public void runBuckCommand(final BuckCommandHandler handler,
+                                    final String operationTitle) {
+    // Always save files
+    FileDocumentManager.getInstance().saveAllDocuments();
+
+    final ProgressManager manager = ProgressManager.getInstance();
+    manager.run(new Task.Backgroundable(handler.project(), operationTitle, true) {
+      public void run(@NotNull final ProgressIndicator indicator) {
+        mProgressIndicator = indicator;
+        runInCurrentThread(handler, indicator, true, operationTitle);
       }
-    }
-
-    // Extract the jobs information and calculate the progress
-    Matcher matcher = BUILD_PROGRESS_PATTERN.matcher(line);
-    if (matcher.matches()) {
-      double finishedJob = Double.parseDouble(matcher.group(1));
-      double totalJob = Double.parseDouble(matcher.group(2));
-      setProgress(finishedJob / totalJob);
-      return false;
-    }
-
-    // Red color
-    for (String errorPrefix : ERROR_PREFIXES) {
-      if (line.startsWith(errorPrefix)) {
-        BuckToolWindowFactory.outputConsoleMessage(
-            line + "\n", ConsoleViewContentType.ERROR_OUTPUT);
-        if (mCurrentErrorMessage == null && errorPrefix.equals(ERROR_PREFIX_FOR_MESSAGE)) {
-          mCurrentErrorMessage = line;
-        }
-        return true;
-      }
-    }
-
-    // Green color
-    for (String successPrefix : SUCCESS_PREFIXES) {
-      if (line.startsWith(successPrefix)) {
-        BuckToolWindowFactory.outputConsoleMessage(
-            line + "\n", ConsoleViewContentType.USER_INPUT);
-        return false;
-      }
-    }
-
-    // Test if it is a java compile error message with a java file path
-    Matcher javaErrorMatcher = JAVA_FILE_PATTERN.matcher(line);
-    if (javaErrorMatcher.matches()) {
-      String javaFile = javaErrorMatcher.group(1);
-      String lineNumber = javaErrorMatcher.group(2);
-      String errorMessage = javaErrorMatcher.group(3);
-
-      String relativePath = javaFile.replaceAll(project.getBasePath(), "");
-      final VirtualFile virtualFile = pathToVirtualFile(project, relativePath);
-      if (virtualFile == null) {
-        BuckToolWindowFactory.outputConsoleMessage(
-            line + "\n", ConsoleViewContentType.ERROR_OUTPUT);
-      } else {
-        BuckToolWindowFactory.outputConsoleHyperlink(relativePath + ":" + lineNumber,
-            new HyperlinkInfo() {
-              @Override
-              public void navigate(Project project) {
-                OpenSourceUtil.navigate(true, new OpenFileDescriptor(project, virtualFile));
-              }
-            });
-        BuckToolWindowFactory.outputConsoleMessage(
-            errorMessage + "\n", ConsoleViewContentType.ERROR_OUTPUT);
-      }
-    } else {
-      BuckToolWindowFactory.outputConsoleMessage(
-          line + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
-    }
-    return false;
+    });
   }
 
-  private
-  @Nullable
-  VirtualFile pathToVirtualFile(Project project, String relativePath) {
-    VirtualFile projectPath = project.getBaseDir();
-    return projectPath.findFileByRelativePath(relativePath);
+  /**
+   * Run handler in the current thread
+   *
+   * @param handler              a handler to run
+   * @param indicator            a progress manager
+   * @param setIndeterminateFlag if true handler is configured as indeterminate
+   * @param operationName
+   */
+  public void runInCurrentThread(final BuckCommandHandler handler,
+                                        final ProgressIndicator indicator,
+                                        final boolean setIndeterminateFlag,
+                                        @Nullable final String operationName) {
+    runInCurrentThread(handler, new Runnable() {
+      public void run() {
+        if (indicator != null) {
+          indicator.setText(operationName);
+          indicator.setText2("");
+          if (setIndeterminateFlag) {
+            indicator.setIndeterminate(true);
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Run handler in the current thread
+   *
+   * @param handler         a handler to run
+   * @param postStartAction an action that is executed
+   */
+  public void runInCurrentThread(
+      final BuckCommandHandler handler, @Nullable final Runnable postStartAction) {
+    handler.runInCurrentThread(postStartAction);
   }
 }
