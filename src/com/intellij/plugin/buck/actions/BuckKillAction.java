@@ -23,9 +23,7 @@ public class BuckKillAction extends DumbAwareAction {
 
   @Override
   public void update(AnActionEvent e) {
-    boolean isBuckProject = BuckBuildManager.getInstance().isBuckProject(e.getProject());
     e.getPresentation().setEnabled(
-        isBuckProject &&
         !BuckBuildManager.getInstance().isKilling() &&
         BuckBuildManager.getInstance().isBuilding());
   }

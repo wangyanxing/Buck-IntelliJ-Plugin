@@ -1,6 +1,7 @@
 package com.intellij.plugin.buck.actions;
 
 import com.intellij.codeInsight.lookup.LookupManager;
+import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.featureStatistics.FeatureUsageTracker;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
@@ -122,12 +123,13 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
   }
 
   @Override
-  public void update(AnActionEvent e) {
-    e.getPresentation().setEnabled(BuckBuildManager.getInstance().isBuckProject(e.getProject()));
-  }
-
-  @Override
   public void actionPerformed(AnActionEvent e) {
+    if (!BuckBuildManager.getInstance().isBuckProject(e.getProject())) {
+      BuckToolWindowFactory.outputConsoleMessage(
+          BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE, ConsoleViewContentType.ERROR_OUTPUT);
+      return;
+    }
+
     String path = e.getProject().getBasePath();
     BuckBuildTargetAliasParser.parseAlias(path);
 

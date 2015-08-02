@@ -254,7 +254,10 @@ public abstract class BuckCommandHandler {
   }
 
   public void runInCurrentThread(@Nullable Runnable postStartAction) {
-    beforeCommand();
+    if (!beforeCommand()) {
+      return;
+    }
+
     start();
     if (isStarted()) {
       if (postStartAction != null) {
@@ -310,7 +313,7 @@ public abstract class BuckCommandHandler {
                            final Iterator<String> lines,
                            final StringBuilder lineBuilder);
 
-  protected abstract void beforeCommand();
+  protected abstract boolean beforeCommand();
 
   protected abstract void afterCommand();
 }

@@ -73,13 +73,20 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
   }
 
   @Override
-  protected void beforeCommand() {
+  protected boolean beforeCommand() {
+    if (!BuckBuildManager.getInstance().isBuckProject(myProject)) {
+      BuckToolWindowFactory.outputConsoleMessage(
+          BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE, ConsoleViewContentType.ERROR_OUTPUT);
+      return false;
+    }
+
     BuckBuildManager.getInstance().setBuilding(true);
     BuckToolWindowFactory.cleanConsole();
 
     String headMessage = "Running '" + command().getCommandLineString() + "'\n";
     BuckToolWindowFactory.outputConsoleMessage(
         headMessage, GRAY_OUTPUT);
+    return true;
   }
 
   @Override

@@ -12,6 +12,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
@@ -31,15 +32,15 @@ import javax.swing.*;
  */
 public class BuckBuildManager {
 
+  public static final String NOT_BUCK_PROJECT_ERROR_MESSAGE = "Not a valid Buck project!\n";
+
   private static BuckBuildManager sInstance;
 
   private ProgressIndicator mProgressIndicator;
   private boolean mIsBuilding = false;
   private boolean mIsKilling = false;
-  private Boolean mIsBuckProject;
 
   private BuckBuildManager() {
-    new BuckProjectListener();
   }
 
   public static synchronized BuckBuildManager getInstance() {
@@ -89,14 +90,8 @@ public class BuckBuildManager {
     if (project == null) {
       return false;
     }
-    if (mIsBuckProject == null) {
-      mIsBuckProject = project.getBaseDir().findChild(BuckBuildUtil.BUCK_CONFIG_FILE) != null;
-    }
-    return mIsBuckProject;
-  }
-
-  public void setBuckProject(boolean isBuckProject) {
-    mIsBuckProject = isBuckProject;
+    VirtualFile base = project.getBaseDir();
+    return base.findChild(BuckBuildUtil.BUCK_CONFIG_FILE) != null;
   }
 
   /**

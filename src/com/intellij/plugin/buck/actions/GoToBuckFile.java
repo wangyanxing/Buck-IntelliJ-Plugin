@@ -1,5 +1,6 @@
 package com.intellij.plugin.buck.actions;
 
+import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -12,6 +13,7 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.build.BuckBuildManager;
+import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.pom.Navigatable;
 
 /**
@@ -24,17 +26,17 @@ public class GoToBuckFile extends AnAction {
   }
 
   @Override
-  public void update(AnActionEvent e) {
-    boolean isBuckProject = BuckBuildManager.getInstance().isBuckProject(e.getProject());
-    e.getPresentation().setEnabled(isBuckProject);
-  }
-
-  @Override
   public void actionPerformed(AnActionEvent e) {
     final Project project = e.getProject();
     if (project == null) {
       return;
     }
+    if (!BuckBuildManager.getInstance().isBuckProject(project)) {
+      BuckToolWindowFactory.outputConsoleMessage(
+          BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE, ConsoleViewContentType.ERROR_OUTPUT);
+      return;
+    }
+
     Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
     if (editor == null) {
       return;

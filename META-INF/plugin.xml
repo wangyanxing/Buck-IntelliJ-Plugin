@@ -93,7 +93,7 @@
           text="Go to Buck file"
           description="Go to Buck file for this source file."
           icon="BuckIcons.BUCK_TOOL_WINDOW_ICON">
-        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift Z"/>
+        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift W"/>
       </action>
       <add-to-group anchor="first" group-id="BuildMenu"/>
       <add-to-group anchor="first" group-id="EditorPopupMenu"/>
@@ -101,7 +101,7 @@
 
     <group id="buck.BuildGroup">
       <action class="com.intellij.plugin.buck.actions.ChooseTargetAction" id="buck.ChooseTarget">
-        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift T"/>
+        <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift D"/>
       </action>
       <action class="com.intellij.plugin.buck.actions.BuckInstallAction" id="buck.Install">
         <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift X"/>
