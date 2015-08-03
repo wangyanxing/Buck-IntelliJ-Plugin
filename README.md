@@ -20,8 +20,17 @@ An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 ![Plugin in action](http://i.giphy.com/3o85xwC8dOyakxqhag.gif)
 
 * Reformat Buck Files
+
+![Plugin in action](http://i.giphy.com/xTiTnBhmOs0N9IW4Vi.gif)
+
 * Sort Buck Dependencies Alphabetically
+
+![Plugin in action](http://i.giphy.com/l41lSQpL6L5veS5EI.gif)
+
 * Automatically Convert to Buck Dependencies after Paste
+
+![Plugin in action](http://i.giphy.com/xTiTntB60zrlkXd7i0.gif) 
+
 * Error Annotation
 * Commenting and Uncommenting
 * Buck Settings / Color Settings / Code Style Settings
