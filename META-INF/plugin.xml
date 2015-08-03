@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>intellij.buck.plugin</id>
   <name>Buck for IDEA</name>
-  <version>1.2</version>
+  <version>2.0</version>
   <vendor email="demiwangya@gmail.com" url="https://github.com/wangyanxing/buck_idea_plugin">
     Yanxing Wang
   </vendor>
@@ -11,21 +11,27 @@
       An IntelliJ plugin for Buck build system.<br>
       <h3>Features:</h3>
       <ul>
-        <li>Syntax highlighting for BUCK file</li>
-        <li>Keywords auto completion</li>
-        <li>Go to buck file with one click</li>
-        <li>Go to to paths of dependencies with one click</li>
-        <li>Buck file formatter</li>
-        <li>Buck line commenter</li>
-        <li>Build panel with output console window and all quick commands</li>
+        <li>Syntax highlighting for BUCK files</li>
+        <li>Buck Build Tool Window</li>
+        <li>Code Completion</li>
+        <li>Go to Buck File</li>
+        <li>Go to Buck Dependencies</li>
+        <li>Reformat Buck Files</li>
+        <li>Sort Buck Dependencies Alphabetically</li>
+        <li>Automatically Convert to Buck Dependencies after Paste</li>
+        <li>Error Annotation</li>
+        <li>Commenting and Uncommenting</li>
       </ul>
     ]]></description>
 
   <change-notes><![CDATA[
-      1. Build panel with output console window and all quick commands
+      New features:
+      1. Build tool window
       2. Formatter for buck file
-      3. Annotator for wrong buck dependency target
+      3. Error annotation
       4. Line commenter
+      5. Sort buck dependencies alphabetically
+      6. Automatically convert to buck dependencies after paste
     ]]>
   </change-notes>
 
