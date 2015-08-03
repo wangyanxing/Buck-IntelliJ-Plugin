@@ -22,6 +22,16 @@ An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 
 ![Plugin in action](http://i.giphy.com/3o85xwC8dOyakxqhag.gif)
 
+## Key shortcuts
+- Buck install: <kbd>⇧ + ⌘ + X</kbd>
+- Buck build: <kbd>⇧ + ⌘ + S</kbd>
+- Buck uninstall: <kbd>⇧ + ⌘ + M</kbd>
+- Buck kill: <kbd>⇧ + ⌘ + L</kbd>
+- Choose buck target: <kbd>⇧ + ⌘ + D</kbd>
+- Go to buck file: <kbd>⇧ + ⌘ + W</kbd>
+- Reformat buck file: <kbd>⌥ + ⌘ + L</kbd>
+- Sort buck dependences: <kbd>^ + ⌥ + O</kbd>
+
 ## Installation
 
 - Using IDE built-in plugin system
