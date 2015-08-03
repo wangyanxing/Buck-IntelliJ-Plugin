@@ -13,6 +13,7 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.build.BuckBuildManager;
+import com.intellij.plugin.buck.build.BuckBuildUtil;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import com.intellij.pom.Navigatable;
 
@@ -55,11 +56,7 @@ public class GoToBuckFile extends AnAction {
       return;
     }
 
-    VirtualFile buckFile = parent.findChild("BUCK");
-    while (buckFile == null && parent != null) {
-      parent = parent.getParent();
-      buckFile = parent.findChild("BUCK");
-    }
+    VirtualFile buckFile = BuckBuildUtil.getBuckFileFromDirectory(parent);
 
     final VirtualFile file = buckFile;
     if (file != null) {
@@ -69,7 +66,9 @@ public class GoToBuckFile extends AnAction {
           //this is for better cursor position
           OpenFileDescriptor descriptor = new OpenFileDescriptor(project, file);
           Navigatable n = descriptor.setUseCurrentWindow(false);
-          if (!n.canNavigate()) return;
+          if (!n.canNavigate()) {
+            return;
+          }
           n.navigate(true);
         }
       }, ModalityState.NON_MODAL);

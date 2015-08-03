@@ -8,18 +8,25 @@ import com.intellij.openapi.editor.RawText;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.util.text.LineTokenizer;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.plugin.buck.build.BuckBuildUtil;
+import com.intellij.plugin.buck.lang.psi.BuckPsiUtils;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
+import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
-import org.jetbrains.annotations.NonNls;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiUtilCore;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
+
+  private static final Pattern DEPENDENCY_PATTERN =
+      Pattern.compile("^(package|import)\\s*([\\w\\.]*);?\\s*$");
 
   @Nullable
   @Override
@@ -37,85 +44,26 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
 
     // pastes in block selection mode (column mode) are not handled by a CopyPasteProcessor
     final int selectionStart = selectionModel.getSelectionStart();
-    final int selectionEnd = selectionModel.getSelectionEnd();
-    PsiElement token = findLiteralTokenType(psiFile, selectionStart, selectionEnd);
-    if (token == null) {
+    final PsiElement element = psiFile.findElementAt(selectionStart);
+    if (element == null) {
       return text;
     }
 
-    if (isStringLiteral(token)) {
-      StringBuilder buffer = new StringBuilder(text.length());
-      @NonNls String breaker = getLineBreaker(token);
-      final String[] lines = LineTokenizer.tokenize(text.toCharArray(), false, true);
-      for (int i = 0; i < lines.length; i++) {
-        buffer.append(escapeCharCharacters(lines[i], token));
-        if (i != lines.length - 1) {
-          buffer.append(breaker);
-        }
-        else if (text.endsWith("\n")) {
-          buffer.append("\\n");
-        }
+    if (BuckPsiUtils.hasElementType(
+        element.getNode(), TokenType.WHITE_SPACE, BuckTypes.VALUE_STRING)) {
+      PsiElement property = BuckPsiUtils.findAncestorWithType(element, BuckTypes.PROPERTY);
+      if (checkPropertyName(property)) {
+        text = buildBuckDependencyPath(element, project, text);
       }
-      text = buffer.toString();
     }
-
     return text;
   }
 
-  @Nullable
-  protected PsiElement findLiteralTokenType(PsiFile file, int selectionStart, int selectionEnd) {
-    final PsiElement elementAtSelectionStart = file.findElementAt(selectionStart);
-    if (elementAtSelectionStart == null) {
-      return null;
-    }
-
-    if (!isStringLiteral(elementAtSelectionStart)) {
-      return null;
-    }
-
-    if (elementAtSelectionStart.getTextRange().getEndOffset() < selectionEnd) {
-      final PsiElement elementAtSelectionEnd = file.findElementAt(selectionEnd);
-      if (elementAtSelectionEnd == null) {
-        return null;
-      }
-      if (elementAtSelectionEnd.getNode().getElementType() ==
-          elementAtSelectionStart.getNode().getElementType() &&
-          elementAtSelectionEnd.getTextRange().getStartOffset() < selectionEnd) {
-        return elementAtSelectionStart;
-      }
-    }
-
-    final TextRange textRange = elementAtSelectionStart.getTextRange();
-    if (selectionStart <= textRange.getStartOffset() || selectionEnd >= textRange.getEndOffset()) {
-      return null;
-    }
-    return elementAtSelectionStart;
-  }
-
-  protected String getLineBreaker(PsiElement token) {
-    CommonCodeStyleSettings codeStyleSettings =
-        CodeStyleSettingsManager.getSettings(
-            token.getProject()).getCommonSettings(token.getLanguage());
-    return codeStyleSettings.BINARY_OPERATION_SIGN_ON_NEXT_LINE ? "\\n\"\n+ \"" : "\\n\" +\n\"";
-  }
-
-  protected boolean isStringLiteral(@NotNull PsiElement token) {
-    ASTNode node = token.getNode();
-    return node.getElementType() == BuckTypes.VALUE_STRING;
-  }
-
-  protected boolean checkToken(@NotNull PsiElement token) {
-    PsiElement current = token.getParent();
-    while (current != null) {
-      if (current.getNode().getElementType() == BuckTypes.PROPERTY) {
-        break;
-      }
-      current = current.getParent();
-    }
-    if (current == null) {
+  protected boolean checkPropertyName(@NotNull PsiElement property) {
+    if (property == null) {
       return false;
     }
-    PsiElement leftValue = current.getFirstChild();
+    PsiElement leftValue = property.getFirstChild();
     if (leftValue == null || leftValue.getNode().getElementType() != BuckTypes.PROPERTY_LVALUE) {
       return false;
     }
@@ -130,27 +78,75 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
     return false;
   }
 
-  @NotNull
-  protected String escapeCharCharacters(@NotNull String s, @NotNull PsiElement token) {
-    if (!checkToken(token)) {
-      return s;
+  /**
+   * Automatically convert to buck dependency pattern
+   * Example 1:
+   * "import com.example.activity.MyFirstActivity" -> "//java/com/example/activity:activity"
+   *
+   * Example 2:
+   * "package com.example.activity;" -> "//java/com/example/activity:activity"
+   *
+   * Example 3:
+   * "com.example.activity.MyFirstActivity" -> "//java/com/example/activity:activity"
+   */
+  private String buildBuckDependencyPath(PsiElement element, Project project, String path) {
+    String original = path;
+    Matcher matcher = DEPENDENCY_PATTERN.matcher(path);
+    if (matcher.matches()) {
+      path = matcher.group(2);
     }
-    return buildBuckDependencyPath(s);
+
+    VirtualFile buckFile = classNameToBuckFile(project, path);
+    if (buckFile != null) {
+      path = buckFile.getPath().replaceFirst(project.getBasePath(), "");
+      path = "/" + path.replace('.', '/');
+      path = path.substring(0, path.lastIndexOf("/"));
+
+      String target = BuckBuildUtil.extractBuckTarget(project, buckFile);
+      if (target != null) {
+        path += target;
+      } else {
+        String lastWord = path.substring(path.lastIndexOf("/") + 1, path.length());
+        path += ":" + lastWord;
+      }
+      if (element.getNode().getElementType() == TokenType.WHITE_SPACE) {
+        path = "'" + path + "',";
+      }
+      return path;
+    } else {
+      return original;
+    }
   }
 
-  private String buildBuckDependencyPath(String path){
-    if (isPathVaild(path)) {
-      path = path.replaceFirst("import ", "");
-      path = path.replace('.', '/');
-      CharSequence cs = path.subSequence(0, path.lastIndexOf("/"));
-      CharSequence lastWord = cs.subSequence(cs.toString().lastIndexOf("/") + 1, cs.length());
-      path =  "//" + cs.toString() + ":" + lastWord.toString();
-      path = path.replace(" ", "");
+  private VirtualFile classNameToBuckFile(Project project, String reference) {
+    // Try class firstly
+    PsiClass classElement = JavaPsiFacade.getInstance(project).findClass(
+        reference, GlobalSearchScope.allScope(project));
+    if (classElement != null) {
+      VirtualFile file = PsiUtilCore.getVirtualFile(classElement);
+      return BuckBuildUtil.getBuckFileFromDirectory(file.getParent());
     }
-    return path;
-  }
 
-  private boolean isPathVaild(String path) {
-    return path.matches("^import\\s*[\\w+\\.{1}]+[\\w+;{?}]{1}") || path.matches("[a-zA-Z]+[\\w*\\.{1}]+[\\w+;{?}]{1}");
+    // Then package
+    PsiPackage packageElement = JavaPsiFacade.getInstance(project).findPackage(reference);
+    if (packageElement != null) {
+      PsiDirectory directory = packageElement.getDirectories()[0];
+      return BuckBuildUtil.getBuckFileFromDirectory(directory.getVirtualFile());
+    }
+
+    // Extract the package from the reference
+    int index = reference.lastIndexOf(".");
+    if (index == -1) {
+      return null;
+    }
+    reference = reference.substring(0, index);
+
+    // Try to find the package again
+    packageElement = JavaPsiFacade.getInstance(project).findPackage(reference);
+    if (packageElement != null) {
+      PsiDirectory directory = packageElement.getDirectories()[0];
+      return BuckBuildUtil.getBuckFileFromDirectory(directory.getVirtualFile());
+    }
+    return null;
   }
 }

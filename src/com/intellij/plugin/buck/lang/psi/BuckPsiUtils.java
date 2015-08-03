@@ -26,16 +26,29 @@ public class BuckPsiUtils {
   }
 
   /**
-   * @see #hasElementType(com.intellij.lang.ASTNode, com.intellij.psi.tree.TokenSet)
+   * Find the first child with a specific type
    */
-  public static boolean hasElementType(@NotNull PsiElement element, @NotNull TokenSet set) {
-    return element.getNode() != null && hasElementType(element.getNode(), set);
+  public static PsiElement findChildWithType(@NotNull PsiElement element, IElementType type) {
+    PsiElement[] children = element.getChildren();
+    for (PsiElement child : children) {
+      if (child.getNode().getElementType() == type) {
+        return child;
+      }
+    }
+    return null;
   }
 
   /**
-   * @see #hasElementType(com.intellij.lang.ASTNode, com.intellij.psi.tree.IElementType...)
+   * Find the ancestor element with a specific type
    */
-  public static boolean hasElementType(@NotNull PsiElement element, IElementType... types) {
-    return element.getNode() != null && hasElementType(element.getNode(), types);
+  public static PsiElement findAncestorWithType(@NotNull PsiElement element, IElementType type) {
+    PsiElement parent = element.getParent();
+    while (parent != null) {
+      if (parent.getNode().getElementType() == type) {
+        return parent;
+      }
+      parent = parent.getParent();
+    }
+    return null;
   }
 }
