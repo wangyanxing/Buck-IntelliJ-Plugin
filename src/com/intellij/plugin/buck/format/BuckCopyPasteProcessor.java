@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.build.BuckBuildUtil;
+import com.intellij.plugin.buck.lang.BuckFile;
 import com.intellij.plugin.buck.lang.psi.BuckPsiUtils;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.*;
@@ -38,6 +39,9 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
   @Override
   public String preprocessOnPaste(
       Project project, PsiFile psiFile, Editor editor, String text, RawText rawText) {
+    if (!(psiFile instanceof BuckFile)) {
+      return text;
+    }
     final Document document = editor.getDocument();
     PsiDocumentManager.getInstance(project).commitDocument(document);
     final SelectionModel selectionModel = editor.getSelectionModel();

@@ -1,4 +1,4 @@
-<idea-plugin version="2">
+<idea-plugin version="2.01">
   <id>intellij.buck.plugin</id>
   <name>Buck for IDEA</name>
   <version>2.0</version>
@@ -32,6 +32,7 @@
       4. Line commenter
       5. Sort buck dependencies alphabetically
       6. Automatically convert to buck dependencies after paste
+      Copy paste bug fixed.
     ]]>
   </change-notes>
 
