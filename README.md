@@ -18,19 +18,21 @@ An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 * Automatically Convert to Buck Dependencies after Paste
 * Error Annotation
 * Commenting and Uncommenting
+* Buck Settings / Color Settings / Code Style Settings
 
 ![Plugin in action](http://i.giphy.com/3o85xwC8dOyakxqhag.gif)
 
 ## Installation
 
-Download the [Buck.jar](https://github.com/wangyanxing/buck_idea_plugin/releases/download/1.1/Buck.jar) and install it via <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
-
-Your can also download from [IntelliJ Plugin Repository](https://plugins.jetbrains.com/plugin/7826).
+- Using IDE built-in plugin system
+  - <kbd>Preferences</kbd> > <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>Search for "Buck"</kbd> > <kbd>Install Plugin</kbd>
+- Manually
+  - Download the [Buck.zip](https://github.com/wangyanxing/buck_idea_plugin/releases/download/2.0/Buck.zip) and install it via <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
+  - Or you can also download it from [IntelliJ Plugin Repository](https://plugins.jetbrains.com/plugin/7826).
 
 ## Contributors
 
 * Yanxing Wang
-* Sha Ni
 * Long Ma
 
 ## Bugs
