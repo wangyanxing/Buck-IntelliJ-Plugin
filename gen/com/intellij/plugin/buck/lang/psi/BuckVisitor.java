@@ -11,6 +11,14 @@ public class BuckVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitList(@NotNull BuckList o) {
+    visitPsiElement(o);
+  }
+
+  public void visitListElements(@NotNull BuckListElements o) {
+    visitPsiElement(o);
+  }
+
   public void visitProperty(@NotNull BuckProperty o) {
     visitPsiElement(o);
   }

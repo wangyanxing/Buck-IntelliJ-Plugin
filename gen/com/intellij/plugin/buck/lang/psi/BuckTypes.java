@@ -9,6 +9,8 @@ import com.intellij.plugin.buck.lang.psi.impl.*;
 public interface BuckTypes {
 
   IElementType ARRAY_ELEMENTS = new BuckElementType("ARRAY_ELEMENTS");
+  IElementType LIST = new BuckElementType("LIST");
+  IElementType LIST_ELEMENTS = new BuckElementType("LIST_ELEMENTS");
   IElementType PROPERTY = new BuckElementType("PROPERTY");
   IElementType PROPERTY_LVALUE = new BuckElementType("PROPERTY_LVALUE");
   IElementType RULE_BLOCK = new BuckElementType("RULE_BLOCK");
@@ -38,6 +40,12 @@ public interface BuckTypes {
       IElementType type = node.getElementType();
        if (type == ARRAY_ELEMENTS) {
         return new BuckArrayElementsImpl(node);
+      }
+      else if (type == LIST) {
+        return new BuckListImpl(node);
+      }
+      else if (type == LIST_ELEMENTS) {
+        return new BuckListElementsImpl(node);
       }
       else if (type == PROPERTY) {
         return new BuckPropertyImpl(node);

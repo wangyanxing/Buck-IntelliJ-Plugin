@@ -59,11 +59,12 @@ RULE_NAMES = "genrule"|
              "python_library"|
              "python_test"|
              "glob"|
+             "subdir_glob"|
              "include_defs"|
              "robolectric_test"|
              "keystore"
 
-GENERIC_RULE_NAMES = [a-zA-Z0-9]+("_android_library") | [a-zA-Z0-9]+("_android_library")
+GENERIC_RULE_NAMES = [a-zA-Z0-9]+("_android_library") | [a-zA-Z0-9]+("_cxx_library")
 
 KEYWORDS =  "name" |
             "res" |
@@ -96,7 +97,17 @@ KEYWORDS =  "name" |
             "import_path" |
             "annotation_processors" |
             "annotation_processor_deps" |
-            "keystore"
+            "keystore" |
+            "exported_headers" |
+            "header_namespace" |
+            "soname" |
+            "preprocessor_flags" |
+            "compiler_flags" |
+            "headers" |
+            "manifest_skeleton" |
+            "force_static" |
+            "header_only" |
+            "exported_platform_linker_flags"
 
 MACROS = ([A-Z0-9] | ("_"))+
 

@@ -40,8 +40,8 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
       "[-] INSTALLING...FINISHED",
   };
 
-  private static final Pattern JAVA_FILE_PATTERN =
-      Pattern.compile("^([\\s\\S]*\\.java):([0-9]+)([\\s\\S]*)\\s*$");
+  private static final Pattern SOURCE_FILE_PATTERN =
+      Pattern.compile("^([\\s\\S]*\\.(cpp|java|hpp|cxx|cc|c|py)):([0-9]+)([\\s\\S]*)\\s*$");
   private static final Pattern BUILD_PROGRESS_PATTERN =
       Pattern.compile("^BUILT //[\\s\\S]*\\(([0-9]+)/([0-9]+) JOBS\\)\\s*$");
 
@@ -151,13 +151,13 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
     }
 
     // Test if it is a java compile error message with a java file path
-    Matcher javaErrorMatcher = JAVA_FILE_PATTERN.matcher(line);
-    if (javaErrorMatcher.matches()) {
-      String javaFile = javaErrorMatcher.group(1);
-      String lineNumber = javaErrorMatcher.group(2);
-      String errorMessage = javaErrorMatcher.group(3);
+    Matcher compilerErrorMatcher = SOURCE_FILE_PATTERN.matcher(line);
+    if (compilerErrorMatcher.matches()) {
+      final String sourceFile = compilerErrorMatcher.group(1);
+      final String lineNumber = compilerErrorMatcher.group(3);
+      final String errorMessage = compilerErrorMatcher.group(4);
 
-      String relativePath = javaFile.replaceAll(myProject.getBasePath(), "");
+      String relativePath = sourceFile.replaceAll(myProject.getBasePath(), "");
       final VirtualFile virtualFile = pathToVirtualFile(relativePath);
       if (virtualFile == null) {
         BuckToolWindowFactory.outputConsoleMessage(
@@ -167,7 +167,14 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
             new HyperlinkInfo() {
               @Override
               public void navigate(Project project) {
-                OpenSourceUtil.navigate(true, new OpenFileDescriptor(project, virtualFile));
+                int lineInteger;
+                try {
+                  lineInteger = Integer.parseInt(lineNumber) - 1;
+                } catch (NumberFormatException e) {
+                  lineInteger = 0;
+                }
+                OpenSourceUtil.navigate(true,
+                    new OpenFileDescriptor(project, virtualFile, lineInteger, 0));
               }
             });
         BuckToolWindowFactory.outputConsoleMessage(

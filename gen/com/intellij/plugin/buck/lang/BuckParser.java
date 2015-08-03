@@ -26,6 +26,12 @@ public class BuckParser implements PsiParser, LightPsiParser {
     if (t == ARRAY_ELEMENTS) {
       r = array_elements(b, 0);
     }
+    else if (t == LIST) {
+      r = list(b, 0);
+    }
+    else if (t == LIST_ELEMENTS) {
+      r = list_elements(b, 0);
+    }
     else if (t == PROPERTY) {
       r = property(b, 0);
     }
@@ -57,6 +63,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // (
   //   value |
+  //   list |
   //   COMMA |
   //   WHITE_SPACE
   // )*
@@ -74,6 +81,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
   }
 
   // value |
+  //   list |
   //   COMMA |
   //   WHITE_SPACE
   private static boolean array_elements_0(PsiBuilder b, int l) {
@@ -81,6 +89,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = value(b, l + 1);
+    if (!r) r = list(b, l + 1);
     if (!r) r = consumeToken(b, COMMA);
     if (!r) r = consumeToken(b, WHITE_SPACE);
     exit_section_(b, m, null, r);
@@ -109,6 +118,66 @@ public class BuckParser implements PsiParser, LightPsiParser {
     r = rule_block(b, l + 1);
     if (!r) r = property(b, l + 1);
     if (!r) r = consumeToken(b, COMMENT);
+    if (!r) r = consumeToken(b, WHITE_SPACE);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // L_PARENTHESES (WHITE_SPACE)* list_elements R_PARENTHESES
+  public static boolean list(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "list")) return false;
+    if (!nextTokenIs(b, L_PARENTHESES)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, L_PARENTHESES);
+    r = r && list_1(b, l + 1);
+    r = r && list_elements(b, l + 1);
+    r = r && consumeToken(b, R_PARENTHESES);
+    exit_section_(b, m, LIST, r);
+    return r;
+  }
+
+  // (WHITE_SPACE)*
+  private static boolean list_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "list_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!consumeToken(b, WHITE_SPACE)) break;
+      if (!empty_element_parsed_guard_(b, "list_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // (
+  //   VALUE_STRING |
+  //   COMMA |
+  //   WHITE_SPACE
+  // )*
+  public static boolean list_elements(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "list_elements")) return false;
+    Marker m = enter_section_(b, l, _NONE_, "<list elements>");
+    int c = current_position_(b);
+    while (true) {
+      if (!list_elements_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "list_elements", c)) break;
+      c = current_position_(b);
+    }
+    exit_section_(b, l, m, LIST_ELEMENTS, true, false, null);
+    return true;
+  }
+
+  // VALUE_STRING |
+  //   COMMA |
+  //   WHITE_SPACE
+  private static boolean list_elements_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "list_elements_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, VALUE_STRING);
+    if (!r) r = consumeToken(b, COMMA);
     if (!r) r = consumeToken(b, WHITE_SPACE);
     exit_section_(b, m, null, r);
     return r;

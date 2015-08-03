@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface BuckArrayElements extends PsiElement {
-
-  @NotNull
-  List<BuckList> getListList();
-
-  @NotNull
-  List<BuckValue> getValueList();
+public interface BuckListElements extends PsiElement {
 
 }
