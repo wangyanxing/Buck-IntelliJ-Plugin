@@ -10,17 +10,21 @@ An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 
 * Syntax highlighting for BUCK files
 * Buck Build Tool Window
+
+![Plugin in action](http://i.giphy.com/xTiTnuXlwrNY8PtJHq.gif)
+
 * Code Completion
 * Go to Buck File
 * Go to Buck Dependencies
+
+![Plugin in action](http://i.giphy.com/3o85xwC8dOyakxqhag.gif)
+
 * Reformat Buck Files
 * Sort Buck Dependencies Alphabetically
 * Automatically Convert to Buck Dependencies after Paste
 * Error Annotation
 * Commenting and Uncommenting
 * Buck Settings / Color Settings / Code Style Settings
-
-![Plugin in action](http://i.giphy.com/3o85xwC8dOyakxqhag.gif)
 
 ## Key shortcuts
 - Buck install: <kbd>⇧ + ⌘ + X</kbd>
