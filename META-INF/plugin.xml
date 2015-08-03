@@ -1,7 +1,7 @@
-<idea-plugin version="2.01">
+<idea-plugin version="2.02">
   <id>intellij.buck.plugin</id>
   <name>Buck for IDEA</name>
-  <version>2.0</version>
+  <version>2.01</version>
   <vendor email="demiwangya@gmail.com" url="https://github.com/wangyanxing/buck_idea_plugin">
     Yanxing Wang
   </vendor>
@@ -25,13 +25,13 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      New features:
-      1. Build tool window
-      2. Formatter for buck file
-      3. Error annotation
-      4. Line commenter
-      5. Sort buck dependencies alphabetically
-      6. Automatically convert to buck dependencies after paste
+      New features: <br>
+      1. Build tool window <br>
+      2. Formatter for buck file <br>
+      3. Error annotation <br>
+      4. Line commenter <br>
+      5. Sort buck dependencies alphabetically <br>
+      6. Automatically convert to buck dependencies after paste <br>
       Copy paste bug fixed.
     ]]>
   </change-notes>

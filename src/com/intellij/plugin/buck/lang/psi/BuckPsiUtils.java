@@ -44,7 +44,7 @@ public class BuckPsiUtils {
   public static PsiElement findAncestorWithType(@NotNull PsiElement element, IElementType type) {
     PsiElement parent = element.getParent();
     while (parent != null) {
-      if (parent.getNode().getElementType() == type) {
+      if (parent.getNode() != null && parent.getNode().getElementType() == type) {
         return parent;
       }
       parent = parent.getParent();

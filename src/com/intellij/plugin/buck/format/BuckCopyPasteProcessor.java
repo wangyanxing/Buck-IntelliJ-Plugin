@@ -63,7 +63,7 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
     return text;
   }
 
-  protected boolean checkPropertyName(@NotNull PsiElement property) {
+  protected boolean checkPropertyName(PsiElement property) {
     if (property == null) {
       return false;
     }
