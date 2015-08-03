@@ -4,28 +4,58 @@
 
 An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 
-<a href="https://www.flickr.com/photos/128908106@N06/18453647543" title="Screen Shot 2015-06-22 at 10.27.09 PM by Yanxing Wang, on Flickr"><img src="https://c1.staticflickr.com/1/394/18453647543_f3cc6227f3_c.jpg" width="800" height="580" alt="Screen Shot 2015-06-22 at 10.27.09 PM"></a>
+<a data-flickr-embed="true" href="https://www.flickr.com/photos/128908106@N06/20225891776/in/dateposted-public/" title="new buck plugin"><img src="https://farm4.staticflickr.com/3802/20225891776_f993d0ffd2_c.jpg" width="800" height="574" alt="new buck plugin"></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
 
 ## Features
 
-* Syntax highlighting for BUCK file
-* Keywords auto completion
-* Go to buck file with one click
-* Go to to paths of dependencies with one click
-* Shortcuts for buck commands, e.g. buck install/build/test (still under development)
+* Syntax highlighting for BUCK files
+* Buck Build Tool Window
+
+![Plugin in action](http://i.giphy.com/xTiTnuXlwrNY8PtJHq.gif)
+
+* Code Completion
+* Go to Buck File
+* Go to Buck Dependencies
 
 ![Plugin in action](http://i.giphy.com/3o85xwC8dOyakxqhag.gif)
 
+* Reformat Buck Files
+
+![Plugin in action](http://i.giphy.com/xTiTnBhmOs0N9IW4Vi.gif)
+
+* Sort Buck Dependencies Alphabetically
+
+![Plugin in action](http://i.giphy.com/l41lSQpL6L5veS5EI.gif)
+
+* Automatically Convert to Buck Dependencies after Paste
+
+![Plugin in action](http://i.giphy.com/xTiTntB60zrlkXd7i0.gif) 
+
+* Error Annotation
+* Commenting and Uncommenting
+* Buck Settings / Color Settings / Code Style Settings
+
+## Key shortcuts
+- Buck install: <kbd>⇧ + ⌘ + X</kbd>
+- Buck build: <kbd>⇧ + ⌘ + S</kbd>
+- Buck uninstall: <kbd>⇧ + ⌘ + M</kbd>
+- Buck kill: <kbd>⇧ + ⌘ + L</kbd>
+- Choose buck target: <kbd>⇧ + ⌘ + D</kbd>
+- Go to buck file: <kbd>⇧ + ⌘ + W</kbd>
+- Reformat buck file: <kbd>⌥ + ⌘ + L</kbd>
+- Sort buck dependences: <kbd>^ + ⌥ + O</kbd>
+
 ## Installation
 
-Download the [Buck.jar](https://github.com/wangyanxing/buck_idea_plugin/releases/download/1.1/Buck.jar) and install it via <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
-
-Your can also download from [IntelliJ Plugin Repository](https://plugins.jetbrains.com/plugin/7826).
+- Using IDE built-in plugin system
+  - <kbd>Preferences</kbd> > <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>Search for "Buck"</kbd> > <kbd>Install Plugin</kbd>
+- Manually
+  - Download the [Buck.zip](https://github.com/wangyanxing/buck_idea_plugin/releases/download/2.0/Buck.zip) and install it via <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
+  - Or you can also download it from [IntelliJ Plugin Repository](https://plugins.jetbrains.com/plugin/7826).
 
 ## Contributors
 
 * Yanxing Wang
-* Sha Ni
 * Long Ma
 
 ## Bugs
