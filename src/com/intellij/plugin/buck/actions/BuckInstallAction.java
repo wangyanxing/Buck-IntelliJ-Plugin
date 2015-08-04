@@ -37,16 +37,30 @@ public class BuckInstallAction extends DumbAwareAction {
         e.getProject(),
         e.getProject().getBaseDir(),
         BuckCommand.INSTALL);
-    if (BuckSettingsProvider.getInstance().getState().runAfterInstall) {
-      handler.command().addParameter("-r");
-    }
-    if (BuckSettingsProvider.getInstance().getState().multiInstallMode) {
-      handler.command().addParameter("-x");
-    }
-    if (BuckSettingsProvider.getInstance().getState().uninstallBeforeInstalling) {
-      handler.command().addParameter("-u");
+    if (BuckSettingsProvider.getInstance().getState().customizedSetting) {
+      if (isValidCommand(BuckSettingsProvider.getInstance().getState().customizedSettingCommand)) {
+        String[] parameters = BuckSettingsProvider.getInstance().getState().customizedSettingCommand.split(" ");
+        for (String parameter : parameters) {
+          handler.command().addParameter(parameter);
+        }
+      }
+    } else {
+      if (BuckSettingsProvider.getInstance().getState().runAfterInstall) {
+        handler.command().addParameter("-r");
+      }
+      if (BuckSettingsProvider.getInstance().getState().multiInstallMode) {
+        handler.command().addParameter("-x");
+      }
+      if (BuckSettingsProvider.getInstance().getState().uninstallBeforeInstalling) {
+        handler.command().addParameter("-u");
+      }
     }
     handler.command().addParameter(target);
     BuckBuildManager.getInstance().runBuckCommand(handler, ACTION_TITLE);
+  }
+
+  private boolean isValidCommand(String command) {
+    // Todo: check if the customized command is valid
+    return true;
   }
 }
