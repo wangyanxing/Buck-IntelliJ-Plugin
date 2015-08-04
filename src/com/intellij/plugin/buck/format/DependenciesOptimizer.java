@@ -48,7 +48,10 @@ public class DependenciesOptimizer {
       Arrays.sort(arrayValues, new Comparator<PsiElement>() {
             @Override
             public int compare(PsiElement e1, PsiElement e2) {
-              return e1.getText().compareTo(e2.getText());
+              // 'deps' should be sorted with local referenes ':' preceding any cross-repo references '@'
+              // e.g :inner, //world:empty, //world/asia:jp, //world/eruope:uk, @mars, @moon
+              // the ascii code '!'(33), ':'(58), '/'(47), '@'(64). Replace ':' by '!' make the rule works.
+              return e1.getText().replace(':', '!').compareTo(e2.getText().replace(':', '!'));
             }
           }
       );
