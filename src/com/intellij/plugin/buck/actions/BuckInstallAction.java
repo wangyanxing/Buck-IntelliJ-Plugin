@@ -37,9 +37,10 @@ public class BuckInstallAction extends DumbAwareAction {
         e.getProject(),
         e.getProject().getBaseDir(),
         BuckCommand.INSTALL);
-    if (BuckSettingsProvider.getInstance().getState().customizedSetting) {
-      if (isValidCommand(BuckSettingsProvider.getInstance().getState().customizedSettingCommand)) {
-        String[] parameters = BuckSettingsProvider.getInstance().getState().customizedSettingCommand.split(" ");
+    if (BuckSettingsProvider.getInstance().getState().customizedInstallSetting) {
+      if (isValidCommand(BuckSettingsProvider.getInstance().getState().customizedInstallSettingCommand)) {
+        String[] parameters = BuckSettingsProvider.getInstance().getState()
+            .customizedInstallSettingCommand.split(" ");
         for (String parameter : parameters) {
           handler.command().addParameter(parameter);
         }
