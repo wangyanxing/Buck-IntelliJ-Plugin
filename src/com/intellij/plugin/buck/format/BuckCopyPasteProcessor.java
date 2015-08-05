@@ -1,26 +1,24 @@
 package com.intellij.plugin.buck.format;
 
 import com.intellij.codeInsight.editorActions.CopyPastePreProcessor;
-import com.intellij.lang.ASTNode;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.RawText;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.build.BuckBuildUtil;
 import com.intellij.plugin.buck.lang.BuckFile;
 import com.intellij.plugin.buck.lang.psi.BuckPsiUtils;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.*;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiUtilCore;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,7 +44,7 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
     PsiDocumentManager.getInstance(project).commitDocument(document);
     final SelectionModel selectionModel = editor.getSelectionModel();
 
-    // pastes in block selection mode (column mode) are not handled by a CopyPasteProcessor
+    // Pastes in block selection mode (column mode) are not handled by a CopyPasteProcessor.
     final int selectionStart = selectionModel.getSelectionStart();
     final PsiElement element = psiFile.findElementAt(selectionStart);
     if (element == null) {
@@ -92,6 +90,9 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
    *
    * Example 3:
    * "com.example.activity.MyFirstActivity" -> "//java/com/example/activity:activity"
+   *
+   * Example 4:
+   * "/Users/tim/tb/java/com/example/activity/BUCK" -> "//java/com/example/activity:activity"
    */
   private String buildBuckDependencyPath(PsiElement element, Project project, String path) {
     String original = path;
@@ -100,7 +101,7 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
       path = matcher.group(2);
     }
 
-    VirtualFile buckFile = classNameToBuckFile(project, path);
+    VirtualFile buckFile = referenceNameToBuckFile(project, path);
     if (buckFile != null) {
       path = buckFile.getPath().replaceFirst(project.getBasePath(), "");
       path = "/" + path.replace('.', '/');
@@ -122,8 +123,17 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
     }
   }
 
-  private VirtualFile classNameToBuckFile(Project project, String reference) {
-    // Try class firstly
+  private VirtualFile referenceNameToBuckFile(Project project, String reference) {
+    // First test if it is a absolute path of a file.
+    File tryFile = new File(reference);
+    if (tryFile != null) {
+      VirtualFile file = VfsUtil.findFileByIoFile(tryFile, true);
+      if (file != null) {
+        return BuckBuildUtil.getBuckFileFromDirectory(file.getParent());
+      }
+    }
+
+    // Try class firstly.
     PsiClass classElement = JavaPsiFacade.getInstance(project).findClass(
         reference, GlobalSearchScope.allScope(project));
     if (classElement != null) {
@@ -131,21 +141,21 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
       return BuckBuildUtil.getBuckFileFromDirectory(file.getParent());
     }
 
-    // Then package
+    // Then try package.
     PsiPackage packageElement = JavaPsiFacade.getInstance(project).findPackage(reference);
     if (packageElement != null) {
       PsiDirectory directory = packageElement.getDirectories()[0];
       return BuckBuildUtil.getBuckFileFromDirectory(directory.getVirtualFile());
     }
 
-    // Extract the package from the reference
+    // Extract the package from the reference.
     int index = reference.lastIndexOf(".");
     if (index == -1) {
       return null;
     }
     reference = reference.substring(0, index);
 
-    // Try to find the package again
+    // Try to find the package again.
     packageElement = JavaPsiFacade.getInstance(project).findPackage(reference);
     if (packageElement != null) {
       PsiDirectory directory = packageElement.getDirectories()[0];
