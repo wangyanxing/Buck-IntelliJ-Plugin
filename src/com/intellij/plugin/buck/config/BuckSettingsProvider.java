@@ -80,8 +80,8 @@ public class BuckSettingsProvider implements PersistentStateComponent<BuckSettin
 
     public Boolean uninstallBeforeInstalling = false;
 
-    public Boolean customizedSetting = false;
-
-    public String customizedSettingCommand = "";
+    public Boolean customizedInstallSetting = false;
+    
+    public String customizedInstallSettingCommand = "";
   }
 }

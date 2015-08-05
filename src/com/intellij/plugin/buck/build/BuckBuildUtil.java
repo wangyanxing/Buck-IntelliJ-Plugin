@@ -7,10 +7,7 @@ import com.intellij.plugin.buck.lang.psi.BuckPsiUtils;
 import com.intellij.plugin.buck.lang.psi.BuckRuleBody;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.util.PsiUtil;
 
 public class BuckBuildUtil {
 
