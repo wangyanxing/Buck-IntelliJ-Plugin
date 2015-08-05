@@ -6,20 +6,19 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.ui.IdeBorderFactory;
+import com.intellij.ui.components.JBTextField;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class BuckSettingsUI extends JPanel {
 
   public static final String CUSTOMIZED_INSTALL_COMMAND_HINT = "input your command here: eg. -r --no-cache";
 
   private TextFieldWithBrowseButton myBuckPathField;
-  private JTextField myCustomizedInstallSettingField;
+  private JBTextField myCustomizedInstallSettingField;
   private JCheckBox myRunAfterInstall;
   private JCheckBox myMultiInstallMode;
   private JCheckBox myUninstallBeforeInstall;
@@ -46,7 +45,8 @@ public class BuckSettingsUI extends JPanel {
         TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT,
         false
     );
-    myCustomizedInstallSettingField = new JTextField(CUSTOMIZED_INSTALL_COMMAND_HINT);
+    myCustomizedInstallSettingField = new JBTextField();
+    myCustomizedInstallSettingField.getEmptyText().setText(CUSTOMIZED_INSTALL_COMMAND_HINT);
     myCustomizedInstallSettingField.setEnabled(false);
 
     myRunAfterInstall = new JCheckBox("Run after install (-r)");
@@ -135,42 +135,10 @@ public class BuckSettingsUI extends JPanel {
           myUninstallBeforeInstall.setEnabled(false);
         } else {
           myCustomizedInstallSettingField.setEnabled(false);
-          if (myCustomizedInstallSettingField.getText().equals("")) {
-            myCustomizedInstallSettingField.setText(CUSTOMIZED_INSTALL_COMMAND_HINT);
-          }
           myRunAfterInstall.setEnabled(true);
           myMultiInstallMode.setEnabled(true);
           myUninstallBeforeInstall.setEnabled(true);
         }
-      }
-    });
-    myCustomizedInstallSettingField.addMouseListener(new MouseListener() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        if (myCustomizedInstallSettingField.getText().equals(CUSTOMIZED_INSTALL_COMMAND_HINT)
-            && myCustomizedInstallSettingField.isEnabled()) {
-          myCustomizedInstallSettingField.setText("");
-        }
-      }
-
-      @Override
-      public void mousePressed(MouseEvent e) {
-
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent e) {
-
-      }
-
-      @Override
-      public void mouseEntered(MouseEvent e) {
-
-      }
-
-      @Override
-      public void mouseExited(MouseEvent e) {
-
       }
     });
   }

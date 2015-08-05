@@ -32,7 +32,6 @@ public class BuckInstallAction extends DumbAwareAction {
       BuckBuildManager.getInstance().showNoTargetMessage();
       return;
     }
-
     BuckBuildCommandHandler handler = new BuckBuildCommandHandler(
         e.getProject(),
         e.getProject().getBaseDir(),
