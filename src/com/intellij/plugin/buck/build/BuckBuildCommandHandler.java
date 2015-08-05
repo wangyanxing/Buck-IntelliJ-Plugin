@@ -25,12 +25,13 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
 
   private static final String UNKNOWN_ERROR_MESSAGE = "Unknown error";
   private static final String ERROR_PREFIX_FOR_MESSAGE = "BUILD FAILED:";
-  private static final String[] ERROR_PREFIXES = new String[]{
-      ERROR_PREFIX_FOR_MESSAGE,
-      "FAIL",
-      "Errors:",
-      "No devices found",
-      "NameError",
+  private static final Pattern[] ERROR_PATTERNS = new Pattern[]{
+      Pattern.compile(ERROR_PREFIX_FOR_MESSAGE + ".*"),
+      Pattern.compile("FAIL.*"),
+      Pattern.compile("Errors:.*"),
+      Pattern.compile("No devices found.*"),
+      Pattern.compile("NameError.*"),
+      Pattern.compile(".*is not a valid option\\s*$"),
   };
 
   private static final String[] SUCCESS_PREFIXES = new String[]{
@@ -130,11 +131,11 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
     }
 
     // Red color
-    for (String errorPrefix : ERROR_PREFIXES) {
-      if (line.startsWith(errorPrefix)) {
+    for (Pattern errorPattern : ERROR_PATTERNS) {
+      if (errorPattern.matcher(line).lookingAt()) {
         BuckToolWindowFactory.outputConsoleMessage(
             line, ConsoleViewContentType.ERROR_OUTPUT);
-        if (mCurrentErrorMessage == null && errorPrefix.equals(ERROR_PREFIX_FOR_MESSAGE)) {
+        if (mCurrentErrorMessage == null && line.startsWith(ERROR_PREFIX_FOR_MESSAGE)) {
           mCurrentErrorMessage = line;
         }
         return true;

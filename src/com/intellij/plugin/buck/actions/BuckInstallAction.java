@@ -8,6 +8,9 @@ import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckCommand;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Run buck install command
  */
@@ -37,8 +40,13 @@ public class BuckInstallAction extends DumbAwareAction {
         e.getProject().getBaseDir(),
         BuckCommand.INSTALL);
     if (BuckSettingsProvider.getInstance().getState().customizedInstallSetting) {
-      handler.command().addParameter(BuckSettingsProvider.getInstance().getState()
-          .customizedInstallSettingCommand);
+      // Split the whole command line into different parameters.
+      String commands =
+          BuckSettingsProvider.getInstance().getState().customizedInstallSettingCommand;
+      Matcher matcher = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(commands);
+      while (matcher.find()) {
+        handler.command().addParameter(matcher.group(1));
+      }
     } else {
       if (BuckSettingsProvider.getInstance().getState().runAfterInstall) {
         handler.command().addParameter("-r");
