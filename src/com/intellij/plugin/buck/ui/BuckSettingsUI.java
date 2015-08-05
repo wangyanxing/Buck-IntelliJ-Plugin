@@ -16,7 +16,7 @@ import java.awt.event.MouseListener;
 
 public class BuckSettingsUI extends JPanel {
 
-  private static final String CUSTOMIZED_INSTALL_COMMAND_HINT = "input your command here: eg. -r --no-cache";
+  public static final String CUSTOMIZED_INSTALL_COMMAND_HINT = "input your command here: eg. -r --no-cache";
 
   private TextFieldWithBrowseButton myBuckPathField;
   private JTextField myCustomizedInstallSettingField;
@@ -82,15 +82,15 @@ public class BuckSettingsUI extends JPanel {
     installSettings.add(myUninstallBeforeInstall, BorderLayout.NORTH);
     installSettings.add(installSettings = new JPanel(new BorderLayout()), BorderLayout.SOUTH);
 
-    final GridBagConstraints constraints1 = new GridBagConstraints(0, 0, 1, 1, 0, 0,
+    final GridBagConstraints customConstraints = new GridBagConstraints(0, 0, 1, 1, 0, 0,
         GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
     JPanel customizedInstallSetting = new JPanel(new GridBagLayout());
-    customizedInstallSetting.add(myCustomizedInstallSetting, constraints1);
-    constraints1.gridx = 1;
-    constraints1.weightx = 1;
-    constraints1.fill = GridBagConstraints.HORIZONTAL;
-    customizedInstallSetting.add(myCustomizedInstallSettingField, constraints1);
-    installSettings.add(customizedInstallSetting, BorderLayout.WEST);
+    customizedInstallSetting.add(myCustomizedInstallSetting, customConstraints);
+    customConstraints.gridx = 1;
+    customConstraints.weightx = 1;
+    customConstraints.fill = GridBagConstraints.HORIZONTAL;
+    customizedInstallSetting.add(myCustomizedInstallSettingField, customConstraints);
+    installSettings.add(customizedInstallSetting, BorderLayout.NORTH);
   }
 
   public boolean isModified() {
