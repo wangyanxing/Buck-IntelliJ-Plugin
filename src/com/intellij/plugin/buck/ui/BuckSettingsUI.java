@@ -107,6 +107,6 @@ public class BuckSettingsUI extends JPanel {
     myMultiInstallMode.setSelected(myOptionsProvider.getState().multiInstallMode);
     myUninstallBeforeInstall.setSelected(myOptionsProvider.getState().uninstallBeforeInstalling);
     myCustomizedSetting.setSelected(myOptionsProvider.getState().customizedSetting);
-    myCustomizedSettingField.setText("");
+    myCustomizedSettingField.setText(myOptionsProvider.getState().customizedSettingCommand);
   }
 }
