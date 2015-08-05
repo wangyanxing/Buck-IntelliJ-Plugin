@@ -19,10 +19,11 @@ private item_ ::= (rule_block | property | COMMENT | WHITE_SPACE)
 
 property_lvalue ::= IDENTIFIER | MACROS | KEYWORDS | RULE_NAMES
 property ::= (property_lvalue EQUAL value) | value
-value ::= VALUE_STRING | VALUE_NONE | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | rule_block
+value ::= VALUE_STRING | VALUE_NONE | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | list | rule_block
 
 list ::= L_PARENTHESES (WHITE_SPACE)* list_elements R_PARENTHESES
 list_elements ::= (
+  value |
   VALUE_STRING |
   COMMA |
   WHITE_SPACE

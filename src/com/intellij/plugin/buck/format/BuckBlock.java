@@ -3,10 +3,7 @@ package com.intellij.plugin.buck.format;
 import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.plugin.buck.lang.psi.BuckProperty;
-import com.intellij.plugin.buck.lang.psi.BuckRuleBody;
-import com.intellij.plugin.buck.lang.psi.BuckTypes;
-import com.intellij.plugin.buck.lang.psi.BuckValueArray;
+import com.intellij.plugin.buck.lang.psi.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
@@ -30,8 +27,7 @@ import static com.intellij.plugin.buck.format.BuckFormatUtil.hasElementType;
 public class BuckBlock implements ASTBlock {
 
   private static final TokenSet BUCK_CONTAINERS =
-      TokenSet.create(BuckTypes.VALUE_ARRAY, BuckTypes.RULE_BODY);
-
+      TokenSet.create(BuckTypes.VALUE_ARRAY, BuckTypes.RULE_BODY, BuckTypes.LIST);
   private static final TokenSet BUCK_OPEN_BRACES =
       TokenSet.create(BuckTypes.L_BRACKET, BuckTypes.L_PARENTHESES);
   private static final TokenSet BUCK_CLOSE_BRACES =
@@ -69,9 +65,9 @@ public class BuckBlock implements ASTBlock {
 
     mySpacingBuilder = BuckFormattingModelBuilder.createSpacingBuilder(settings);
 
-    if (myPsiElement instanceof BuckValueArray) {
-      myChildWrap = Wrap.createWrap(CommonCodeStyleSettings.WRAP_ALWAYS, true);
-    } else if (myPsiElement instanceof BuckRuleBody) {
+    if (myPsiElement instanceof BuckValueArray ||
+        myPsiElement instanceof BuckRuleBody ||
+        myPsiElement instanceof BuckList) {
       myChildWrap = Wrap.createWrap(CommonCodeStyleSettings.WRAP_ALWAYS, true);
     } else {
       myChildWrap = null;

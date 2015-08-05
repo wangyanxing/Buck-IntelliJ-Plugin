@@ -22,4 +22,10 @@ public class BuckListElementsImpl extends ASTWrapperPsiElement implements BuckLi
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public List<BuckValue> getValueList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, BuckValue.class);
+  }
+
 }

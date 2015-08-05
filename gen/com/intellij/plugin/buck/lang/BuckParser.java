@@ -152,6 +152,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // (
+  //   value |
   //   VALUE_STRING |
   //   COMMA |
   //   WHITE_SPACE
@@ -169,14 +170,16 @@ public class BuckParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // VALUE_STRING |
+  // value |
+  //   VALUE_STRING |
   //   COMMA |
   //   WHITE_SPACE
   private static boolean list_elements_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "list_elements_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, VALUE_STRING);
+    r = value(b, l + 1);
+    if (!r) r = consumeToken(b, VALUE_STRING);
     if (!r) r = consumeToken(b, COMMA);
     if (!r) r = consumeToken(b, WHITE_SPACE);
     exit_section_(b, m, null, r);
@@ -294,7 +297,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // VALUE_STRING | VALUE_NONE | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | rule_block
+  // VALUE_STRING | VALUE_NONE | VALUE_BOOLEAN | MACROS | IDENTIFIER | value_array | list | rule_block
   public static boolean value(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "value")) return false;
     boolean r;
@@ -305,6 +308,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, MACROS);
     if (!r) r = consumeToken(b, IDENTIFIER);
     if (!r) r = value_array(b, l + 1);
+    if (!r) r = list(b, l + 1);
     if (!r) r = rule_block(b, l + 1);
     exit_section_(b, l, m, VALUE, r, false, null);
     return r;

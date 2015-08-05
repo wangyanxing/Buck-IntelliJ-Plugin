@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface BuckListElements extends PsiElement {
 
+  @NotNull
+  List<BuckValue> getValueList();
+
 }

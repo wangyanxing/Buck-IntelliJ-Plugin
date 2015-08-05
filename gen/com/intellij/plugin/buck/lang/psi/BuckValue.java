@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface BuckValue extends PsiElement {
 
   @Nullable
+  BuckList getList();
+
+  @Nullable
   BuckRuleBlock getRuleBlock();
 
   @Nullable
