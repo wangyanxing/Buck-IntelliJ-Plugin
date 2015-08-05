@@ -8,6 +8,9 @@ import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckCommand;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Run buck install command
  */
@@ -15,6 +18,31 @@ public class BuckInstallAction extends DumbAwareAction {
 
   public static final String ACTION_TITLE = "Run buck install";
   public static final String ACTION_DESCRIPTION = "Run buck install command";
+  public static final Set<String> sRuleInstallCommands = new HashSet<String>() {{
+    // Todo support all commands
+    add("--deep");
+    add("--help");
+    add("--no-cache");
+    add("--keep-going");
+    add("--profile");
+    add("--run");
+    add("-r");
+    add("--shallow");
+    add("--uninstall");
+    add("-u");
+    add("--via-sd");
+    add("-S");
+    add("--wait-for-debugger");
+    add("-w");
+    add("--keep");
+    add("-k");
+    add("-all");
+    add("-x");
+    add("--emulator");
+    add("-e");
+    add("--device");
+    add("-d");
+  }};
 
   public BuckInstallAction() {
     super(ACTION_TITLE, ACTION_DESCRIPTION, AllIcons.Actions.Execute);
@@ -38,10 +66,10 @@ public class BuckInstallAction extends DumbAwareAction {
         e.getProject().getBaseDir(),
         BuckCommand.INSTALL);
     if (BuckSettingsProvider.getInstance().getState().customizedInstallSetting) {
-      if (isValidCommand(BuckSettingsProvider.getInstance().getState().customizedInstallSettingCommand)) {
-        String[] parameters = BuckSettingsProvider.getInstance().getState()
-            .customizedInstallSettingCommand.split(" ");
-        for (String parameter : parameters) {
+      String[] parameters = BuckSettingsProvider.getInstance().getState()
+          .customizedInstallSettingCommand.split(" ");
+      for (String parameter : parameters) {
+        if (sRuleInstallCommands.contains(parameter)) {
           handler.command().addParameter(parameter);
         }
       }
@@ -58,10 +86,5 @@ public class BuckInstallAction extends DumbAwareAction {
     }
     handler.command().addParameter(target);
     BuckBuildManager.getInstance().runBuckCommand(handler, ACTION_TITLE);
-  }
-
-  private boolean isValidCommand(String command) {
-    // Todo: check if the customized command is valid
-    return true;
   }
 }
