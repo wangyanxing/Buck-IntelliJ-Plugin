@@ -621,7 +621,12 @@ public class ChooseTargetAction extends DumbAwareAction implements DataProvider 
       if (BuckSettingsProvider.getInstance().getState().lastAlias != null) {
         BuckSettingsProvider.getInstance().getState().lastAlias.put(myProject.getBasePath(), alias);
       }
-
+      BuckToolWindowFactory.updateBuckToolWindowTitle(myProject);
+    } else if (value == null) {
+      String alias = myPopupField.getText();
+      if (BuckSettingsProvider.getInstance().getState().lastAlias != null) {
+        BuckSettingsProvider.getInstance().getState().lastAlias.put(myProject.getBasePath(), alias);
+      }
       BuckToolWindowFactory.updateBuckToolWindowTitle(myProject);
     }
 
