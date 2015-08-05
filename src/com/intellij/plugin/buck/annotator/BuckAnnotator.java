@@ -30,7 +30,7 @@ public class BuckAnnotator implements Annotator {
     }
 
     String target = psiElement.getText();
-    if (!target.isEmpty() && target.startsWith("'") && target.endsWith("'")) {
+    if (target.matches("\".*\"") || target.matches("'.*'")) {
       target = target.substring(1, target.length() - 1);
     } else {
       return;
@@ -42,7 +42,6 @@ public class BuckAnnotator implements Annotator {
         BuckBuildUtil.extractAbsoluteTarget(target));
     VirtualFile targetBuckFile = buckDir != null ? buckDir.findChild("BUCK") : null;
 
-    // Show error annotate if can't find this buck target
     if (targetBuckFile == null) {
       TextRange range = new TextRange(psiElement.getTextRange().getStartOffset(),
           psiElement.getTextRange().getEndOffset());

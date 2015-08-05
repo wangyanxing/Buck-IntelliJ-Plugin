@@ -25,14 +25,18 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      New features: <br>
-      1. Build tool window <br>
-      2. Formatter for buck file <br>
-      3. Error annotation <br>
-      4. Line commenter <br>
-      5. Sort buck dependencies alphabetically <br>
-      6. Automatically convert to buck dependencies after paste <br>
-      Copy paste bug fixed.
+      <h3>Features:</h3>
+      <li>Customized install command added.</li>
+      <li>C++ compiler error highlighting added.</li>
+      <li>Target chooser can manually type any target, not only alias.</li>
+      <li>Smart paste supports full file path.</li>
+      <h3>Bug fixes:</h3>
+      <li>Dependencies sorting issue fixed.</li>
+      <li>Error annotation issue fixed.</li>
+      <li>Some formatter bugs fixed.</li>
+      <li>File with line number in compiler errors now can be navigated correctly.</li>
+      <h3>Others:</h3>
+      <li>File icon changed to Buck's official logo.</li>
     ]]>
   </change-notes>
 
