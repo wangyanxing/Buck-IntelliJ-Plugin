@@ -8,9 +8,6 @@ import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckCommand;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Run buck install command
  */
@@ -18,31 +15,6 @@ public class BuckInstallAction extends DumbAwareAction {
 
   public static final String ACTION_TITLE = "Run buck install";
   public static final String ACTION_DESCRIPTION = "Run buck install command";
-  public static final Set<String> sRuleInstallCommands = new HashSet<String>() {{
-    // Todo support all commands
-    add("--deep");
-    add("--help");
-    add("--no-cache");
-    add("--keep-going");
-    add("--profile");
-    add("--run");
-    add("-r");
-    add("--shallow");
-    add("--uninstall");
-    add("-u");
-    add("--via-sd");
-    add("-S");
-    add("--wait-for-debugger");
-    add("-w");
-    add("--keep");
-    add("-k");
-    add("-all");
-    add("-x");
-    add("--emulator");
-    add("-e");
-    add("--device");
-    add("-d");
-  }};
 
   public BuckInstallAction() {
     super(ACTION_TITLE, ACTION_DESCRIPTION, AllIcons.Actions.Execute);
@@ -60,19 +32,13 @@ public class BuckInstallAction extends DumbAwareAction {
       BuckBuildManager.getInstance().showNoTargetMessage();
       return;
     }
-
     BuckBuildCommandHandler handler = new BuckBuildCommandHandler(
         e.getProject(),
         e.getProject().getBaseDir(),
         BuckCommand.INSTALL);
     if (BuckSettingsProvider.getInstance().getState().customizedInstallSetting) {
-      String[] parameters = BuckSettingsProvider.getInstance().getState()
-          .customizedInstallSettingCommand.split(" ");
-      for (String parameter : parameters) {
-        if (sRuleInstallCommands.contains(parameter)) {
-          handler.command().addParameter(parameter);
-        }
-      }
+      handler.command().addParameter(BuckSettingsProvider.getInstance().getState()
+          .customizedInstallSettingCommand);
     } else {
       if (BuckSettingsProvider.getInstance().getState().runAfterInstall) {
         handler.command().addParameter("-r");
