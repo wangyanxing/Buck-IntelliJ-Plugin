@@ -27,7 +27,7 @@ import static com.intellij.plugin.buck.format.BuckFormatUtil.hasElementType;
 public class BuckBlock implements ASTBlock {
 
   private static final TokenSet BUCK_CONTAINERS =
-      TokenSet.create(BuckTypes.VALUE_ARRAY, BuckTypes.RULE_BODY, BuckTypes.LIST);
+      TokenSet.create(BuckTypes.ARRAY_ELEMENTS, BuckTypes.RULE_BODY, BuckTypes.LIST_ELEMENTS);
   private static final TokenSet BUCK_OPEN_BRACES =
       TokenSet.create(BuckTypes.L_BRACKET, BuckTypes.L_PARENTHESES);
   private static final TokenSet BUCK_CLOSE_BRACES =
@@ -46,7 +46,6 @@ public class BuckBlock implements ASTBlock {
   private final SpacingBuilder mySpacingBuilder;
 
   private List<BuckBlock> mySubBlocks = null;
-  private final Alignment myPropertyValueAlignment;
 
   public BuckBlock(@Nullable final BuckBlock parent,
                    @NotNull final ASTNode node,
@@ -60,14 +59,13 @@ public class BuckBlock implements ASTBlock {
     myNode = node;
     myPsiElement = node.getPsi();
     myWrap = wrap;
-    myPropertyValueAlignment = Alignment.createAlignment(true);
     mySettings = settings;
 
     mySpacingBuilder = BuckFormattingModelBuilder.createSpacingBuilder(settings);
 
-    if (myPsiElement instanceof BuckValueArray ||
+    if (myPsiElement instanceof BuckArrayElements ||
         myPsiElement instanceof BuckRuleBody ||
-        myPsiElement instanceof BuckList) {
+        myPsiElement instanceof BuckListElements) {
       myChildWrap = Wrap.createWrap(CommonCodeStyleSettings.WRAP_ALWAYS, true);
     } else {
       myChildWrap = null;
@@ -110,7 +108,7 @@ public class BuckBlock implements ASTBlock {
       }
       if (childType == BuckTypes.RULE_BLOCK) {
         ASTNode nameNode = child.findChildByType(BuckTypes.RULE_NAMES);
-        // We don't do glob for now
+        // We don't do glob right now.
         if (nameNode != null &&
             (nameNode.getText().equals("glob") || nameNode.getText().equals("subdir_glob"))) {
           continue;
@@ -133,19 +131,6 @@ public class BuckBlock implements ASTBlock {
         assert myChildWrap != null;
         wrap = myChildWrap;
         indent = Indent.getNormalIndent();
-      } else if (hasElementType(childNode, BUCK_OPEN_BRACES)) {
-        if (myPsiElement instanceof BuckProperty) {
-          assert myParent != null &&
-              myParent.myParent != null &&
-              myParent.myParent.myPropertyValueAlignment != null;
-          alignment = myParent.myParent.myPropertyValueAlignment;
-        }
-      }
-    } else if (hasElementType(myNode, BuckTypes.PROPERTY)) {
-      if (myPsiElement instanceof BuckProperty) {
-        if (!hasElementType(childNode, BUCK_CONTAINERS)) {
-          alignment = myParent.myPropertyValueAlignment;
-        }
       }
     }
     return new BuckBlock(this, childNode, mySettings, alignment, indent, wrap);
@@ -192,12 +177,15 @@ public class BuckBlock implements ASTBlock {
   public boolean isIncomplete() {
     final ASTNode lastChildNode = myNode.getLastChildNode();
 
+    boolean ret = false;
     if (hasElementType(myNode, TokenSet.create(BuckTypes.VALUE_ARRAY))) {
-      return lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_BRACKET;
+      ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_BRACKET;
     } else if (hasElementType(myNode, TokenSet.create(BuckTypes.RULE_BODY))) {
-      return lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_PARENTHESES;
+      ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_PARENTHESES;
+    } else if (hasElementType(myNode, TokenSet.create(BuckTypes.LIST))) {
+      ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_PARENTHESES;
     }
-    return false;
+    return ret;
   }
 
   @Override

@@ -26,7 +26,8 @@ public class BuckCodeStyleSettingsProvider extends CodeStyleSettingsProvider {
 
   @NotNull
   @Override
-  public Configurable createSettingsPage(CodeStyleSettings settings, CodeStyleSettings originalSettings) {
+  public Configurable createSettingsPage(
+      CodeStyleSettings settings, CodeStyleSettings originalSettings) {
     return new CodeStyleAbstractConfigurable(settings, originalSettings, "Buck") {
       @Override
       protected CodeStyleAbstractPanel createPanel(CodeStyleSettings settings) {

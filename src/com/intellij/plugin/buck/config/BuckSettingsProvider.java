@@ -68,19 +68,39 @@ public class BuckSettingsProvider implements PersistentStateComponent<BuckSettin
    */
   public static class State {
 
-    // Remember the last used buck alias for each historical project
+    /**
+     * Remember the last used buck alias for each historical project.
+     */
     public Map<String, String> lastAlias = new HashMap<String, String>();
 
-    // Path to buck executable
+    /**
+     * Path to buck executable.
+     */
     public String buckExecutable = BuckExecutableDetector.detect();
 
+    /**
+     * "-r" parameter for "buck install"
+     */
     public Boolean runAfterInstall = true;
 
+    /**
+     * "-x" parameter for "buck install"
+     */
     public Boolean multiInstallMode = false;
 
+    /**
+     * "-u" parameter for "buck install"
+     */
     public Boolean uninstallBeforeInstalling = false;
 
+    /**
+     * If use user's customized install string.
+     */
     public Boolean customizedInstallSetting = false;
+
+    /**
+     * User's customized install command string, e.g. "-a -b -c".
+     */
     public String customizedInstallSettingCommand = "";
   }
 }
