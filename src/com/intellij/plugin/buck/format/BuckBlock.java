@@ -178,11 +178,11 @@ public class BuckBlock implements ASTBlock {
     final ASTNode lastChildNode = myNode.getLastChildNode();
 
     boolean ret = false;
-    if (hasElementType(myNode, TokenSet.create(BuckTypes.VALUE_ARRAY))) {
+    if (hasElementType(myNode, TokenSet.create(BuckTypes.ARRAY_ELEMENTS))) {
       ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_BRACKET;
     } else if (hasElementType(myNode, TokenSet.create(BuckTypes.RULE_BODY))) {
       ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_PARENTHESES;
-    } else if (hasElementType(myNode, TokenSet.create(BuckTypes.LIST))) {
+    } else if (hasElementType(myNode, TokenSet.create(BuckTypes.LIST_ELEMENTS))) {
       ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_PARENTHESES;
     }
     return ret;
