@@ -6,13 +6,12 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 
-import static com.intellij.json.JsonElementTypes.DOUBLE_QUOTED_STRING;
-import static com.intellij.json.JsonElementTypes.SINGLE_QUOTED_STRING;
+import java.util.List;
 
 public class BuckPsiUtils {
 
   public static final TokenSet STRING_LITERALS =
-      TokenSet.create(SINGLE_QUOTED_STRING, DOUBLE_QUOTED_STRING);
+      TokenSet.create(BuckTypes.SINGLE_QUOTED_STRING, BuckTypes.DOUBLE_QUOTED_STRING);
 
   /**
    * Check that element type of the given AST node belongs to the token set.
@@ -82,5 +81,24 @@ public class BuckPsiUtils {
       parent = parent.getParent();
     }
     return null;
+  }
+
+  /**
+   * Return the text content if the given BuckExpression has only one string value.
+   * Return null if this expression has multiple values, for example: "a" + "b"
+   */
+  public static String getStringValueFromExpression(BuckExpression expression) {
+    List<BuckValue> values = expression.getValueList();
+    if (values.size() != 1) {
+      return null;
+    }
+    PsiElement value = values.get(0); // This should be a "Value" type.
+    if (value.getFirstChild() != null &&
+        BuckPsiUtils.hasElementType(value.getFirstChild(), BuckPsiUtils.STRING_LITERALS)) {
+      String text = value.getFirstChild().getText();
+      return text.length() > 2 ? text.substring(1, text.length() - 1) : null;
+    } else {
+      return null;
+    }
   }
 }

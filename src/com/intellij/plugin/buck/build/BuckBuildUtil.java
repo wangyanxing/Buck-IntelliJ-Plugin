@@ -3,6 +3,7 @@ package com.intellij.plugin.buck.build;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.lang.BuckFile;
+import com.intellij.plugin.buck.lang.psi.BuckExpression;
 import com.intellij.plugin.buck.lang.psi.BuckPsiUtils;
 import com.intellij.plugin.buck.lang.psi.BuckRuleBody;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
@@ -67,13 +68,12 @@ public class BuckBuildUtil {
       if (child.getNode().getElementType() == BuckTypes.RULE_BLOCK) {
         PsiElement ruleName = child.getFirstChild();
         // Find rule "project_config"
-        if (ruleName != null &&
-            BuckPsiUtils.testIdentifierType(ruleName, BuckTypes.RULE_NAME) &&
-            ruleName.getText().equals(PROJECT_CONFIG_RULE_NAME)) {
-
-          // Find property "src_target"
-          PsiElement bodyElement = BuckPsiUtils.findChildWithType(child, BuckTypes.RULE_BODY);
-          return getPropertyValue((BuckRuleBody) bodyElement, SRC_TARGET_PROPERTY_NAME);
+        if (ruleName != null && BuckPsiUtils.testType(ruleName, BuckTypes.RULE_NAME)) {
+          if (ruleName.getText().equals(PROJECT_CONFIG_RULE_NAME)) {
+            // Find property "src_target"
+            PsiElement bodyElement = BuckPsiUtils.findChildWithType(child, BuckTypes.RULE_BODY);
+            return getPropertyValue((BuckRuleBody) bodyElement, SRC_TARGET_PROPERTY_NAME);
+          }
         }
       }
     }
@@ -90,15 +90,13 @@ public class BuckBuildUtil {
     }
     PsiElement[] children = body.getChildren();
     for (PsiElement child : children) {
-      if (child.getNode().getElementType() == BuckTypes.PROPERTY) {
-        PsiElement propertyName = child.getFirstChild();
+      if (BuckPsiUtils.testType(child, BuckTypes.PROPERTY)) {
+        PsiElement lvalue = child.getFirstChild();
+        PsiElement propertyName = lvalue.getFirstChild();
         if (propertyName != null && propertyName.getText().equals(name)) {
-          PsiElement value = BuckPsiUtils.findChildWithType(child, BuckTypes.VALUE);
-          if (value != null && value.getFirstChild() != null &&
-              BuckPsiUtils.hasElementType(value.getFirstChild(),BuckPsiUtils.STRING_LITERALS)) {
-            String text = value.getText();
-            return text.length() > 2 ? text.substring(1, text.length() - 1) : null;
-          }
+          BuckExpression expression =
+              (BuckExpression) BuckPsiUtils.findChildWithType(child, BuckTypes.EXPRESSION);
+          return expression != null ? BuckPsiUtils.getStringValueFromExpression(expression) : null;
         }
       }
     }
