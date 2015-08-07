@@ -18,7 +18,8 @@ public interface BuckTypes {
   IElementType PROPERTY_LVALUE = new BuckElementType("PROPERTY_LVALUE");
   IElementType RULE_BLOCK = new BuckElementType("RULE_BLOCK");
   IElementType RULE_BODY = new BuckElementType("RULE_BODY");
-  IElementType RULE_NAME = new BuckElementType("BUCK_RULE_NAME");
+  IElementType RULE_CALL = new BuckElementType("RULE_CALL");
+  IElementType RULE_NAME = new BuckElementType("RULE_NAME");
   IElementType VALUE = new BuckElementType("VALUE");
   IElementType VALUE_ARRAY = new BuckElementType("VALUE_ARRAY");
 
@@ -73,6 +74,9 @@ public interface BuckTypes {
       }
       else if (type == RULE_BODY) {
         return new BuckRuleBodyImpl(node);
+      }
+      else if (type == RULE_CALL) {
+        return new BuckRuleCallImpl(node);
       }
       else if (type == RULE_NAME) {
         return new BuckRuleNameImpl(node);

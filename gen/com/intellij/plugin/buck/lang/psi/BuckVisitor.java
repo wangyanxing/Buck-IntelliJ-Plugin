@@ -47,6 +47,10 @@ public class BuckVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitRuleCall(@NotNull BuckRuleCall o) {
+    visitPsiElement(o);
+  }
+
   public void visitRuleName(@NotNull BuckRuleName o) {
     visitPsiElement(o);
   }

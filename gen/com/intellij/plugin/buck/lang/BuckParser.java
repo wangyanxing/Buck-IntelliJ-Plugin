@@ -53,6 +53,9 @@ public class BuckParser implements PsiParser, LightPsiParser {
     else if (t == RULE_BODY) {
       r = rule_body(b, 0);
     }
+    else if (t == RULE_CALL) {
+      r = rule_call(b, 0);
+    }
     else if (t == RULE_NAME) {
       r = rule_name(b, 0);
     }
@@ -203,7 +206,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // value_array [',' GLOB_EXCLUDES_KEYWORD '=' value_array]
+  // value_array [',' GLOB_EXCLUDES_KEYWORD '=' expression]
   public static boolean glob_elements(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "glob_elements")) return false;
     if (!nextTokenIs(b, L_BRACKET)) return false;
@@ -215,14 +218,14 @@ public class BuckParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // [',' GLOB_EXCLUDES_KEYWORD '=' value_array]
+  // [',' GLOB_EXCLUDES_KEYWORD '=' expression]
   private static boolean glob_elements_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "glob_elements_1")) return false;
     glob_elements_1_0(b, l + 1);
     return true;
   }
 
-  // ',' GLOB_EXCLUDES_KEYWORD '=' value_array
+  // ',' GLOB_EXCLUDES_KEYWORD '=' expression
   private static boolean glob_elements_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "glob_elements_1_0")) return false;
     boolean r;
@@ -230,18 +233,19 @@ public class BuckParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, COMMA);
     r = r && consumeToken(b, GLOB_EXCLUDES_KEYWORD);
     r = r && consumeToken(b, EQUAL);
-    r = r && value_array(b, l + 1);
+    r = r && expression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   /* ********************************************************** */
-  // rule_block | property | LINE_COMMENT
+  // rule_call | rule_block | property | LINE_COMMENT
   static boolean item_(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "item_")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = rule_block(b, l + 1);
+    r = rule_call(b, l + 1);
+    if (!r) r = rule_block(b, l + 1);
     if (!r) r = property(b, l + 1);
     if (!r) r = consumeToken(b, LINE_COMMENT);
     exit_section_(b, m, null, r);
@@ -428,6 +432,21 @@ public class BuckParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "rule_body_1_0_1")) return false;
     consumeToken(b, COMMA);
     return true;
+  }
+
+  /* ********************************************************** */
+  // rule_name '(' list_elements ')'
+  public static boolean rule_call(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rule_call")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = rule_name(b, l + 1);
+    r = r && consumeToken(b, L_PARENTHESES);
+    r = r && list_elements(b, l + 1);
+    r = r && consumeToken(b, R_PARENTHESES);
+    exit_section_(b, m, RULE_CALL, r);
+    return r;
   }
 
   /* ********************************************************** */

@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface BuckGlobElements extends PsiElement {
-
-  @Nullable
-  BuckExpression getExpression();
+public interface BuckRuleCall extends PsiElement {
 
   @NotNull
-  BuckValueArray getValueArray();
+  BuckListElements getListElements();
+
+  @NotNull
+  BuckRuleName getRuleName();
 
 }

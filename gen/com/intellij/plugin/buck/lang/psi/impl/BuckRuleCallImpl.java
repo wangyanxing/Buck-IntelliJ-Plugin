@@ -11,27 +11,27 @@ import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.plugin.buck.lang.psi.*;
 
-public class BuckGlobElementsImpl extends ASTWrapperPsiElement implements BuckGlobElements {
+public class BuckRuleCallImpl extends ASTWrapperPsiElement implements BuckRuleCall {
 
-  public BuckGlobElementsImpl(ASTNode node) {
+  public BuckRuleCallImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitGlobElements(this);
+    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitRuleCall(this);
     else super.accept(visitor);
   }
 
   @Override
-  @Nullable
-  public BuckExpression getExpression() {
-    return findChildByClass(BuckExpression.class);
+  @NotNull
+  public BuckListElements getListElements() {
+    return findNotNullChildByClass(BuckListElements.class);
   }
 
   @Override
   @NotNull
-  public BuckValueArray getValueArray() {
-    return findNotNullChildByClass(BuckValueArray.class);
+  public BuckRuleName getRuleName() {
+    return findNotNullChildByClass(BuckRuleName.class);
   }
 
 }

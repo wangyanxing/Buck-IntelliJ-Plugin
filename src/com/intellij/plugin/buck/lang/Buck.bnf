@@ -26,7 +26,7 @@
     GLOB_KEYWORD = 'regexp:(glob|subdir_glob)'
     GLOB_EXCLUDES_KEYWORD = 'excludes'
 
-    MACROS = "regexp:([A-Z])([A-Z]|[0-9])*"
+    MACROS = "regexp:([A-Z0-9] | ('_'))+"
 
     DOUBLE_QUOTED_STRING="regexp:\"([^\\\"\r\n]|\\[^\r\n])*\"?"
     SINGLE_QUOTED_STRING="regexp:'([^\\\'\r\n]|\\[^\r\n])*'?"
@@ -43,7 +43,7 @@
 
 buckFile ::= item_*
 
-private item_ ::= (rule_block | property | LINE_COMMENT)
+private item_ ::= (rule_call | rule_block | property | LINE_COMMENT)
 
 property_lvalue ::= IDENTIFIER | MACROS
 property ::= property_lvalue '=' expression
@@ -66,4 +66,6 @@ rule_block ::= rule_name '(' rule_body ')'
 rule_body ::= (property ',')* [property [',']]
 
 glob_block ::= GLOB_KEYWORD '(' glob_elements ')'
-glob_elements ::= value_array [',' GLOB_EXCLUDES_KEYWORD '=' value_array]
+glob_elements ::= value_array [',' GLOB_EXCLUDES_KEYWORD '=' expression]
+
+rule_call ::= rule_name '(' list_elements ')'

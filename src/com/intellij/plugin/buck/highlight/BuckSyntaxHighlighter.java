@@ -10,7 +10,6 @@ import com.intellij.plugin.buck.lang.BuckLexerAdapter;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
@@ -44,13 +43,11 @@ public class BuckSyntaxHighlighter extends SyntaxHighlighterBase {
   private static final TextAttributesKey[] MACROS_KEYS = new TextAttributesKey[]{BUCK_MACRO};
   private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
-  @NotNull
   @Override
   public Lexer getHighlightingLexer() {
     return new BuckLexerAdapter();
   }
 
-  @NotNull
   @Override
   public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
     if (tokenType.equals(BuckTypes.DOUBLE_QUOTED_STRING) ||
