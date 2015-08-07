@@ -47,7 +47,7 @@ public class BuckPsiUtils {
 
   /**
    * Test the specific type of the given identifier element.
-   * For it could be a RULE_NAME or PROPERTY_LVALUE.
+   * For it could be a BUCK_RULE_NAME or PROPERTY_LVALUE.
    */
   public static boolean testIdentifierType(PsiElement element, IElementType type) {
     if (element.getNode().getElementType() != BuckTypes.IDENTIFIER) {

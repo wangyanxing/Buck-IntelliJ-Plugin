@@ -3,7 +3,6 @@ package com.intellij.plugin.buck.annotator;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -71,10 +70,10 @@ public class BuckAnnotator implements Annotator {
 
     final Annotation annotation = annotationHolder.createInfoAnnotation(psiElement, null);
     if (BuckPsiUtils.testType(parent, BuckTypes.RULE_NAME)) {
-      annotation.setTextAttributes(BuckSyntaxHighlighter.RULE_NAME);
+      annotation.setTextAttributes(BuckSyntaxHighlighter.BUCK_RULE_NAME);
       return true;
     } else if (BuckPsiUtils.testType(parent, BuckTypes.PROPERTY_LVALUE)) {
-      annotation.setTextAttributes(BuckSyntaxHighlighter.KEY);
+      annotation.setTextAttributes(BuckSyntaxHighlighter.BUCK_KEYWORD);
       return true;
     }
     return false;

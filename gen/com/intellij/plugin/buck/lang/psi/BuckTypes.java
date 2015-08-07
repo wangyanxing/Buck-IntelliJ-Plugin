@@ -18,7 +18,7 @@ public interface BuckTypes {
   IElementType PROPERTY_LVALUE = new BuckElementType("PROPERTY_LVALUE");
   IElementType RULE_BLOCK = new BuckElementType("RULE_BLOCK");
   IElementType RULE_BODY = new BuckElementType("RULE_BODY");
-  IElementType RULE_NAME = new BuckElementType("RULE_NAME");
+  IElementType RULE_NAME = new BuckElementType("BUCK_RULE_NAME");
   IElementType VALUE = new BuckElementType("VALUE");
   IElementType VALUE_ARRAY = new BuckElementType("VALUE_ARRAY");
 
