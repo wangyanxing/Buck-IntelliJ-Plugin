@@ -26,7 +26,7 @@
     GLOB_KEYWORD = 'regexp:(glob|subdir_glob)'
     GLOB_EXCLUDES_KEYWORD = 'excludes'
 
-    MACROS = "regexp:([A-Z0-9] | ('_'))+"
+    MACROS = "regexp:[A-Z_]([A-Z0-9_])+"
 
     DOUBLE_QUOTED_STRING="regexp:\"([^\\\"\r\n]|\\[^\r\n])*\"?"
     SINGLE_QUOTED_STRING="regexp:'([^\\\'\r\n]|\\[^\r\n])*'?"
