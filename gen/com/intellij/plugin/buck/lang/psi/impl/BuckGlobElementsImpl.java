@@ -11,21 +11,21 @@ import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.plugin.buck.lang.psi.*;
 
-public class BuckArrayElementsImpl extends ASTWrapperPsiElement implements BuckArrayElements {
+public class BuckGlobElementsImpl extends ASTWrapperPsiElement implements BuckGlobElements {
 
-  public BuckArrayElementsImpl(ASTNode node) {
+  public BuckGlobElementsImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitArrayElements(this);
+    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitGlobElements(this);
     else super.accept(visitor);
   }
 
   @Override
   @NotNull
-  public List<BuckValue> getValueList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, BuckValue.class);
+  public List<BuckValueArray> getValueArrayList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, BuckValueArray.class);
   }
 
 }

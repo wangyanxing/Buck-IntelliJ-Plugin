@@ -52,7 +52,10 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
     }
 
     if (BuckPsiUtils.hasElementType(
-        element.getNode(), TokenType.WHITE_SPACE, BuckTypes.VALUE_STRING)) {
+        element.getNode(),
+        TokenType.WHITE_SPACE,
+        BuckTypes.SINGLE_QUOTED_STRING,
+        BuckTypes.DOUBLE_QUOTED_STRING)) {
       PsiElement property = BuckPsiUtils.findAncestorWithType(element, BuckTypes.PROPERTY);
       if (checkPropertyName(property)) {
         text = buildBuckDependencyPath(element, project, text);
@@ -70,7 +73,7 @@ public class BuckCopyPasteProcessor implements CopyPastePreProcessor {
       return false;
     }
     leftValue = leftValue.getFirstChild();
-    if (leftValue == null || leftValue.getNode().getElementType() != BuckTypes.KEYWORDS) {
+    if (leftValue == null || leftValue.getNode().getElementType() != BuckTypes.IDENTIFIER) {
       return false;
     }
     if (leftValue.getText().equals("deps") ||

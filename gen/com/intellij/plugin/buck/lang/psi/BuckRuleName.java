@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface BuckPropertyLvalue extends PsiElement {
+public interface BuckRuleName extends PsiElement {
 
-  @Nullable
+  @NotNull
   PsiElement getIdentifier();
-
-  @Nullable
-  PsiElement getMacros();
 
 }

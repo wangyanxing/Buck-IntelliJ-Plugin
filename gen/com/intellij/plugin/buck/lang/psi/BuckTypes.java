@@ -9,37 +9,52 @@ import com.intellij.plugin.buck.lang.psi.impl.*;
 public interface BuckTypes {
 
   IElementType ARRAY_ELEMENTS = new BuckElementType("ARRAY_ELEMENTS");
+  IElementType EXPRESSION = new BuckElementType("EXPRESSION");
+  IElementType GLOB_BLOCK = new BuckElementType("GLOB_BLOCK");
+  IElementType GLOB_ELEMENTS = new BuckElementType("GLOB_ELEMENTS");
   IElementType LIST = new BuckElementType("LIST");
   IElementType LIST_ELEMENTS = new BuckElementType("LIST_ELEMENTS");
   IElementType PROPERTY = new BuckElementType("PROPERTY");
   IElementType PROPERTY_LVALUE = new BuckElementType("PROPERTY_LVALUE");
   IElementType RULE_BLOCK = new BuckElementType("RULE_BLOCK");
   IElementType RULE_BODY = new BuckElementType("RULE_BODY");
+  IElementType RULE_NAME = new BuckElementType("RULE_NAME");
   IElementType VALUE = new BuckElementType("VALUE");
   IElementType VALUE_ARRAY = new BuckElementType("VALUE_ARRAY");
 
-  IElementType COMMA = new BuckTokenType("COMMA");
-  IElementType COMMENT = new BuckTokenType("COMMENT");
-  IElementType EQUAL = new BuckTokenType("EQUAL");
-  IElementType GENERIC_RULE_NAMES = new BuckTokenType("GENERIC_RULE_NAMES");
+  IElementType BOOLEAN = new BuckTokenType("BOOLEAN");
+  IElementType COMMA = new BuckTokenType(",");
+  IElementType DOUBLE_QUOTED_STRING = new BuckTokenType("DOUBLE_QUOTED_STRING");
+  IElementType EQUAL = new BuckTokenType("=");
+  IElementType GLOB_EXCLUDES_KEYWORD = new BuckTokenType("excludes");
+  IElementType GLOB_KEYWORD = new BuckTokenType("GLOB_KEYWORD");
   IElementType IDENTIFIER = new BuckTokenType("IDENTIFIER");
-  IElementType KEYWORDS = new BuckTokenType("KEYWORDS");
-  IElementType L_BRACKET = new BuckTokenType("L_BRACKET");
-  IElementType L_PARENTHESES = new BuckTokenType("L_PARENTHESES");
+  IElementType LINE_COMMENT = new BuckTokenType("LINE_COMMENT");
+  IElementType L_BRACKET = new BuckTokenType("[");
+  IElementType L_PARENTHESES = new BuckTokenType("(");
   IElementType MACROS = new BuckTokenType("MACROS");
-  IElementType RULE_NAMES = new BuckTokenType("RULE_NAMES");
-  IElementType R_BRACKET = new BuckTokenType("R_BRACKET");
-  IElementType R_PARENTHESES = new BuckTokenType("R_PARENTHESES");
-  IElementType VALUE_BOOLEAN = new BuckTokenType("VALUE_BOOLEAN");
-  IElementType VALUE_NONE = new BuckTokenType("VALUE_NONE");
-  IElementType VALUE_STRING = new BuckTokenType("VALUE_STRING");
-  IElementType WHITE_SPACE = new BuckTokenType("WHITE_SPACE");
+  IElementType NONE = new BuckTokenType("None");
+  IElementType NUMBER = new BuckTokenType("NUMBER");
+  IElementType PLUS = new BuckTokenType("+");
+  IElementType R_BRACKET = new BuckTokenType("]");
+  IElementType R_PARENTHESES = new BuckTokenType(")");
+  IElementType SINGLE_QUOTED_STRING = new BuckTokenType("SINGLE_QUOTED_STRING");
+  IElementType SLASH = new BuckTokenType("\\");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
        if (type == ARRAY_ELEMENTS) {
         return new BuckArrayElementsImpl(node);
+      }
+      else if (type == EXPRESSION) {
+        return new BuckExpressionImpl(node);
+      }
+      else if (type == GLOB_BLOCK) {
+        return new BuckGlobBlockImpl(node);
+      }
+      else if (type == GLOB_ELEMENTS) {
+        return new BuckGlobElementsImpl(node);
       }
       else if (type == LIST) {
         return new BuckListImpl(node);
@@ -58,6 +73,9 @@ public interface BuckTypes {
       }
       else if (type == RULE_BODY) {
         return new BuckRuleBodyImpl(node);
+      }
+      else if (type == RULE_NAME) {
+        return new BuckRuleNameImpl(node);
       }
       else if (type == VALUE) {
         return new BuckValueImpl(node);

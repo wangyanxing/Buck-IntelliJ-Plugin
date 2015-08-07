@@ -11,14 +11,14 @@ import static com.intellij.plugin.buck.lang.psi.BuckTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.plugin.buck.lang.psi.*;
 
-public class BuckArrayElementsImpl extends ASTWrapperPsiElement implements BuckArrayElements {
+public class BuckExpressionImpl extends ASTWrapperPsiElement implements BuckExpression {
 
-  public BuckArrayElementsImpl(ASTNode node) {
+  public BuckExpressionImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitArrayElements(this);
+    if (visitor instanceof BuckVisitor) ((BuckVisitor)visitor).visitExpression(this);
     else super.accept(visitor);
   }
 

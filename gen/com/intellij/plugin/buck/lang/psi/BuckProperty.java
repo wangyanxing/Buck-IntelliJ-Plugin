@@ -7,10 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface BuckProperty extends PsiElement {
 
-  @Nullable
-  BuckPropertyLvalue getPropertyLvalue();
+  @NotNull
+  BuckExpression getExpression();
 
   @NotNull
-  BuckValue getValue();
+  BuckPropertyLvalue getPropertyLvalue();
 
 }

@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface BuckPropertyLvalue extends PsiElement {
+public interface BuckGlobBlock extends PsiElement {
 
-  @Nullable
-  PsiElement getIdentifier();
+  @NotNull
+  BuckGlobElements getGlobElements();
 
-  @Nullable
-  PsiElement getMacros();
+  @NotNull
+  PsiElement getGlobKeyword();
 
 }

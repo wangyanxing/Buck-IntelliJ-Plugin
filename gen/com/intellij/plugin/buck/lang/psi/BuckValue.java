@@ -8,12 +8,27 @@ import com.intellij.psi.PsiElement;
 public interface BuckValue extends PsiElement {
 
   @Nullable
+  BuckGlobBlock getGlobBlock();
+
+  @Nullable
   BuckList getList();
 
   @Nullable
-  BuckRuleBlock getRuleBlock();
+  BuckValueArray getValueArray();
 
   @Nullable
-  BuckValueArray getValueArray();
+  PsiElement getBoolean();
+
+  @Nullable
+  PsiElement getDoubleQuotedString();
+
+  @Nullable
+  PsiElement getMacros();
+
+  @Nullable
+  PsiElement getNumber();
+
+  @Nullable
+  PsiElement getSingleQuotedString();
 
 }

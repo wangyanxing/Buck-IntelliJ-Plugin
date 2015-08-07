@@ -68,7 +68,7 @@ public class BuckBuildUtil {
         PsiElement ruleName = child.getFirstChild();
         // Find rule "project_config"
         if (ruleName != null &&
-            ruleName.getNode().getElementType() == BuckTypes.RULE_NAMES &&
+            BuckPsiUtils.testIdentifierType(ruleName, BuckTypes.RULE_NAME) &&
             ruleName.getText().equals(PROJECT_CONFIG_RULE_NAME)) {
 
           // Find property "src_target"
@@ -95,7 +95,7 @@ public class BuckBuildUtil {
         if (propertyName != null && propertyName.getText().equals(name)) {
           PsiElement value = BuckPsiUtils.findChildWithType(child, BuckTypes.VALUE);
           if (value != null && value.getFirstChild() != null &&
-              value.getFirstChild().getNode().getElementType() == BuckTypes.VALUE_STRING) {
+              BuckPsiUtils.hasElementType(value.getFirstChild(),BuckPsiUtils.STRING_LITERALS)) {
             String text = value.getText();
             return text.length() > 2 ? text.substring(1, text.length() - 1) : null;
           }

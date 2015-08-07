@@ -22,4 +22,16 @@ public class BuckPropertyLvalueImpl extends ASTWrapperPsiElement implements Buck
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getIdentifier() {
+    return findChildByType(IDENTIFIER);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getMacros() {
+    return findChildByType(MACROS);
+  }
+
 }

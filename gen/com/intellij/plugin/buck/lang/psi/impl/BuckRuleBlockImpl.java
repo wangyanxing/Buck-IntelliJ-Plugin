@@ -28,4 +28,10 @@ public class BuckRuleBlockImpl extends ASTWrapperPsiElement implements BuckRuleB
     return findNotNullChildByClass(BuckRuleBody.class);
   }
 
+  @Override
+  @NotNull
+  public BuckRuleName getRuleName() {
+    return findNotNullChildByClass(BuckRuleName.class);
+  }
+
 }

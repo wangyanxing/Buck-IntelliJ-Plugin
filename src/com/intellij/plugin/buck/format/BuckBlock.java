@@ -106,13 +106,9 @@ public class BuckBlock implements ASTBlock {
       if (childType == TokenType.WHITE_SPACE) {
         continue;
       }
-      if (childType == BuckTypes.RULE_BLOCK) {
-        ASTNode nameNode = child.findChildByType(BuckTypes.RULE_NAMES);
-        // We don't do glob right now.
-        if (nameNode != null &&
-            (nameNode.getText().equals("glob") || nameNode.getText().equals("subdir_glob"))) {
-          continue;
-        }
+      // In most cases, glob block doesn't need reformatting. So just ignore it for now.
+      if (childType == BuckTypes.GLOB_BLOCK) {
+        continue;
       }
       blocks.add(buildSubBlock(child));
     }

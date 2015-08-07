@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A utility class for sorting buck dependencies alphabetically
@@ -38,31 +39,37 @@ public class DependenciesOptimizer {
       if (lValue == null || !lValue.getText().equals(DEPENDENCIES_KEYWORD)) {
         return;
       }
-      BuckValueArray array = property.getValue().getValueArray();
-      if (array == null) {
-        return;
-      }
 
-      BuckArrayElements arrayElements = array.getArrayElements();
-      PsiElement[] arrayValues = arrayElements.getChildren();
-      // 'deps' should be sorted with local referenes ':' preceding any cross-repo references '@'
-      // e.g :inner, //world:empty, //world/asia:jp, //world/eruope:uk, @mars, @moon
-      // the ascii code '!'(33), ':'(58), '/'(47), '@'(64). Replace ':' by '!' make the rule works.
-      Arrays.sort(arrayValues, new Comparator<PsiElement>() {
-            @Override
-            public int compare(PsiElement e1, PsiElement e2) {
-              return e1.getText().replace(':', '!').compareTo(e2.getText().replace(':', '!'));
-            }
+      List<BuckValue> values = property.getExpression().getValueList();
+      for (BuckValue value : values) {
+        BuckValueArray array = value.getValueArray();
+        if (array != null) {
+          sortArray(array);
+        }
+      }
+    }
+  }
+
+  private static void sortArray(BuckValueArray array) {
+    BuckArrayElements arrayElements = array.getArrayElements();
+    PsiElement[] arrayValues = arrayElements.getChildren();
+    // 'deps' should be sorted with local referenes ':' preceding any cross-repo references '@'
+    // e.g :inner, //world:empty, //world/asia:jp, //world/eruope:uk, @mars, @moon
+    // the ascii code '!'(33), ':'(58), '/'(47), '@'(64). Replace ':' by '!' make the rule works.
+    Arrays.sort(arrayValues, new Comparator<PsiElement>() {
+          @Override
+          public int compare(PsiElement e1, PsiElement e2) {
+            return e1.getText().replace(':', '!').compareTo(e2.getText().replace(':', '!'));
           }
-      );
-      PsiElement[] oldValues = new PsiElement[arrayValues.length];
-      for (int i = 0; i < arrayValues.length; ++i) {
-        oldValues[i] = arrayValues[i].copy();
-      }
+        }
+    );
+    PsiElement[] oldValues = new PsiElement[arrayValues.length];
+    for (int i = 0; i < arrayValues.length; ++i) {
+      oldValues[i] = arrayValues[i].copy();
+    }
 
-      for (int i = 0; i < arrayValues.length; ++i) {
-        arrayElements.getChildren()[i].replace(oldValues[i]);
-      }
+    for (int i = 0; i < arrayValues.length; ++i) {
+      arrayElements.getChildren()[i].replace(oldValues[i]);
     }
   }
 }

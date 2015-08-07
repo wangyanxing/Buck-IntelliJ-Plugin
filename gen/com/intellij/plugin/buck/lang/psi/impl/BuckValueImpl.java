@@ -24,20 +24,50 @@ public class BuckValueImpl extends ASTWrapperPsiElement implements BuckValue {
 
   @Override
   @Nullable
+  public BuckGlobBlock getGlobBlock() {
+    return findChildByClass(BuckGlobBlock.class);
+  }
+
+  @Override
+  @Nullable
   public BuckList getList() {
     return findChildByClass(BuckList.class);
   }
 
   @Override
   @Nullable
-  public BuckRuleBlock getRuleBlock() {
-    return findChildByClass(BuckRuleBlock.class);
+  public BuckValueArray getValueArray() {
+    return findChildByClass(BuckValueArray.class);
   }
 
   @Override
   @Nullable
-  public BuckValueArray getValueArray() {
-    return findChildByClass(BuckValueArray.class);
+  public PsiElement getBoolean() {
+    return findChildByType(BOOLEAN);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getDoubleQuotedString() {
+    return findChildByType(DOUBLE_QUOTED_STRING);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getMacros() {
+    return findChildByType(MACROS);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getNumber() {
+    return findChildByType(NUMBER);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getSingleQuotedString() {
+    return findChildByType(SINGLE_QUOTED_STRING);
   }
 
 }

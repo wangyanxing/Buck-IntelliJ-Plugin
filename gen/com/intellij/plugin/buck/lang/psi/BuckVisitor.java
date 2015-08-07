@@ -11,6 +11,18 @@ public class BuckVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitExpression(@NotNull BuckExpression o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGlobBlock(@NotNull BuckGlobBlock o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGlobElements(@NotNull BuckGlobElements o) {
+    visitPsiElement(o);
+  }
+
   public void visitList(@NotNull BuckList o) {
     visitPsiElement(o);
   }
@@ -32,6 +44,10 @@ public class BuckVisitor extends PsiElementVisitor {
   }
 
   public void visitRuleBody(@NotNull BuckRuleBody o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRuleName(@NotNull BuckRuleName o) {
     visitPsiElement(o);
   }
 

@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface BuckArrayElements extends PsiElement {
 
   @NotNull
-  List<BuckList> getListList();
-
-  @NotNull
   List<BuckValue> getValueList();
 
 }
