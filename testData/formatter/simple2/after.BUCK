@@ -7,6 +7,7 @@ android_library(
 
 
     '//libraries/code/src/main/java/com/company/common/internal:internal',
+
     '//libraries/code/src/main/java/com/company/common/util:util',
     '//third-party/java/jsr-305:jsr-305',
   ],

@@ -4,45 +4,45 @@ import org.jetbrains.annotations.Nullable;
 
 public class BuckFormatterTest extends BuckTestCase {
 
-//  public void testSimple1(){
-//    doTest();
-//  }
-//
-//  public void testSimple2(){
-//    doTest();
-//  }
-//
-//  public void testSimple3(){
-//    doTest();
-//  }
-//
-//  public void testSimple4(){
-//    doTest();
-//  }
-//
-//  public void testSimple5(){
-//    doTest();
-//  }
-//
-//  public void testSimple6(){
-//    doTest();
-//  }
-//
-//  public void testBlankLine1(){
-//    doTest();
-//  }
-//
-//  public void testBlankLine2(){
-//    doTest();
-//  }
-//
-//  public void testBlankLine3(){
-//    doTest();
-//  }
-//
-//  public void testBlankLine4(){
-//    doTest();
-//  }
+  public void testSimple1(){
+    doTest();
+  }
+
+  public void testSimple2(){
+    doTest();
+  }
+
+  public void testSimple3(){
+    doTest();
+  }
+
+  public void testSimple4(){
+    doTest();
+  }
+
+  public void testSimple5(){
+    doTest();
+  }
+
+  public void testSimple6(){
+    doTest();
+  }
+
+  public void testBlankLine1(){
+    doTest();
+  }
+
+  public void testBlankLine2(){
+    doTest();
+  }
+
+  public void testBlankLine3(){
+    doTest();
+  }
+
+  public void testBlankLine4(){
+    doTest();
+  }
 
   public void testEnterAfterComma1() {
     doTestEnter();

@@ -5,9 +5,9 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.testFramework.TestLoggerFactory;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 
-public abstract class BuckTestCase extends LightCodeInsightFixtureTestCase {
+public abstract class BuckTestCase extends LightPlatformCodeInsightFixtureTestCase {
   static {
     Logger.setFactory(TestLoggerFactory.class);
   }
@@ -18,10 +18,6 @@ public abstract class BuckTestCase extends LightCodeInsightFixtureTestCase {
 
   protected CommonCodeStyleSettings getCommonCodeStyleSettings() {
     return getCodeStyleSettings().getCommonSettings(BuckLanguage.INSTANCE);
-  }
-
-  protected BuckCodeStyleSettings getCustomCodeStyleSettings() {
-    return getCodeStyleSettings().getCustomSettings(BuckCodeStyleSettings.class);
   }
 
   protected CommonCodeStyleSettings.IndentOptions getIndentOptions() {

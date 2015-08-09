@@ -1,4 +1,5 @@
-android_library(name = 'common',
+android_library(
+  name = 'common',
   srcs = glob(['*.java']),
   deps = [
     '//libraries/code/src/main/java/com/company/common/internal:internal',
