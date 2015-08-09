@@ -2,7 +2,8 @@ SOME_REFERENCE = [
   'Ref.java',
 ]
 
-foo_android_library(
+foo_android_library
+(
   name = 'locale',
   srcs = glob(['*.java'], excludes = SOME_REFERENCE),
   deps = [
@@ -16,18 +17,4 @@ foo_android_library(
   visibility = [
     'PUBLIC',
   ],
-)
-
-android_library(
-  name = 'abcdefg',
-  srcs = SOME_REFERENCE,
-  deps = [
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
-)
-
-project_config(
-  src_target = ':name',
 )

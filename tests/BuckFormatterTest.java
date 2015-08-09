@@ -40,7 +40,7 @@ public class BuckFormatterTest extends BuckTestCase {
     doTest();
   }
 
-  public void testBlankLine4(){
+  public void testError(){
     doTest();
   }
 
@@ -60,6 +60,10 @@ public class BuckFormatterTest extends BuckTestCase {
     doTestEnter();
   }
 
+  public void testEnterBeforeLBracket1() {
+    doTestEnter();
+  }
+
   public void testEnterAfterLBracket1() {
     doTestEnter();
   }
@@ -73,6 +77,10 @@ public class BuckFormatterTest extends BuckTestCase {
   }
 
   public void testEnterAfterRBracket2() {
+    doTestEnter();
+  }
+
+  public void testEnterBeforeLParentheses1() {
     doTestEnter();
   }
 

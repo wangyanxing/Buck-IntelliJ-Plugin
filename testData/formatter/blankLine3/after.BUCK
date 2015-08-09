@@ -1,6 +1,8 @@
 SOME_REFERENCE = [
   'Ref.java',
-]foo_android_library(
+]
+
+foo_android_library(
   name = 'locale',
   srcs = glob(['*.java'], excludes = SOME_REFERENCE),
   deps = [

@@ -70,6 +70,7 @@ public class BuckFormattingModelBuilder implements
         .before(BuckTypes.COMMA).spacing(0, 0, 0, false, 0)
         .after(BuckTypes.COMMA).lineBreakInCode()
         .before(BuckTypes.R_PARENTHESES).lineBreakInCode()
-        .before(BuckTypes.R_BRACKET).lineBreakInCode();
+        .before(BuckTypes.R_BRACKET).lineBreakInCode()
+        .before(BuckTypes.RULE_BLOCK).blankLines(1);
   }
 }

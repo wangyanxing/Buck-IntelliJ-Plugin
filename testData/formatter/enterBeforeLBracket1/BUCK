@@ -5,7 +5,7 @@ SOME_REFERENCE = [
 foo_android_library(
   name = 'locale',
   srcs = glob(['*.java'], excludes = SOME_REFERENCE),
-  deps = [
+  deps = <caret>[
     '//java/com/foo/common/android:android',
     '//java/com/foo/debug/log:log',
     '//third-party/java/abc:def',
@@ -16,18 +16,4 @@ foo_android_library(
   visibility = [
     'PUBLIC',
   ],
-)
-
-android_library(
-  name = 'abcdefg',
-  srcs = SOME_REFERENCE,
-  deps = [
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
-)
-
-project_config(
-  src_target = ':name',
 )
