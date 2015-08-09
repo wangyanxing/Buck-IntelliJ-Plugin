@@ -114,11 +114,8 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
   public ActionGroup getLeftToolbarActions(final Project project) {
     ActionManager actionManager = ActionManager.getInstance();
 
-    ChooseTargetAction chooseTargetAction = (ChooseTargetAction) actionManager.getAction(
-        "buck.ChooseTarget");
-
     DefaultActionGroup group = new DefaultActionGroup();
-    group.add(chooseTargetAction.init(project));
+    group.add(actionManager.getAction("buck.ChooseTarget"));
     group.addSeparator();
     group.add(actionManager.getAction("buck.Install"));
     group.add(actionManager.getAction("buck.Build"));

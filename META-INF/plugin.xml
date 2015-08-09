@@ -96,6 +96,9 @@
         displayName="Buck"
         id="buck.settings"
         instance="com.intellij.plugin.buck.config.BuckSettingsConfigurable"/>
+    <projectService
+        serviceInterface="com.intellij.plugin.buck.actions.choosetargets.ChooseTargetConfiguration"
+        serviceImplementation="com.intellij.plugin.buck.actions.choosetargets.ChooseTargetConfiguration"/>
   </extensions>
 
   <actions>
@@ -130,7 +133,7 @@
     </group>
 
     <group id="BuckToolsGroup" popup="true" text="Buck" icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"
-         class="com.intellij.plugin.buck.toolbar.BuckToolsActionGroup">
+           class="com.intellij.plugin.buck.toolbar.BuckToolsActionGroup">
       <action id="Buck.InstallAction"
               class="com.intellij.plugin.buck.actions.BuckInstallAction"
               icon="BuckIcons.BUCK_INSTALL"/>
@@ -145,11 +148,11 @@
 
     <group id="Buck.MainToolBarActionGroup">
       <separator/>
-      <reference id="Buck.InstallAction" />
-      <reference id="Buck.BuckKillAction" />
-      <reference id="Buck.GoToBuckFile" />
+      <reference id="Buck.InstallAction"/>
+      <reference id="Buck.BuckKillAction"/>
+      <reference id="Buck.GoToBuckFile"/>
       <separator/>
-      <add-to-group group-id="MainToolBar" anchor="before" relative-to-action="HelpTopics" />
+      <add-to-group group-id="MainToolBar" anchor="before" relative-to-action="HelpTopics"/>
     </group>
 
   </actions>
