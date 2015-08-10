@@ -7,4 +7,13 @@ import com.intellij.psi.PsiElement;
 
 public interface BuckPair extends PsiElement {
 
+  @NotNull
+  BuckValue getValue();
+
+  @Nullable
+  PsiElement getDoubleQuotedString();
+
+  @Nullable
+  PsiElement getSingleQuotedString();
+
 }

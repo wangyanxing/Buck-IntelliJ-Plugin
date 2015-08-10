@@ -64,7 +64,7 @@ list_elements ::= (value ',')* [value [',']]
 
 object ::= '{' object_elements '}'
 object_elements ::= (pair ',')* [pair [',']]
-pair ::= string ':' string
+pair ::= string ':' value
 
 value_array ::= '[' array_elements ']'
 array_elements ::= (value ',')* [value [',']]

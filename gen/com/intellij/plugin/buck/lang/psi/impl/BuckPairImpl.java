@@ -22,4 +22,22 @@ public class BuckPairImpl extends ASTWrapperPsiElement implements BuckPair {
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public BuckValue getValue() {
+    return findNotNullChildByClass(BuckValue.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getDoubleQuotedString() {
+    return findChildByType(DOUBLE_QUOTED_STRING);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getSingleQuotedString() {
+    return findChildByType(SINGLE_QUOTED_STRING);
+  }
+
 }

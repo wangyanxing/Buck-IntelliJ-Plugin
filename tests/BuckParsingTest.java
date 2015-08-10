@@ -45,6 +45,10 @@ public class BuckParsingTest extends ParsingTestCase {
     doTest();
   }
 
+  public void testObject() {
+    doTest();
+  }
+
   public void testNested() {
     doTest();
   }

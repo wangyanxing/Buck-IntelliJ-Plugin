@@ -416,7 +416,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // string ':' string
+  // string ':' value
   public static boolean pair(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "pair")) return false;
     if (!nextTokenIs(b, "<pair>", DOUBLE_QUOTED_STRING, SINGLE_QUOTED_STRING)) return false;
@@ -424,7 +424,7 @@ public class BuckParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, "<pair>");
     r = string(b, l + 1);
     r = r && consumeToken(b, COLON);
-    r = r && string(b, l + 1);
+    r = r && value(b, l + 1);
     exit_section_(b, l, m, PAIR, r, false, null);
     return r;
   }
