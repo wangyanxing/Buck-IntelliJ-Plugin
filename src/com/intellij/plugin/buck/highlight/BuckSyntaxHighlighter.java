@@ -5,13 +5,12 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
+import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.plugin.buck.lang.BuckLexerAdapter;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-
-import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
 /**
  * Syntax highlighter for buck PSI elements

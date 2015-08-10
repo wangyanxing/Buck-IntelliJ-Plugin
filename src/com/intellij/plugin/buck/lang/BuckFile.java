@@ -6,7 +6,7 @@ import com.intellij.plugin.buck.file.BuckFileType;
 import com.intellij.psi.FileViewProvider;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.Icon;
 
 public class BuckFile extends PsiFileBase {
 

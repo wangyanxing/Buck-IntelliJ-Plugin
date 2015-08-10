@@ -4,14 +4,16 @@ import com.google.common.base.Joiner;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.build.BuckBuildTargetAliasParser;
 import com.intellij.plugin.buck.build.BuckBuildUtil;
 import com.intellij.plugin.buck.index.BuckTargetNameIndex;
 
-import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ChooseTargetContributor implements ChooseByNameContributor {
 

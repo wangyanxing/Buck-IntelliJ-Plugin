@@ -5,7 +5,7 @@ import com.intellij.plugin.buck.lang.BuckLanguage;
 import icons.BuckIcons;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.Icon;
 
 /**
  * Buck language type

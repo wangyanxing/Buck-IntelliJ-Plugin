@@ -20,7 +20,7 @@ import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 /**
  * Run buck build commands in background thread, then parse the output from stderr and print to

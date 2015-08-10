@@ -1,9 +1,22 @@
 package com.intellij.plugin.buck.format;
 
-import com.intellij.formatting.*;
+import com.intellij.formatting.ASTBlock;
+import com.intellij.formatting.Alignment;
+import com.intellij.formatting.Block;
+import com.intellij.formatting.ChildAttributes;
+import com.intellij.formatting.Indent;
+import com.intellij.formatting.Spacing;
+import com.intellij.formatting.SpacingBuilder;
+import com.intellij.formatting.Wrap;
+import com.intellij.formatting.WrapType;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.plugin.buck.lang.psi.*;
+import static com.intellij.plugin.buck.format.BuckFormatUtil.hasElementType;
+import com.intellij.plugin.buck.lang.psi.BuckArrayElements;
+import com.intellij.plugin.buck.lang.psi.BuckListElements;
+import com.intellij.plugin.buck.lang.psi.BuckObjectElements;
+import com.intellij.plugin.buck.lang.psi.BuckRuleBody;
+import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
@@ -17,8 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static com.intellij.plugin.buck.format.BuckFormatUtil.hasElementType;
 
 /**
  * A BuckBlock is actually a abstract syntax tree block, which mainly used for formatting a buck

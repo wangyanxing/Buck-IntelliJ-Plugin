@@ -1,6 +1,11 @@
 package com.intellij.plugin.buck.format;
 
-import com.intellij.plugin.buck.lang.psi.*;
+import com.intellij.plugin.buck.lang.psi.BuckArrayElements;
+import com.intellij.plugin.buck.lang.psi.BuckProperty;
+import com.intellij.plugin.buck.lang.psi.BuckPropertyLvalue;
+import com.intellij.plugin.buck.lang.psi.BuckValue;
+import com.intellij.plugin.buck.lang.psi.BuckValueArray;
+import com.intellij.plugin.buck.lang.psi.BuckVisitor;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;

@@ -6,7 +6,7 @@ import com.intellij.plugin.buck.ui.BuckSettingsUI;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 public class BuckSettingsConfigurable implements SearchableConfigurable {
 
