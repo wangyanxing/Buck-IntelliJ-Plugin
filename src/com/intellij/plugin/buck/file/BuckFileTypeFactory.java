@@ -9,6 +9,7 @@ public class BuckFileTypeFactory extends FileTypeFactory {
 
   @Override
   public void createFileTypes(@NotNull FileTypeConsumer fileTypeConsumer) {
-    fileTypeConsumer.consume(BuckFileType.INSTANCE, new ExactFileNameMatcher("BUCK"));
+    fileTypeConsumer.consume(
+        BuckFileType.INSTANCE, new ExactFileNameMatcher(BuckFileUtil.getBuildFileName()));
   }
 }

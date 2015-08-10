@@ -1,10 +1,11 @@
+import com.intellij.plugin.buck.file.BuckFileUtil;
 import com.intellij.plugin.buck.lang.BuckParserDefinition;
 import com.intellij.testFramework.ParsingTestCase;
 
 public class BuckParsingTest extends ParsingTestCase {
 
   public BuckParsingTest() {
-    super("psi", "BUCK", new BuckParserDefinition());
+    super("psi", BuckFileUtil.getBuildFileName(), new BuckParserDefinition());
   }
 
   @Override

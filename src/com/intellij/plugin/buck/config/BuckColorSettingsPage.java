@@ -5,6 +5,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
+import com.intellij.plugin.buck.file.BuckFileUtil;
 import com.intellij.plugin.buck.highlight.BuckSyntaxHighlighter;
 import icons.BuckIcons;
 import org.jetbrains.annotations.NotNull;
@@ -37,23 +38,7 @@ public class BuckColorSettingsPage implements ColorSettingsPage {
   @NotNull
   @Override
   public String getDemoText() {
-    return "# Thanks for installing Buck Plugin for IDEA!\n" +
-        "android_library(\n" +
-        "  name = 'bar',\n" +
-        "  srcs = glob(['**/*.java']),\n" +
-        "  deps = [\n" +
-        "    '//android_res/com/foo/interfaces:res',\n" +
-        "    '//android_res/com/foo/common/strings:res',\n" +
-        "    '//android_res/com/foo/custom:res'\n" +
-        "  ],\n" +
-        "  visibility = [\n" +
-        "    'PUBLIC',\n" +
-        "  ],\n" +
-        ")\n" +
-        "\n" +
-        "project_config(" +
-        "  src_target = ':bar'," +
-        ")";
+    return BuckFileUtil.getSampleBuckFile();
   }
 
   @Nullable

@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.build.BuckBuildUtil;
+import com.intellij.plugin.buck.file.BuckFileUtil;
 import com.intellij.plugin.buck.highlight.BuckSyntaxHighlighter;
 import com.intellij.plugin.buck.lang.psi.BuckPsiUtils;
 import com.intellij.plugin.buck.lang.psi.BuckTypes;
@@ -51,7 +52,8 @@ public class BuckAnnotator implements Annotator {
     }
     VirtualFile buckDir = project.getBaseDir().findFileByRelativePath(
         BuckBuildUtil.extractAbsoluteTarget(target));
-    VirtualFile targetBuckFile = buckDir != null ? buckDir.findChild("BUCK") : null;
+    VirtualFile targetBuckFile =
+        buckDir != null ? buckDir.findChild(BuckFileUtil.getBuildFileName()) : null;
 
     if (targetBuckFile == null) {
       TextRange range = new TextRange(psiElement.getTextRange().getStartOffset(),

@@ -2,6 +2,7 @@ package com.intellij.plugin.buck.build;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.plugin.buck.file.BuckFileUtil;
 import com.intellij.plugin.buck.lang.BuckFile;
 import com.intellij.plugin.buck.lang.psi.BuckExpression;
 import com.intellij.plugin.buck.lang.psi.BuckPsiUtils;
@@ -13,7 +14,7 @@ import com.intellij.psi.PsiManager;
 public class BuckBuildUtil {
 
   static public final String BUCK_CONFIG_FILE = ".buckconfig";
-  static public final String BUCK_FILE_NAME = "BUCK";
+  static public final String BUCK_FILE_NAME = BuckFileUtil.getBuildFileName();
   static public final String PROJECT_CONFIG_RULE_NAME = "project_config";
   static public final String SRC_TARGET_PROPERTY_NAME = "src_target";
 

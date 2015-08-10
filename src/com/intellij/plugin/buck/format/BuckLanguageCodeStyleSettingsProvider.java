@@ -3,17 +3,16 @@ package com.intellij.plugin.buck.format;
 import com.intellij.application.options.IndentOptionsEditor;
 import com.intellij.application.options.SmartIndentOptionsEditor;
 import com.intellij.lang.Language;
+import com.intellij.plugin.buck.file.BuckFileUtil;
 import com.intellij.plugin.buck.lang.BuckLanguage;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * BUCK code style settings
  */
 public class BuckLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
 
-  @NotNull
   @Override
   public Language getLanguage() {
     return BuckLanguage.INSTANCE;
@@ -41,23 +40,7 @@ public class BuckLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSett
   }
 
   @Override
-  public String getCodeSample(@NotNull SettingsType settingsType) {
-    return "# Thanks for installing Buck Plugin for IDEA!\n" +
-        "android_library(\n" +
-        "  name = 'bar',\n" +
-        "  srcs = glob(['**/*.java']),\n" +
-        "  deps = [\n" +
-        "    '//android_res/com/foo/interfaces:res',\n" +
-        "    '//android_res/com/foo/common/strings:res',\n" +
-        "    '//android_res/com/foo/custom:res'\n" +
-        "  ],\n" +
-        "  visibility = [\n" +
-        "    'PUBLIC',\n" +
-        "  ],\n" +
-        ")\n" +
-        "\n" +
-        "project_config(" +
-        "  src_target = ':bar'," +
-        ")";
+  public String getCodeSample(SettingsType settingsType) {
+    return BuckFileUtil.getSampleBuckFile();
   }
 }
