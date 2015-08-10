@@ -43,6 +43,7 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
 
   private static final Pattern SOURCE_FILE_PATTERN =
       Pattern.compile("^([\\s\\S]*\\.(cpp|java|hpp|cxx|cc|c|py)):([0-9]+)([\\s\\S]*)\\s*$");
+
   private static final Pattern BUILD_PROGRESS_PATTERN =
       Pattern.compile("^BUILT //[\\s\\S]*\\(([0-9]+)/([0-9]+) JOBS\\)\\s*$");
 
@@ -77,44 +78,44 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
   protected boolean beforeCommand() {
     BuckBuildManager buildManager = BuckBuildManager.getInstance(project());
 
-    if (!buildManager.isBuckProject(myProject)) {
+    if (!buildManager.isBuckProject(mProject)) {
       BuckToolWindowFactory.outputConsoleMessage(
-          myProject,
+          mProject,
           BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE, ConsoleViewContentType.ERROR_OUTPUT);
       return false;
     }
 
-    buildManager.setBuilding(myProject, true);
+    buildManager.setBuilding(mProject, true);
     BuckToolWindowFactory.cleanConsole(project());
 
     String headMessage = "Running '" + command().getCommandLineString() + "'\n";
     BuckToolWindowFactory.outputConsoleMessage(
-        myProject,
+        mProject,
         headMessage, GRAY_OUTPUT);
     return true;
   }
 
   @Override
   protected void afterCommand() {
-    BuckBuildManager.getInstance(project()).setBuilding(myProject, false);
+    BuckBuildManager.getInstance(project()).setBuilding(mProject, false);
 
-    // Popup notification if needed
-    if (showFailedNotification && !BuckToolWindowFactory.isToolWindowVisible(myProject)) {
+    // Popup notification if needed.
+    if (showFailedNotification && !BuckToolWindowFactory.isToolWindowVisible(mProject)) {
       if (mCurrentErrorMessage == null) {
         mCurrentErrorMessage = UNKNOWN_ERROR_MESSAGE;
       } else {
         mCurrentErrorMessage = mCurrentErrorMessage.replaceAll(ERROR_PREFIX_FOR_MESSAGE, "");
       }
       BuckBuildNotification.createBuildFailedNotification(
-          myCommand.name(), mCurrentErrorMessage).notify(myProject);
+          mCommand.name(), mCurrentErrorMessage).notify(mProject);
     }
   }
 
   /**
    * Parse a line of the buck command output for:
-   * 1. Calculate the progress
-   * 2. Ignore unused lines, for example "Using buckd."
-   * 3. Print to console window with different colors
+   * 1. Calculate the progress.
+   * 2. Ignore unused lines, for example "Using buckd.".
+   * 3. Print to console window with different colors.
    *
    * @return boolean failed or not
    */
@@ -125,7 +126,7 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
       }
     }
 
-    // Extract the jobs information and calculate the progress
+    // Extract the jobs information and calculate the progress.
     Matcher matcher = BUILD_PROGRESS_PATTERN.matcher(line);
     if (matcher.matches()) {
       double finishedJob = Double.parseDouble(matcher.group(1));
@@ -134,7 +135,7 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
       return false;
     }
 
-    // Red color
+    // Red color.
     for (Pattern errorPattern : ERROR_PATTERNS) {
       if (errorPattern.matcher(line).lookingAt()) {
         BuckToolWindowFactory.outputConsoleMessage(
@@ -146,7 +147,7 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
       }
     }
 
-    // Green color
+    // Green color.
     for (String successPrefix : SUCCESS_PREFIXES) {
       if (line.startsWith(successPrefix)) {
         BuckToolWindowFactory.outputConsoleMessage(
@@ -155,14 +156,14 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
       }
     }
 
-    // Test if it is a java compile error message with a java file path
+    // Test if it is a java compile error message with a java file path.
     Matcher compilerErrorMatcher = SOURCE_FILE_PATTERN.matcher(line);
     if (compilerErrorMatcher.matches()) {
       final String sourceFile = compilerErrorMatcher.group(1);
       final String lineNumber = compilerErrorMatcher.group(3);
       final String errorMessage = compilerErrorMatcher.group(4);
 
-      String relativePath = sourceFile.replaceAll(myProject.getBasePath(), "");
+      String relativePath = sourceFile.replaceAll(mProject.getBasePath(), "");
       final VirtualFile virtualFile = pathToVirtualFile(relativePath);
       if (virtualFile == null) {
         BuckToolWindowFactory.outputConsoleMessage(
@@ -196,7 +197,7 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
 
   @Nullable
   private VirtualFile pathToVirtualFile(String relativePath) {
-    VirtualFile projectPath = myProject.getBaseDir();
+    VirtualFile projectPath = mProject.getBaseDir();
     return projectPath.findFileByRelativePath(relativePath);
   }
 

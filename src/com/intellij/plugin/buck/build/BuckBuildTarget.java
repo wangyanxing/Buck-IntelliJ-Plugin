@@ -4,22 +4,22 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 /**
- * Represents a buck build target
+ * Represents a buck build target.
  */
 public class BuckBuildTarget {
 
   /**
-   * The alias of a target, defined in .buckconfig. For example, fb4a
+   * The alias of a target, defined in .buckconfig. For example, fb4a.
    */
   private String alias;
 
   /**
-   * Buck target, for example '//third-party/java/dagger:dagger'
+   * Buck target, for example '//third-party/java/dagger:dagger'.
    */
   private String target;
 
   /**
-   * Intellij virtual file of the BUCK file
+   * Intellij virtual file of the BUCK file.
    */
   private VirtualFile virtualFile;
 

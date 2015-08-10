@@ -11,34 +11,38 @@ import java.util.Iterator;
 
 public class BuckKillCommandHandler extends BuckCommandHandler {
 
-  public BuckKillCommandHandler(final Project project,
-                                 final VirtualFile root,
-                                 final BuckCommand command) {
+  public BuckKillCommandHandler(
+      final Project project,
+      final VirtualFile root,
+      final BuckCommand command) {
     super(project, VfsUtil.virtualToIoFile(root), command);
   }
 
   @Override
-  protected void notifyLines(Key outputType, Iterator<String> lines, StringBuilder lineBuilder) {
+  protected void notifyLines(
+      Key outputType,
+      Iterator<String> lines,
+      StringBuilder lineBuilder) {
   }
 
   @Override
   protected boolean beforeCommand() {
-    if (!BuckBuildManager.getInstance(project()).isBuckProject(myProject)) {
+    if (!BuckBuildManager.getInstance(project()).isBuckProject(mProject)) {
       BuckToolWindowFactory.outputConsoleMessage(
           project(),
           BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE,
           ConsoleViewContentType.ERROR_OUTPUT);
       return false;
     }
-    BuckBuildManager.getInstance(project()).setKilling(myProject, true);
+    BuckBuildManager.getInstance(project()).setKilling(mProject, true);
     return true;
   }
 
   @Override
   protected void afterCommand() {
     BuckBuildManager buildManager = BuckBuildManager.getInstance(project());
-    buildManager.setBuilding(myProject, false);
-    buildManager.setKilling(myProject, false);
+    buildManager.setBuilding(mProject, false);
+    buildManager.setKilling(mProject, false);
     BuckToolWindowFactory.outputConsoleMessage(
         project(),
         "Build aborted\n",

@@ -30,7 +30,7 @@ public class BuckBuildUtil {
   }
 
   /**
-   * Return the virtual file of the BUCK file of the given target
+   * Return the virtual file of the BUCK file of the given target.
    */
   public static VirtualFile getBuckFileFromAbsoluteTarget(Project project, String target) {
     if (!isValidAbsoluteTarget(target)) {
@@ -41,6 +41,9 @@ public class BuckBuildUtil {
     return buckDir != null ? buckDir.findChild(BUCK_FILE_NAME) : null;
   }
 
+  /**
+   * Find the buck file from a directory.
+   */
   public static VirtualFile getBuckFileFromDirectory(VirtualFile file) {
     if (file == null) {
       return null;
@@ -54,7 +57,7 @@ public class BuckBuildUtil {
   }
 
   /**
-   * Get the buck target from a buck file
+   * Get the buck target from a buck file.
    */
   public static String extractBuckTarget(Project project, VirtualFile file) {
     BuckFile buckFile = (BuckFile) PsiManager.getInstance(project).findFile(file);
@@ -94,7 +97,7 @@ public class BuckBuildUtil {
   }
 
   /**
-   * Get the value of a property in a specific buck rule body
+   * Get the value of a property in a specific buck rule body.
    */
   public static String getPropertyValue(BuckRuleBody body, String name) {
     if (body == null) {

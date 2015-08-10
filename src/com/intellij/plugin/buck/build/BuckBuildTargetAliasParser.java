@@ -19,7 +19,7 @@ public class BuckBuildTargetAliasParser {
   static public Map<String, Set<String>> sTargetAlias = new HashMap<String, Set<String>>();
 
   /**
-   * Get all alias declared in buck config file
+   * Get all alias declared in buck config file.
    *
    * @param baseDir The root folder of the project which contains ".buckconfig"
    */

@@ -17,7 +17,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.plugin.buck.config.BuckSettingsProvider;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JComponent;
@@ -52,7 +51,7 @@ public class BuckBuildManager {
   }
 
   /**
-   * Get saved target for this project from settings
+   * Get saved target for this project from settings.
    */
   public String getCurrentSavedTarget(Project project) {
     if (BuckSettingsProvider.getInstance().getState().lastAlias == null) {
@@ -88,8 +87,8 @@ public class BuckBuildManager {
   }
 
   /**
-   * Print "no selected target" error message to console window
-   * Also provide a hyperlink which can directly jump to "Choose Target" GUI window
+   * Print "no selected target" error message to console window.
+   * Also provide a hyperlink which can directly jump to "Choose Target" GUI window.
    */
   public void showNoTargetMessage(Project project) {
     BuckToolWindowFactory.outputConsoleMessage(
@@ -112,13 +111,14 @@ public class BuckBuildManager {
   }
 
   /**
-   * Execute simple process asynchronously with progress
+   * Execute simple process asynchronously with progress.
    *
    * @param handler        a handler
    * @param operationTitle an operation title shown in progress dialog
    */
-  public void runBuckCommand(final BuckCommandHandler handler,
-                                    final String operationTitle) {
+  public void runBuckCommand(
+      final BuckCommandHandler handler,
+      final String operationTitle) {
     Project project = handler.project();
 
     // Always save files
@@ -140,7 +140,7 @@ public class BuckBuildManager {
 
     final ProgressManager manager = ProgressManager.getInstance();
     manager.run(new Task.Backgroundable(handler.project(), operationTitle, true) {
-      public void run(@NotNull final ProgressIndicator indicator) {
+      public void run(final ProgressIndicator indicator) {
         mProgressIndicator = indicator;
         runInCurrentThread(handler, indicator, true, operationTitle);
       }
@@ -148,17 +148,18 @@ public class BuckBuildManager {
   }
 
   /**
-   * Run handler in the current thread
+   * Run handler in the current thread.
    *
    * @param handler              a handler to run
    * @param indicator            a progress manager
    * @param setIndeterminateFlag if true handler is configured as indeterminate
    * @param operationName
    */
-  public void runInCurrentThread(final BuckCommandHandler handler,
-                                        final ProgressIndicator indicator,
-                                        final boolean setIndeterminateFlag,
-                                        @Nullable final String operationName) {
+  public void runInCurrentThread(
+      final BuckCommandHandler handler,
+      final ProgressIndicator indicator,
+      final boolean setIndeterminateFlag,
+      @Nullable final String operationName) {
     runInCurrentThread(handler, new Runnable() {
       public void run() {
         if (indicator != null) {
@@ -173,13 +174,14 @@ public class BuckBuildManager {
   }
 
   /**
-   * Run handler in the current thread
+   * Run handler in the current thread.
    *
    * @param handler         a handler to run
    * @param postStartAction an action that is executed
    */
   public void runInCurrentThread(
-      final BuckCommandHandler handler, @Nullable final Runnable postStartAction) {
+      final BuckCommandHandler handler,
+      @Nullable final Runnable postStartAction) {
     handler.runInCurrentThread(postStartAction);
   }
 }

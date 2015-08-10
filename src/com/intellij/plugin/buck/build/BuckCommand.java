@@ -1,8 +1,5 @@
 package com.intellij.plugin.buck.build;
 
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-
 /**
  * The descriptor of buck command.
  */
@@ -13,26 +10,25 @@ public class BuckCommand {
   public static final BuckCommand UNINSTALL = create("uninstall");
   public static final BuckCommand KILL = create("kill");
 
-  @NotNull
-  @NonNls
-  private final String myName; // command name passed to buck
+  /**
+   * Command name passed to buck.
+   */
+  private final String mName;
 
-  private BuckCommand(@NotNull String name) {
-    myName = name;
+  private BuckCommand(String name) {
+    mName = name;
   }
 
-  @NotNull
-  private static BuckCommand create(@NotNull String name) {
+  private static BuckCommand create(String name) {
     return new BuckCommand(name);
   }
 
-  @NotNull
   public String name() {
-    return myName;
+    return mName;
   }
 
   @Override
   public String toString() {
-    return myName;
+    return mName;
   }
 }

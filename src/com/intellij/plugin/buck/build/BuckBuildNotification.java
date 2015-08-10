@@ -4,7 +4,6 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.plugin.buck.ui.BuckToolWindowFactory;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Buck build result notification
@@ -16,14 +15,13 @@ public class BuckBuildNotification extends Notification {
       "Buck Build Messages", BuckToolWindowFactory.TOOL_WINDOW_ID);
 
   public BuckBuildNotification(
-      @NotNull String groupDisplayId,
-      @NotNull String title,
-      @NotNull String content,
-      @NotNull NotificationType type) {
+      String groupDisplayId,
+      String title,
+      String content,
+      NotificationType type) {
     super(groupDisplayId, title, content, type);
   }
 
-  @NotNull
   public static BuckBuildNotification createBuildFailedNotification(
       String buildCommand,
       String description) {
