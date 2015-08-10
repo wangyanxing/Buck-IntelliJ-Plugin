@@ -11,6 +11,7 @@ public class BuckBraceMatcher implements PairedBraceMatcher {
   private static BracePair[] PAIRS = {
       new BracePair(BuckTypes.L_BRACKET, BuckTypes.R_BRACKET, true),
       new BracePair(BuckTypes.L_PARENTHESES, BuckTypes.R_PARENTHESES, true),
+      new BracePair(BuckTypes.L_CURLY, BuckTypes.R_CURLY, true),
   };
 
   @Override

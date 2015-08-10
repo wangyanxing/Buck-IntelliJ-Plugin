@@ -3,6 +3,7 @@ package com.intellij.plugin.buck.actions;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.project.Project;
 import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckBuildUtil;
 import com.intellij.plugin.buck.build.BuckCommand;
@@ -23,9 +24,11 @@ public class BuckKillAction extends DumbAwareAction {
 
   @Override
   public void update(AnActionEvent e) {
-    e.getPresentation().setEnabled(
-        !BuckBuildManager.getInstance().isKilling() &&
-        BuckBuildManager.getInstance().isBuilding());
+    Project project = e.getProject();
+    if (project != null) {
+      BuckBuildManager buildManager = BuckBuildManager.getInstance(project);
+      e.getPresentation().setEnabled(!buildManager.isKilling() && buildManager.isBuilding());
+    }
   }
 
   @Override
@@ -34,6 +37,6 @@ public class BuckKillAction extends DumbAwareAction {
         e.getProject(),
         e.getProject().getBaseDir(),
         BuckCommand.KILL);
-    BuckBuildManager.getInstance().runBuckCommand(handler, ACTION_TITLE);
+    BuckBuildManager.getInstance(e.getProject()).runBuckCommand(handler, ACTION_TITLE);
   }
 }

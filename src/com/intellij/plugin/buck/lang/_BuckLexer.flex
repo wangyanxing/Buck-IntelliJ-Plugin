@@ -37,14 +37,17 @@ IDENTIFIER=[:jletter:] [:jletterdigit:]*
 
   "None"                      { return NONE; }
   ","                         { return COMMA; }
+  ":"                         { return COLON; }
   "="                         { return EQUAL; }
   "\\"                        { return SLASH; }
   "+"                         { return PLUS; }
   "excludes"                  { return GLOB_EXCLUDES_KEYWORD; }
   "("                         { return L_PARENTHESES; }
   "["                         { return L_BRACKET; }
+  "{"                         { return L_CURLY; }
   ")"                         { return R_PARENTHESES; }
   "]"                         { return R_BRACKET; }
+  "}"                         { return R_CURLY; }
 
   {BOOLEAN}                   { return BOOLEAN; }
   {LINE_COMMENT}              { return LINE_COMMENT; }

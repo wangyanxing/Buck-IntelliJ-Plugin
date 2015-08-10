@@ -14,6 +14,9 @@ public interface BuckTypes {
   IElementType GLOB_ELEMENTS = new BuckElementType("GLOB_ELEMENTS");
   IElementType LIST = new BuckElementType("LIST");
   IElementType LIST_ELEMENTS = new BuckElementType("LIST_ELEMENTS");
+  IElementType OBJECT = new BuckElementType("OBJECT");
+  IElementType OBJECT_ELEMENTS = new BuckElementType("OBJECT_ELEMENTS");
+  IElementType PAIR = new BuckElementType("PAIR");
   IElementType PROPERTY = new BuckElementType("PROPERTY");
   IElementType PROPERTY_LVALUE = new BuckElementType("PROPERTY_LVALUE");
   IElementType RULE_BLOCK = new BuckElementType("RULE_BLOCK");
@@ -24,6 +27,7 @@ public interface BuckTypes {
   IElementType VALUE_ARRAY = new BuckElementType("VALUE_ARRAY");
 
   IElementType BOOLEAN = new BuckTokenType("BOOLEAN");
+  IElementType COLON = new BuckTokenType(":");
   IElementType COMMA = new BuckTokenType(",");
   IElementType DOUBLE_QUOTED_STRING = new BuckTokenType("DOUBLE_QUOTED_STRING");
   IElementType EQUAL = new BuckTokenType("=");
@@ -32,12 +36,14 @@ public interface BuckTypes {
   IElementType IDENTIFIER = new BuckTokenType("IDENTIFIER");
   IElementType LINE_COMMENT = new BuckTokenType("LINE_COMMENT");
   IElementType L_BRACKET = new BuckTokenType("[");
+  IElementType L_CURLY = new BuckTokenType("{");
   IElementType L_PARENTHESES = new BuckTokenType("(");
   IElementType MACROS = new BuckTokenType("MACROS");
   IElementType NONE = new BuckTokenType("None");
   IElementType NUMBER = new BuckTokenType("NUMBER");
   IElementType PLUS = new BuckTokenType("+");
   IElementType R_BRACKET = new BuckTokenType("]");
+  IElementType R_CURLY = new BuckTokenType("}");
   IElementType R_PARENTHESES = new BuckTokenType(")");
   IElementType SINGLE_QUOTED_STRING = new BuckTokenType("SINGLE_QUOTED_STRING");
   IElementType SLASH = new BuckTokenType("\\");
@@ -62,6 +68,15 @@ public interface BuckTypes {
       }
       else if (type == LIST_ELEMENTS) {
         return new BuckListElementsImpl(node);
+      }
+      else if (type == OBJECT) {
+        return new BuckObjectImpl(node);
+      }
+      else if (type == OBJECT_ELEMENTS) {
+        return new BuckObjectElementsImpl(node);
+      }
+      else if (type == PAIR) {
+        return new BuckPairImpl(node);
       }
       else if (type == PROPERTY) {
         return new BuckPropertyImpl(node);

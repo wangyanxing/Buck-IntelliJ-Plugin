@@ -17,6 +17,7 @@
     BOOLEAN = 'regexp:(True|False)'
 
     COMMA = ','
+    COLON = ':'
     EQUAL = '='
     SLASH = '\'
     PLUS = '+'
@@ -33,8 +34,10 @@
 
     L_PARENTHESES = '('
     L_BRACKET = '['
+    L_CURLY = '{'
     R_PARENTHESES = ')'
     R_BRACKET = ']'
+    R_CURLY = '}'
 
     NUMBER = 'regexp:-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d*)?'
     IDENTIFIER = 'regexp:[:jletter:] [:jletterdigit:]*'
@@ -52,11 +55,16 @@ property ::= property_lvalue '=' expression
 private operator ::= PLUS
 expression ::= (value operator)* [value]
 
-value ::= DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING |
-          NONE | BOOLEAN | NUMBER | MACROS | value_array | list | glob_block
+private string ::= DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+
+value ::= NONE | BOOLEAN | NUMBER | MACROS | string | value_array | list | object | glob_block
 
 list ::= '(' list_elements ')'
 list_elements ::= (value ',')* [value [',']]
+
+object ::= '{' object_elements '}'
+object_elements ::= (pair ',')* [pair [',']]
+pair ::= string ':' string
 
 value_array ::= '[' array_elements ']'
 array_elements ::= (value ',')* [value [',']]

@@ -23,20 +23,25 @@ public class BuckKillCommandHandler extends BuckCommandHandler {
 
   @Override
   protected boolean beforeCommand() {
-    if (!BuckBuildManager.getInstance().isBuckProject(myProject)) {
+    if (!BuckBuildManager.getInstance(project()).isBuckProject(myProject)) {
       BuckToolWindowFactory.outputConsoleMessage(
-          BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE, ConsoleViewContentType.ERROR_OUTPUT);
+          project(),
+          BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE,
+          ConsoleViewContentType.ERROR_OUTPUT);
       return false;
     }
-    BuckBuildManager.getInstance().setKilling(true);
+    BuckBuildManager.getInstance(project()).setKilling(myProject, true);
     return true;
   }
 
   @Override
   protected void afterCommand() {
-    BuckBuildManager.getInstance().setBuilding(false);
-    BuckBuildManager.getInstance().setKilling(false);
+    BuckBuildManager buildManager = BuckBuildManager.getInstance(project());
+    buildManager.setBuilding(myProject, false);
+    buildManager.setKilling(myProject, false);
     BuckToolWindowFactory.outputConsoleMessage(
-        "Build aborted\n", ConsoleViewContentType.ERROR_OUTPUT);
+        project(),
+        "Build aborted\n",
+        ConsoleViewContentType.ERROR_OUTPUT);
   }
 }

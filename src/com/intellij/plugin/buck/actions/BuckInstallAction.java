@@ -3,6 +3,7 @@ package com.intellij.plugin.buck.actions;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.project.Project;
 import com.intellij.plugin.buck.build.BuckBuildCommandHandler;
 import com.intellij.plugin.buck.build.BuckBuildManager;
 import com.intellij.plugin.buck.build.BuckCommand;
@@ -25,40 +26,50 @@ public class BuckInstallAction extends DumbAwareAction {
 
   @Override
   public void update(AnActionEvent e) {
-    e.getPresentation().setEnabled(!BuckBuildManager.getInstance().isBuilding());
+    Project project = e.getProject();
+    if (project != null) {
+      e.getPresentation().setEnabled(!BuckBuildManager.getInstance(project).isBuilding());
+    }
+
   }
 
   @Override
   public void actionPerformed(AnActionEvent e) {
-    String target = BuckBuildManager.getInstance().getCurrentSavedTarget(e.getProject());
+    BuckBuildManager buildManager = BuckBuildManager.getInstance(e.getProject());
+    String target = buildManager.getCurrentSavedTarget(e.getProject());
     if (target == null) {
-      BuckBuildManager.getInstance().showNoTargetMessage();
+      buildManager.showNoTargetMessage(e.getProject());
       return;
     }
+
+    BuckSettingsProvider.State state = BuckSettingsProvider.getInstance().getState();
+    if (state == null) {
+      return;
+    }
+
     BuckBuildCommandHandler handler = new BuckBuildCommandHandler(
         e.getProject(),
         e.getProject().getBaseDir(),
         BuckCommand.INSTALL);
-    if (BuckSettingsProvider.getInstance().getState().customizedInstallSetting) {
+    if (state.customizedInstallSetting) {
       // Split the whole command line into different parameters.
-      String commands =
-          BuckSettingsProvider.getInstance().getState().customizedInstallSettingCommand;
+      String commands = state.customizedInstallSettingCommand;
       Matcher matcher = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(commands);
       while (matcher.find()) {
         handler.command().addParameter(matcher.group(1));
       }
     } else {
-      if (BuckSettingsProvider.getInstance().getState().runAfterInstall) {
+      if (state.runAfterInstall) {
         handler.command().addParameter("-r");
       }
-      if (BuckSettingsProvider.getInstance().getState().multiInstallMode) {
+      if (state.multiInstallMode) {
         handler.command().addParameter("-x");
       }
-      if (BuckSettingsProvider.getInstance().getState().uninstallBeforeInstalling) {
+      if (state.uninstallBeforeInstalling) {
         handler.command().addParameter("-u");
       }
     }
     handler.command().addParameter(target);
-    BuckBuildManager.getInstance().runBuckCommand(handler, ACTION_TITLE);
+    buildManager.runBuckCommand(handler, ACTION_TITLE);
   }
 }

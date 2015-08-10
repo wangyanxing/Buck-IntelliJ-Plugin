@@ -26,12 +26,18 @@ import static com.intellij.plugin.buck.format.BuckFormatUtil.hasElementType;
  */
 public class BuckBlock implements ASTBlock {
 
-  private static final TokenSet BUCK_CONTAINERS =
-      TokenSet.create(BuckTypes.ARRAY_ELEMENTS, BuckTypes.RULE_BODY, BuckTypes.LIST_ELEMENTS);
+  private static final TokenSet BUCK_CONTAINERS = TokenSet.create(
+      BuckTypes.ARRAY_ELEMENTS,
+      BuckTypes.RULE_BODY,
+      BuckTypes.LIST_ELEMENTS,
+      BuckTypes.OBJECT_ELEMENTS);
+
   private static final TokenSet BUCK_OPEN_BRACES =
-      TokenSet.create(BuckTypes.L_BRACKET, BuckTypes.L_PARENTHESES);
+      TokenSet.create(BuckTypes.L_BRACKET, BuckTypes.L_PARENTHESES, BuckTypes.L_CURLY);
+
   private static final TokenSet BUCK_CLOSE_BRACES =
-      TokenSet.create(BuckTypes.R_BRACKET, BuckTypes.R_PARENTHESES);
+      TokenSet.create(BuckTypes.R_BRACKET, BuckTypes.R_PARENTHESES, BuckTypes.R_CURLY);
+
   private static final TokenSet BUCK_ALL_BRACES =
       TokenSet.orSet(BUCK_OPEN_BRACES, BUCK_CLOSE_BRACES);
 
@@ -65,7 +71,8 @@ public class BuckBlock implements ASTBlock {
 
     if (myPsiElement instanceof BuckArrayElements ||
         myPsiElement instanceof BuckRuleBody ||
-        myPsiElement instanceof BuckListElements) {
+        myPsiElement instanceof BuckListElements ||
+        myPsiElement instanceof BuckObjectElements) {
       myChildWrap = Wrap.createWrap(CommonCodeStyleSettings.WRAP_ALWAYS, true);
     } else {
       myChildWrap = null;
@@ -180,6 +187,8 @@ public class BuckBlock implements ASTBlock {
       ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_PARENTHESES;
     } else if (hasElementType(myNode, TokenSet.create(BuckTypes.LIST_ELEMENTS))) {
       ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_PARENTHESES;
+    } else if (hasElementType(myNode, TokenSet.create(BuckTypes.OBJECT_ELEMENTS))) {
+      ret = lastChildNode != null && lastChildNode.getElementType() != BuckTypes.R_CURLY;
     }
     return ret;
   }

@@ -36,6 +36,12 @@ public class BuckValueImpl extends ASTWrapperPsiElement implements BuckValue {
 
   @Override
   @Nullable
+  public BuckObject getObject() {
+    return findChildByClass(BuckObject.class);
+  }
+
+  @Override
+  @Nullable
   public BuckValueArray getValueArray() {
     return findChildByClass(BuckValueArray.class);
   }

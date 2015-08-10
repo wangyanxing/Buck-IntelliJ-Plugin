@@ -45,10 +45,15 @@ public class ChooseTargetAction extends GotoActionBase implements DumbAware {
           return;
         }
 
+        BuckSettingsProvider buckSettingsProvider = BuckSettingsProvider.getInstance();
+        if (buckSettingsProvider == null || buckSettingsProvider.getState() == null) {
+          return;
+        }
+
         ChooseTargetItem item = (ChooseTargetItem) element;
-        if (BuckSettingsProvider.getInstance().getState().lastAlias != null) {
-          BuckSettingsProvider.getInstance().getState().lastAlias.put(
-              project.getBasePath(), item.getName());
+        if (buckSettingsProvider.getState().lastAlias != null) {
+          buckSettingsProvider.getState().lastAlias.put(
+              project.getBasePath(), item.getBuildTarget());
         }
         BuckToolWindowFactory.updateBuckToolWindowTitle(project);
       }

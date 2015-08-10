@@ -41,6 +41,15 @@ public class BuckParser implements PsiParser, LightPsiParser {
     else if (t == LIST_ELEMENTS) {
       r = list_elements(b, 0);
     }
+    else if (t == OBJECT) {
+      r = object(b, 0);
+    }
+    else if (t == OBJECT_ELEMENTS) {
+      r = object_elements(b, 0);
+    }
+    else if (t == PAIR) {
+      r = pair(b, 0);
+    }
     else if (t == PROPERTY) {
       r = property(b, 0);
     }
@@ -327,9 +336,97 @@ public class BuckParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // '{' object_elements '}'
+  public static boolean object(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "object")) return false;
+    if (!nextTokenIs(b, L_CURLY)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, L_CURLY);
+    r = r && object_elements(b, l + 1);
+    r = r && consumeToken(b, R_CURLY);
+    exit_section_(b, m, OBJECT, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // (pair ',')* [pair [',']]
+  public static boolean object_elements(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "object_elements")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<object elements>");
+    r = object_elements_0(b, l + 1);
+    r = r && object_elements_1(b, l + 1);
+    exit_section_(b, l, m, OBJECT_ELEMENTS, r, false, null);
+    return r;
+  }
+
+  // (pair ',')*
+  private static boolean object_elements_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "object_elements_0")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!object_elements_0_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "object_elements_0", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // pair ','
+  private static boolean object_elements_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "object_elements_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = pair(b, l + 1);
+    r = r && consumeToken(b, COMMA);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // [pair [',']]
+  private static boolean object_elements_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "object_elements_1")) return false;
+    object_elements_1_0(b, l + 1);
+    return true;
+  }
+
+  // pair [',']
+  private static boolean object_elements_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "object_elements_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = pair(b, l + 1);
+    r = r && object_elements_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // [',']
+  private static boolean object_elements_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "object_elements_1_0_1")) return false;
+    consumeToken(b, COMMA);
+    return true;
+  }
+
+  /* ********************************************************** */
   // PLUS
   static boolean operator(PsiBuilder b, int l) {
     return consumeToken(b, PLUS);
+  }
+
+  /* ********************************************************** */
+  // string ':' string
+  public static boolean pair(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pair")) return false;
+    if (!nextTokenIs(b, "<pair>", DOUBLE_QUOTED_STRING, SINGLE_QUOTED_STRING)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<pair>");
+    r = string(b, l + 1);
+    r = r && consumeToken(b, COLON);
+    r = r && string(b, l + 1);
+    exit_section_(b, l, m, PAIR, r, false, null);
+    return r;
   }
 
   /* ********************************************************** */
@@ -462,20 +559,32 @@ public class BuckParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING |
-  //           NONE | BOOLEAN | NUMBER | MACROS | value_array | list | glob_block
+  // DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+  static boolean string(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "string")) return false;
+    if (!nextTokenIs(b, "", DOUBLE_QUOTED_STRING, SINGLE_QUOTED_STRING)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, DOUBLE_QUOTED_STRING);
+    if (!r) r = consumeToken(b, SINGLE_QUOTED_STRING);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // NONE | BOOLEAN | NUMBER | MACROS | string | value_array | list | object | glob_block
   public static boolean value(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "value")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<value>");
-    r = consumeToken(b, DOUBLE_QUOTED_STRING);
-    if (!r) r = consumeToken(b, SINGLE_QUOTED_STRING);
-    if (!r) r = consumeToken(b, NONE);
+    r = consumeToken(b, NONE);
     if (!r) r = consumeToken(b, BOOLEAN);
     if (!r) r = consumeToken(b, NUMBER);
     if (!r) r = consumeToken(b, MACROS);
+    if (!r) r = string(b, l + 1);
     if (!r) r = value_array(b, l + 1);
     if (!r) r = list(b, l + 1);
+    if (!r) r = object(b, l + 1);
     if (!r) r = glob_block(b, l + 1);
     exit_section_(b, l, m, VALUE, r, false, null);
     return r;

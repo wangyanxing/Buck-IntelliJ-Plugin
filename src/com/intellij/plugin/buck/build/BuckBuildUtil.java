@@ -12,11 +12,10 @@ import com.intellij.psi.PsiManager;
 
 public class BuckBuildUtil {
 
-  static public String BUCK_CONFIG_FILE = ".buckconfig";
-  static public String BUCK_FILE_NAME = "BUCK";
-
-  static private String PROJECT_CONFIG_RULE_NAME = "project_config";
-  static private String SRC_TARGET_PROPERTY_NAME = "src_target";
+  static public final String BUCK_CONFIG_FILE = ".buckconfig";
+  static public final String BUCK_FILE_NAME = "BUCK";
+  static public final String PROJECT_CONFIG_RULE_NAME = "project_config";
+  static public final String SRC_TARGET_PROPERTY_NAME = "src_target";
 
   public static boolean isValidAbsoluteTarget(String target) {
     return target.matches("^//[\\s\\S]*:[\\s\\S]*$");
@@ -80,6 +79,19 @@ public class BuckBuildUtil {
     return null;
   }
 
+  /**
+   * Get the full buck target string, for example: '//com/example/app:app'
+   */
+  public static String getFullBuckTarget(Project project, VirtualFile file) {
+    String target = extractBuckTarget(project, file);
+    if (target == null) {
+      return null;
+    }
+
+    String path = file.getPath().replace(project.getBasePath(), "/");
+    path = path.substring(0, path.lastIndexOf("/BUCK")) + target;
+    return path;
+  }
 
   /**
    * Get the value of a property in a specific buck rule body

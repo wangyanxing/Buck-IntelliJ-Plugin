@@ -25,15 +25,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
 
-  @NonNls
   private static final String OUTPUT_WINDOW_CONTENT_ID = "BuckOutputWindowContent";
-  private static ConsoleView sConsoleWindow;
-  private static RunnerLayoutUi sRunnerLayoutUi;
   public static final String TOOL_WINDOW_ID = "Buck";
 
   public static void updateBuckToolWindowTitle(Project project) {
     ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID);
-    String target = BuckBuildManager.getInstance().getCurrentSavedTarget(project);
+    String target = BuckBuildManager.getInstance(project).getCurrentSavedTarget(project);
     if (target != null) {
       toolWindow.setTitle("Target: " + target);
     }
@@ -45,31 +42,25 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
   }
 
   public static synchronized void outputConsoleMessage(
-      String message, ConsoleViewContentType type) {
-    if (sConsoleWindow != null) {
-      sConsoleWindow.print(message, type);
-    }
+      Project project, String message, ConsoleViewContentType type) {
+    BuckUIManager.getInstance(project).getConsoleWindow(project).print(message, type);
   }
 
-  public static synchronized void outputConsoleHyperlink(String link, HyperlinkInfo linkInfo) {
-    if (sConsoleWindow != null) {
-      sConsoleWindow.printHyperlink(link, linkInfo);
-    }
+  public static synchronized void outputConsoleHyperlink(
+      Project project, String link, HyperlinkInfo linkInfo) {
+    BuckUIManager.getInstance(project).getConsoleWindow(project).printHyperlink(link, linkInfo);
   }
 
-  public static synchronized void cleanConsole() {
-    if (sConsoleWindow != null) {
-      sConsoleWindow.clear();
-    }
+  public static synchronized void cleanConsole(Project project) {
+    BuckUIManager.getInstance(project).getConsoleWindow(project).clear();
   }
 
-  public static synchronized void updateActionsNow() {
+  public static synchronized void updateActionsNow(final Project project) {
+
     ApplicationManager.getApplication().invokeLater(new Runnable() {
       @Override
       public void run() {
-        if (sRunnerLayoutUi != null) {
-          sRunnerLayoutUi.updateActionsNow();
-        }
+        BuckUIManager.getInstance(project).getLayoutUi(project).updateActionsNow();
       }
     });
   }
@@ -80,32 +71,27 @@ public class BuckToolWindowFactory implements ToolWindowFactory, DumbAware {
     toolWindow.setAvailable(true, null);
     toolWindow.setToHideOnEmptyContent(true);
 
-    sRunnerLayoutUi = RunnerLayoutUi.Factory.getInstance(project).create(
-        "buck", "buck", "buck", project);
-    Content consoleContent = createConsoleContent(sRunnerLayoutUi, project);
+    RunnerLayoutUi runnerLayoutUi = BuckUIManager.getInstance(project).getLayoutUi(project);
+    Content consoleContent = createConsoleContent(runnerLayoutUi, project);
 
-    sRunnerLayoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
-    sRunnerLayoutUi.getOptions().setLeftToolbar(
+    runnerLayoutUi.addContent(consoleContent, 0, PlaceInGrid.center, false);
+    runnerLayoutUi.getOptions().setLeftToolbar(
         getLeftToolbarActions(project), ActionPlaces.UNKNOWN);
 
-    sRunnerLayoutUi.updateActionsNow();
+    runnerLayoutUi.updateActionsNow();
 
     final ContentManager contentManager = toolWindow.getContentManager();
     Content content = contentManager.getFactory().createContent(
-        sRunnerLayoutUi.getComponent(), "", true);
+        runnerLayoutUi.getComponent(), "", true);
     contentManager.addContent(content);
 
     updateBuckToolWindowTitle(project);
-
-//    if (!BuckBuildUtil.isBuckProject(project)) {
-//      outputConsoleMessage("Not a Buck project!", ConsoleViewContentType.ERROR_OUTPUT);
-//    }
   }
 
   private Content createConsoleContent(RunnerLayoutUi layoutUi, Project project) {
-    sConsoleWindow = new ConsoleViewImpl(project, false);
+    ConsoleView consoleView = BuckUIManager.getInstance(project).getConsoleWindow(project);
     Content consoleWindowContent = layoutUi.createContent(
-        OUTPUT_WINDOW_CONTENT_ID, sConsoleWindow.getComponent(), "Output Logs", null, null);
+        OUTPUT_WINDOW_CONTENT_ID, consoleView.getComponent(), "Output Logs", null, null);
     consoleWindowContent.setCloseable(false);
     return consoleWindowContent;
   }

@@ -14,6 +14,9 @@ public interface BuckValue extends PsiElement {
   BuckList getList();
 
   @Nullable
+  BuckObject getObject();
+
+  @Nullable
   BuckValueArray getValueArray();
 
   @Nullable

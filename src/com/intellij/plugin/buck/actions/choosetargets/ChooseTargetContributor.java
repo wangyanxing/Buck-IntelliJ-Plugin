@@ -1,24 +1,46 @@
 package com.intellij.plugin.buck.actions.choosetargets;
 
+import com.google.common.base.Joiner;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.build.BuckBuildTargetAliasParser;
 import com.intellij.plugin.buck.build.BuckBuildUtil;
-import com.intellij.util.ArrayUtil;
+import com.intellij.plugin.buck.index.BuckTargetNameIndex;
 
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 
 public class ChooseTargetContributor implements ChooseByNameContributor {
 
+  public static final String ALIAS_SEPARATOR = "::";
+
   @Override
   public String[] getNames(Project project, boolean includeNonProjectItems) {
-    String path = project.getBasePath();
-    BuckBuildTargetAliasParser.parseAlias(path);
+    BuckBuildTargetAliasParser.parseAlias(project.getBasePath());
+    List<String> names = new ArrayList<String>();
 
-    Set<String> alias = BuckBuildTargetAliasParser.sTargetAlias.keySet();
-    return ArrayUtil.toStringArray(alias);
+    Collection<String> buckKeys = BuckTargetNameIndex.getAllKeys(project);
+    for(String fileName : buckKeys) {
+      VirtualFile file = VfsUtil.findFileByIoFile(new File(fileName), true);
+      String target = BuckBuildUtil.getFullBuckTarget(project, file);
+      Set<String> alias = BuckBuildTargetAliasParser.sTargetAlias.get(target);
+      if (alias == null) {
+        names.add(target);
+      }
+    }
+
+    for (Map.Entry<String, Set<String>> entry :
+        BuckBuildTargetAliasParser.sTargetAlias.entrySet()) {
+      String target = entry.getKey();
+      Set<String> alias = entry.getValue();
+      target += ALIAS_SEPARATOR + Joiner.on(',').join(alias);
+      names.add(target);
+    }
+
+    return names.toArray(new String[names.size()]);
   }
 
   @Override
@@ -27,12 +49,12 @@ public class ChooseTargetContributor implements ChooseByNameContributor {
       String pattern,
       Project project,
       boolean includeNonProjectItems) {
-    String target = BuckBuildTargetAliasParser.sTargetAlias.get(name);
-    VirtualFile file = BuckBuildUtil.getBuckFileFromAbsoluteTarget(project, target);
-    if (file == null) {
-      return new NavigationItem[0];
+    String alias = null;
+    int index = name.lastIndexOf(ALIAS_SEPARATOR);
+    if (index > 0) {
+      alias = name.substring(index + ALIAS_SEPARATOR.length());
+      name = name.substring(0, index);
     }
-
-    return new NavigationItem[] { new ChooseTargetItem(name, target) };
+    return new NavigationItem[] { new ChooseTargetItem(name, alias) };
   }
 }

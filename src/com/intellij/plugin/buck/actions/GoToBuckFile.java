@@ -32,9 +32,11 @@ public class GoToBuckFile extends AnAction {
     if (project == null) {
       return;
     }
-    if (!BuckBuildManager.getInstance().isBuckProject(project)) {
+    if (!BuckBuildManager.getInstance(e.getProject()).isBuckProject(project)) {
       BuckToolWindowFactory.outputConsoleMessage(
-          BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE, ConsoleViewContentType.ERROR_OUTPUT);
+          project,
+          BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE,
+          ConsoleViewContentType.ERROR_OUTPUT);
       return;
     }
 

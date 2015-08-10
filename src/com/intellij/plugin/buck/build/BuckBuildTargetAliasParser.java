@@ -1,10 +1,13 @@
 package com.intellij.plugin.buck.build;
 
+import com.google.common.collect.Sets;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class BuckBuildTargetAliasParser {
 
@@ -13,7 +16,7 @@ public class BuckBuildTargetAliasParser {
   static private String COMMENT_PREFIX = "#";
   static private char SEPARATOR = '=';
 
-  static public Map<String, String> sTargetAlias = new HashMap<String, String>();
+  static public Map<String, Set<String>> sTargetAlias = new HashMap<String, Set<String>>();
 
   /**
    * Get all alias declared in buck config file
@@ -47,7 +50,12 @@ public class BuckBuildTargetAliasParser {
             }
             String alias = line.substring(0, separatorIndex).trim();
             String path = line.substring(separatorIndex + 1).trim();
-            sTargetAlias.put(alias, path);
+
+            if (sTargetAlias.containsKey(path)) {
+              sTargetAlias.get(path).add(alias);
+            } else {
+              sTargetAlias.put(path, Sets.newHashSet(alias));
+            }
           }
         }
       }

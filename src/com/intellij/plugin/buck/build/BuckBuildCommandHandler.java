@@ -75,24 +75,28 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
 
   @Override
   protected boolean beforeCommand() {
-    if (!BuckBuildManager.getInstance().isBuckProject(myProject)) {
+    BuckBuildManager buildManager = BuckBuildManager.getInstance(project());
+
+    if (!buildManager.isBuckProject(myProject)) {
       BuckToolWindowFactory.outputConsoleMessage(
+          myProject,
           BuckBuildManager.NOT_BUCK_PROJECT_ERROR_MESSAGE, ConsoleViewContentType.ERROR_OUTPUT);
       return false;
     }
 
-    BuckBuildManager.getInstance().setBuilding(true);
-    BuckToolWindowFactory.cleanConsole();
+    buildManager.setBuilding(myProject, true);
+    BuckToolWindowFactory.cleanConsole(project());
 
     String headMessage = "Running '" + command().getCommandLineString() + "'\n";
     BuckToolWindowFactory.outputConsoleMessage(
+        myProject,
         headMessage, GRAY_OUTPUT);
     return true;
   }
 
   @Override
   protected void afterCommand() {
-    BuckBuildManager.getInstance().setBuilding(false);
+    BuckBuildManager.getInstance(project()).setBuilding(myProject, false);
 
     // Popup notification if needed
     if (showFailedNotification && !BuckToolWindowFactory.isToolWindowVisible(myProject)) {
@@ -126,7 +130,7 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
     if (matcher.matches()) {
       double finishedJob = Double.parseDouble(matcher.group(1));
       double totalJob = Double.parseDouble(matcher.group(2));
-      BuckBuildManager.getInstance().setProgress(finishedJob / totalJob);
+      BuckBuildManager.getInstance(project()).setProgress(finishedJob / totalJob);
       return false;
     }
 
@@ -134,7 +138,7 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
     for (Pattern errorPattern : ERROR_PATTERNS) {
       if (errorPattern.matcher(line).lookingAt()) {
         BuckToolWindowFactory.outputConsoleMessage(
-            line, ConsoleViewContentType.ERROR_OUTPUT);
+            project(), line, ConsoleViewContentType.ERROR_OUTPUT);
         if (mCurrentErrorMessage == null && line.startsWith(ERROR_PREFIX_FOR_MESSAGE)) {
           mCurrentErrorMessage = line;
         }
@@ -146,7 +150,7 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
     for (String successPrefix : SUCCESS_PREFIXES) {
       if (line.startsWith(successPrefix)) {
         BuckToolWindowFactory.outputConsoleMessage(
-            line, GREEN_OUTPUT);
+            project(), line, GREEN_OUTPUT);
         return false;
       }
     }
@@ -162,9 +166,9 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
       final VirtualFile virtualFile = pathToVirtualFile(relativePath);
       if (virtualFile == null) {
         BuckToolWindowFactory.outputConsoleMessage(
-            line, ConsoleViewContentType.ERROR_OUTPUT);
+            project(), line, ConsoleViewContentType.ERROR_OUTPUT);
       } else {
-        BuckToolWindowFactory.outputConsoleHyperlink(relativePath + ":" + lineNumber,
+        BuckToolWindowFactory.outputConsoleHyperlink(project(), relativePath + ":" + lineNumber,
             new HyperlinkInfo() {
               @Override
               public void navigate(Project project) {
@@ -179,11 +183,13 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
               }
             });
         BuckToolWindowFactory.outputConsoleMessage(
-            errorMessage, ConsoleViewContentType.ERROR_OUTPUT);
+            project(), errorMessage, ConsoleViewContentType.ERROR_OUTPUT);
       }
     } else {
-      BuckToolWindowFactory.outputConsoleMessage(
-          line, ConsoleViewContentType.NORMAL_OUTPUT);
+      if (!line.trim().isEmpty()) {
+        BuckToolWindowFactory.outputConsoleMessage(
+            project(), line, ConsoleViewContentType.NORMAL_OUTPUT);
+      }
     }
     return false;
   }

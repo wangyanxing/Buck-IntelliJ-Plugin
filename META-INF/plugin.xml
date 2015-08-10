@@ -96,9 +96,12 @@
         displayName="Buck"
         id="buck.settings"
         instance="com.intellij.plugin.buck.config.BuckSettingsConfigurable"/>
+    <fileBasedIndex implementation="com.intellij.plugin.buck.index.BuckTargetNameIndex"/>
+
     <projectService
-        serviceInterface="com.intellij.plugin.buck.actions.choosetargets.ChooseTargetConfiguration"
-        serviceImplementation="com.intellij.plugin.buck.actions.choosetargets.ChooseTargetConfiguration"/>
+        serviceImplementation="com.intellij.plugin.buck.build.BuckBuildManager"/>
+    <projectService
+        serviceImplementation="com.intellij.plugin.buck.ui.BuckUIManager"/>
   </extensions>
 
   <actions>
@@ -163,4 +166,5 @@
       </implementation-class>
     </component>
   </application-components>
+
 </idea-plugin>

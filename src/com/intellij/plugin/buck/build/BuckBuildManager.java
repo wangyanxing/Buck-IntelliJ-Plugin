@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -34,20 +35,12 @@ public class BuckBuildManager {
 
   public static final String NOT_BUCK_PROJECT_ERROR_MESSAGE = "Not a valid Buck project!\n";
 
-  private static BuckBuildManager sInstance;
-
   private ProgressIndicator mProgressIndicator;
   private boolean mIsBuilding = false;
   private boolean mIsKilling = false;
 
-  private BuckBuildManager() {
-  }
-
-  public static synchronized BuckBuildManager getInstance() {
-    if (sInstance == null) {
-      sInstance = new BuckBuildManager();
-    }
-    return sInstance;
+  public static synchronized BuckBuildManager getInstance(Project project) {
+    return ServiceManager.getService(project, BuckBuildManager.class);
   }
 
   public synchronized void setProgress(double fraction) {
@@ -72,18 +65,18 @@ public class BuckBuildManager {
     return mIsBuilding;
   }
 
-  public synchronized void setBuilding(boolean value) {
+  public synchronized void setBuilding(Project project, boolean value) {
     mIsBuilding = value;
-    BuckToolWindowFactory.updateActionsNow();
+    BuckToolWindowFactory.updateActionsNow(project);
   }
 
   public boolean isKilling() {
     return mIsKilling;
   }
 
-  public synchronized void setKilling(boolean value) {
+  public synchronized void setKilling(Project project, boolean value) {
     mIsKilling = value;
-    BuckToolWindowFactory.updateActionsNow();
+    BuckToolWindowFactory.updateActionsNow(project);
   }
 
   public boolean isBuckProject(Project project) {
@@ -98,9 +91,11 @@ public class BuckBuildManager {
    * Print "no selected target" error message to console window
    * Also provide a hyperlink which can directly jump to "Choose Target" GUI window
    */
-  public void showNoTargetMessage() {
-    BuckToolWindowFactory.outputConsoleMessage("Please ", ConsoleViewContentType.ERROR_OUTPUT);
+  public void showNoTargetMessage(Project project) {
+    BuckToolWindowFactory.outputConsoleMessage(
+        project, "Please ", ConsoleViewContentType.ERROR_OUTPUT);
     BuckToolWindowFactory.outputConsoleHyperlink(
+        project,
         "choose a build target!\n",
         new HyperlinkInfo() {
           @Override
@@ -124,14 +119,20 @@ public class BuckBuildManager {
    */
   public void runBuckCommand(final BuckCommandHandler handler,
                                     final String operationTitle) {
+    Project project = handler.project();
+
     // Always save files
     FileDocumentManager.getInstance().saveAllDocuments();
 
     String exec = BuckSettingsProvider.getInstance().getState().buckExecutable;
     if (exec == null) {
-      BuckToolWindowFactory.outputConsoleMessage("Please specify the buck executable path!\n",
-          ConsoleViewContentType.ERROR_OUTPUT);
       BuckToolWindowFactory.outputConsoleMessage(
+          project,
+          "Please specify the buck executable path!\n",
+          ConsoleViewContentType.ERROR_OUTPUT);
+
+      BuckToolWindowFactory.outputConsoleMessage(
+          project,
           "Preference -> Tools -> Buck -> Path to Buck executable\n",
           ConsoleViewContentType.NORMAL_OUTPUT);
       return;
