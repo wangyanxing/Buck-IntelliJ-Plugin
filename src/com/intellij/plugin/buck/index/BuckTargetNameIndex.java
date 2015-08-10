@@ -1,14 +1,30 @@
 package com.intellij.plugin.buck.index;
 
+import com.google.common.collect.Sets;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.file.BuckFileType;
-import com.intellij.util.indexing.*;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.CommonProcessors;
+import com.intellij.util.indexing.DataIndexer;
+import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter;
+import com.intellij.util.indexing.FileBasedIndex;
+import com.intellij.util.indexing.FileContent;
+import com.intellij.util.indexing.ID;
+import com.intellij.util.indexing.ScalarIndexExtension;
 import com.intellij.util.io.EnumeratorStringDescriptor;
 import com.intellij.util.io.KeyDescriptor;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BuckTargetNameIndex extends ScalarIndexExtension<String> {
 
@@ -40,7 +56,13 @@ public class BuckTargetNameIndex extends ScalarIndexExtension<String> {
 
   @Override
   public FileBasedIndex.InputFilter getInputFilter() {
-    return new DefaultFileTypeSpecificInputFilter(BuckFileType.INSTANCE);
+    return new DefaultFileTypeSpecificInputFilter(BuckFileType.INSTANCE) {
+      @Override
+      public boolean acceptInput(@NotNull final VirtualFile file) {
+
+        return file.isInLocalFileSystem();
+      }
+    };
   }
 
   @Override
@@ -53,7 +75,17 @@ public class BuckTargetNameIndex extends ScalarIndexExtension<String> {
     return 0;
   }
 
-  public static Collection<String> getAllKeys(Project project) {
-    return FileBasedIndex.getInstance().getAllKeys(NAME, project);
+  public static Collection<VirtualFile> getAllFiles(Project project) {
+    final GlobalSearchScope searchScope = GlobalSearchScope.projectScope(project);
+    final Collection<String> files = FileBasedIndex.getInstance().getAllKeys(NAME, project);
+    Set<VirtualFile> result = Sets.newHashSet();
+    for (Iterator<String> iterator = files.iterator(); iterator.hasNext(); ) {
+      final String fileName = iterator.next();
+      VirtualFile file = VfsUtil.findFileByIoFile(new File(fileName), true);
+      if (searchScope.contains(file)) {
+        result.add(file);
+      }
+    }
+    return result;
   }
 }

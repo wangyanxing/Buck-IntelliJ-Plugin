@@ -22,9 +22,8 @@ public class ChooseTargetContributor implements ChooseByNameContributor {
     BuckBuildTargetAliasParser.parseAlias(project.getBasePath());
     List<String> names = new ArrayList<String>();
 
-    Collection<String> buckKeys = BuckTargetNameIndex.getAllKeys(project);
-    for(String fileName : buckKeys) {
-      VirtualFile file = VfsUtil.findFileByIoFile(new File(fileName), true);
+    Collection<VirtualFile> buckKeys = BuckTargetNameIndex.getAllFiles(project);
+    for(VirtualFile file : buckKeys) {
       String target = BuckBuildUtil.getFullBuckTarget(project, file);
       Set<String> alias = BuckBuildTargetAliasParser.sTargetAlias.get(target);
       if (alias == null) {
