@@ -64,7 +64,7 @@ public class ChooseTargetModel
 
   @Override
   public String getFullName(Object element) {
-    return "full name";
+    return getElementName(element);
   }
 
   @Override

@@ -3,19 +3,16 @@ package com.intellij.plugin.buck.config;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.plugin.buck.ui.BuckSettingsUI;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.JComponent;
 
 public class BuckSettingsConfigurable implements SearchableConfigurable {
 
-  private BuckSettingsUI myPanel;
+  private BuckSettingsUI mPanel;
 
   public BuckSettingsConfigurable() {
   }
 
-  @NotNull
   @Override
   public String getId() {
     return getHelpTopic();
@@ -26,7 +23,6 @@ public class BuckSettingsConfigurable implements SearchableConfigurable {
     return null;
   }
 
-  @Nls
   @Override
   public String getDisplayName() {
     return "Buck";
@@ -39,31 +35,31 @@ public class BuckSettingsConfigurable implements SearchableConfigurable {
 
   @Override
   public JComponent createComponent() {
-    myPanel = new BuckSettingsUI();
-    return myPanel;
+    mPanel = new BuckSettingsUI();
+    return mPanel;
   }
 
   @Override
   public boolean isModified() {
-    return myPanel != null && myPanel.isModified();
+    return mPanel != null && mPanel.isModified();
   }
 
   @Override
   public void apply() throws ConfigurationException {
-    if (myPanel != null) {
-      myPanel.apply();
+    if (mPanel != null) {
+      mPanel.apply();
     }
   }
 
   @Override
   public void reset() {
-    if (myPanel != null) {
-      myPanel.reset();
+    if (mPanel != null) {
+      mPanel.reset();
     }
   }
 
   @Override
   public void disposeUIResources() {
-    myPanel = null;
+    mPanel = null;
   }
 }

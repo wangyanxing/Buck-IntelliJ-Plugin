@@ -7,7 +7,6 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StoragePathMacros;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.HashMap;
@@ -25,7 +24,7 @@ import java.util.Map;
 )
 public class BuckSettingsProvider implements PersistentStateComponent<BuckSettingsProvider.State>,
     ExportableApplicationComponent {
-  private State myState = new State();
+  private State mState = new State();
 
   public static BuckSettingsProvider getInstance() {
     return ApplicationManager.getApplication().getComponent(BuckSettingsProvider.class);
@@ -33,12 +32,12 @@ public class BuckSettingsProvider implements PersistentStateComponent<BuckSettin
 
   @Override
   public State getState() {
-    return myState;
+    return mState;
   }
 
   @Override
   public void loadState(State state) {
-    myState = state;
+    mState = state;
   }
 
   @Override
@@ -49,19 +48,16 @@ public class BuckSettingsProvider implements PersistentStateComponent<BuckSettin
   public void disposeComponent() {
   }
 
-  @NotNull
   @Override
   public File[] getExportFiles() {
     return new File[]{new File(PathManager.getOptionsPath() + File.separatorChar + "buck.xml")};
   }
 
-  @NotNull
   @Override
   public String getPresentableName() {
     return "BuckOptions";
   }
 
-  @NotNull
   @Override
   public String getComponentName() {
     return "BuckOptionsProvider";

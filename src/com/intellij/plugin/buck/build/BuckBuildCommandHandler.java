@@ -58,15 +58,16 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
   private boolean showFailedNotification = false;
   private String mCurrentErrorMessage;
 
-  public BuckBuildCommandHandler(final Project project,
-                            final VirtualFile root,
-                            final BuckCommand command) {
+  public BuckBuildCommandHandler(
+      final Project project,
+      final VirtualFile root,
+      final BuckCommand command) {
     super(project, VfsUtil.virtualToIoFile(root), command);
   }
 
   @Override
   protected void notifyLines(Key outputType, Iterator<String> lines, StringBuilder lineBuilder) {
-    while(lines.hasNext()) {
+    while (lines.hasNext()) {
       boolean failed = parseOutputLine(lines.next());
       if (!showFailedNotification) {
         showFailedNotification = failed;
@@ -200,5 +201,4 @@ public class BuckBuildCommandHandler extends BuckCommandHandler {
     VirtualFile projectPath = mProject.getBaseDir();
     return projectPath.findFileByRelativePath(relativePath);
   }
-
 }

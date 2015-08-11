@@ -3,7 +3,6 @@ package com.intellij.plugin.buck.file;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.plugin.buck.lang.BuckLanguage;
 import icons.BuckIcons;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.Icon;
 
@@ -19,17 +18,14 @@ public class BuckFileType extends LanguageFileType {
     super(BuckLanguage.INSTANCE);
   }
 
-  @NotNull
   public String getName() {
     return "Buck";
   }
 
-  @NotNull
   public String getDescription() {
     return "Buck file";
   }
 
-  @NotNull
   public String getDefaultExtension() {
     return DEFAULT_EXTENSIONS[0];
   }

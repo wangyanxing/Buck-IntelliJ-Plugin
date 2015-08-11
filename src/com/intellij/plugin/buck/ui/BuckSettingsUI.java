@@ -18,20 +18,24 @@ import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+/**
+ * Buck Setting GUI, located in "Preference > Tools > Buck".
+ */
 public class BuckSettingsUI extends JPanel {
 
-  public static final String CUSTOMIZED_INSTALL_COMMAND_HINT = "input your command here: eg. -r --no-cache";
+  public static final String CUSTOMIZED_INSTALL_COMMAND_HINT =
+      "input your command here: eg. -r --no-cache";
 
-  private TextFieldWithBrowseButton myBuckPathField;
-  private JBTextField myCustomizedInstallSettingField;
-  private JCheckBox myRunAfterInstall;
-  private JCheckBox myMultiInstallMode;
-  private JCheckBox myUninstallBeforeInstall;
-  private JCheckBox myCustomizedInstallSetting;
-  private BuckSettingsProvider myOptionsProvider;
+  private TextFieldWithBrowseButton mBuckPathField;
+  private JBTextField mCustomizedInstallSettingField;
+  private JCheckBox mRunAfterInstall;
+  private JCheckBox mMultiInstallMode;
+  private JCheckBox mUninstallBeforeInstall;
+  private JCheckBox mCustomizedInstallSetting;
+  private BuckSettingsProvider mOptionsProvider;
 
   public BuckSettingsUI() {
-    myOptionsProvider = BuckSettingsProvider.getInstance();
+    mOptionsProvider = BuckSettingsProvider.getInstance();
     init();
   }
 
@@ -39,10 +43,10 @@ public class BuckSettingsUI extends JPanel {
     setLayout(new BorderLayout());
     JPanel container = this;
 
-    myBuckPathField = new TextFieldWithBrowseButton();
+    mBuckPathField = new TextFieldWithBrowseButton();
     FileChooserDescriptor fileChooserDescriptor =
         new FileChooserDescriptor(true, false, false, false, false, false);
-    myBuckPathField.addBrowseFolderListener(
+    mBuckPathField.addBrowseFolderListener(
         "",
         "Buck Executable Path",
         null,
@@ -50,14 +54,14 @@ public class BuckSettingsUI extends JPanel {
         TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT,
         false
     );
-    myCustomizedInstallSettingField = new JBTextField();
-    myCustomizedInstallSettingField.getEmptyText().setText(CUSTOMIZED_INSTALL_COMMAND_HINT);
-    myCustomizedInstallSettingField.setEnabled(false);
+    mCustomizedInstallSettingField = new JBTextField();
+    mCustomizedInstallSettingField.getEmptyText().setText(CUSTOMIZED_INSTALL_COMMAND_HINT);
+    mCustomizedInstallSettingField.setEnabled(false);
 
-    myRunAfterInstall = new JCheckBox("Run after install (-r)");
-    myMultiInstallMode = new JCheckBox("Multi-install mode (-x)");
-    myUninstallBeforeInstall = new JCheckBox("Uninstall before installing (-u)");
-    myCustomizedInstallSetting = new JCheckBox("Use customized install setting:  ");
+    mRunAfterInstall = new JCheckBox("Run after install (-r)");
+    mMultiInstallMode = new JCheckBox("Multi-install mode (-x)");
+    mUninstallBeforeInstall = new JCheckBox("Uninstall before installing (-u)");
+    mCustomizedInstallSetting = new JCheckBox("Use customized install setting:  ");
     initCustomizedInstallCommandListener();
 
     JPanel buckSettings = new JPanel(new GridBagLayout());
@@ -71,78 +75,80 @@ public class BuckSettingsUI extends JPanel {
     constraints.gridx = 1;
     constraints.weightx = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
-    buckSettings.add(myBuckPathField, constraints);
+    buckSettings.add(mBuckPathField, constraints);
 
     JPanel installSettings = new JPanel(new BorderLayout());
     installSettings.setBorder(IdeBorderFactory.createTitledBorder("Buck Install Settings", true));
     container.add(container = new JPanel(new BorderLayout()), BorderLayout.SOUTH);
     container.add(installSettings, BorderLayout.NORTH);
 
-    installSettings.add(myRunAfterInstall, BorderLayout.NORTH);
+    installSettings.add(mRunAfterInstall, BorderLayout.NORTH);
     installSettings.add(installSettings = new JPanel(new BorderLayout()), BorderLayout.SOUTH);
 
-    installSettings.add(myMultiInstallMode, BorderLayout.NORTH);
+    installSettings.add(mMultiInstallMode, BorderLayout.NORTH);
     installSettings.add(installSettings = new JPanel(new BorderLayout()), BorderLayout.SOUTH);
 
-    installSettings.add(myUninstallBeforeInstall, BorderLayout.NORTH);
+    installSettings.add(mUninstallBeforeInstall, BorderLayout.NORTH);
     installSettings.add(installSettings = new JPanel(new BorderLayout()), BorderLayout.SOUTH);
 
     final GridBagConstraints customConstraints = new GridBagConstraints(0, 0, 1, 1, 0, 0,
         GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
     JPanel customizedInstallSetting = new JPanel(new GridBagLayout());
-    customizedInstallSetting.add(myCustomizedInstallSetting, customConstraints);
+    customizedInstallSetting.add(mCustomizedInstallSetting, customConstraints);
     customConstraints.gridx = 1;
     customConstraints.weightx = 1;
     customConstraints.fill = GridBagConstraints.HORIZONTAL;
-    customizedInstallSetting.add(myCustomizedInstallSettingField, customConstraints);
+    customizedInstallSetting.add(mCustomizedInstallSettingField, customConstraints);
     installSettings.add(customizedInstallSetting, BorderLayout.NORTH);
   }
 
   public boolean isModified() {
-    return !Comparing.equal(myBuckPathField.getText(),
-        myOptionsProvider.getState().buckExecutable) ||
-        myOptionsProvider.getState().runAfterInstall != myRunAfterInstall.isSelected() ||
-        myOptionsProvider.getState().multiInstallMode != myMultiInstallMode.isSelected() ||
-        myOptionsProvider.getState().uninstallBeforeInstalling !=
-            myUninstallBeforeInstall.isSelected() ||
-        myOptionsProvider.getState().customizedInstallSetting !=
-            myCustomizedInstallSetting.isSelected() ||
-        !myOptionsProvider.getState().customizedInstallSettingCommand
-            .equals(myCustomizedInstallSettingField.getText());
+    return !Comparing.equal(mBuckPathField.getText(),
+        mOptionsProvider.getState().buckExecutable) ||
+        mOptionsProvider.getState().runAfterInstall != mRunAfterInstall.isSelected() ||
+        mOptionsProvider.getState().multiInstallMode != mMultiInstallMode.isSelected() ||
+        mOptionsProvider.getState().uninstallBeforeInstalling !=
+            mUninstallBeforeInstall.isSelected() ||
+        mOptionsProvider.getState().customizedInstallSetting !=
+            mCustomizedInstallSetting.isSelected() ||
+        !mOptionsProvider.getState().customizedInstallSettingCommand
+            .equals(mCustomizedInstallSettingField.getText());
   }
 
   public void apply() {
-    myOptionsProvider.getState().buckExecutable = myBuckPathField.getText();
-    myOptionsProvider.getState().runAfterInstall = myRunAfterInstall.isSelected();
-    myOptionsProvider.getState().multiInstallMode = myMultiInstallMode.isSelected();
-    myOptionsProvider.getState().uninstallBeforeInstalling = myUninstallBeforeInstall.isSelected();
-    myOptionsProvider.getState().customizedInstallSetting = myCustomizedInstallSetting.isSelected();
-    myOptionsProvider.getState().customizedInstallSettingCommand = myCustomizedInstallSettingField.getText();
+    mOptionsProvider.getState().buckExecutable = mBuckPathField.getText();
+    mOptionsProvider.getState().runAfterInstall = mRunAfterInstall.isSelected();
+    mOptionsProvider.getState().multiInstallMode = mMultiInstallMode.isSelected();
+    mOptionsProvider.getState().uninstallBeforeInstalling = mUninstallBeforeInstall.isSelected();
+    mOptionsProvider.getState().customizedInstallSetting = mCustomizedInstallSetting.isSelected();
+    mOptionsProvider.getState().customizedInstallSettingCommand =
+        mCustomizedInstallSettingField.getText();
   }
 
   public void reset() {
-    myBuckPathField.setText(myOptionsProvider.getState().buckExecutable);
-    myRunAfterInstall.setSelected(myOptionsProvider.getState().runAfterInstall);
-    myMultiInstallMode.setSelected(myOptionsProvider.getState().multiInstallMode);
-    myUninstallBeforeInstall.setSelected(myOptionsProvider.getState().uninstallBeforeInstalling);
-    myCustomizedInstallSetting.setSelected(myOptionsProvider.getState().customizedInstallSetting);
-    myCustomizedInstallSettingField.setText(myOptionsProvider.getState().customizedInstallSettingCommand);
+    mBuckPathField.setText(mOptionsProvider.getState().buckExecutable);
+    mRunAfterInstall.setSelected(mOptionsProvider.getState().runAfterInstall);
+    mMultiInstallMode.setSelected(mOptionsProvider.getState().multiInstallMode);
+    mUninstallBeforeInstall.setSelected(mOptionsProvider.getState().uninstallBeforeInstalling);
+    mCustomizedInstallSetting.setSelected(mOptionsProvider.getState().customizedInstallSetting);
+    mCustomizedInstallSettingField.setText(
+        mOptionsProvider.getState().customizedInstallSettingCommand);
   }
 
   private void initCustomizedInstallCommandListener() {
-    myCustomizedInstallSetting.addItemListener(new ItemListener() {
+    mCustomizedInstallSetting.addItemListener(new ItemListener() {
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
-          myCustomizedInstallSettingField.setEnabled(true);
-          myRunAfterInstall.setEnabled(false);
-          myMultiInstallMode.setEnabled(false);
-          myUninstallBeforeInstall.setEnabled(false);
+          mCustomizedInstallSettingField.setEnabled(true);
+          mRunAfterInstall.setEnabled(false);
+          mMultiInstallMode.setEnabled(false);
+          mUninstallBeforeInstall.setEnabled(false);
         } else {
-          myCustomizedInstallSettingField.setEnabled(false);
-          myRunAfterInstall.setEnabled(true);
-          myMultiInstallMode.setEnabled(true);
-          myUninstallBeforeInstall.setEnabled(true);
+          mCustomizedInstallSettingField.setEnabled(false);
+          mRunAfterInstall.setEnabled(true);
+          mMultiInstallMode.setEnabled(true);
+          mUninstallBeforeInstall.setEnabled(true);
         }
       }
     });

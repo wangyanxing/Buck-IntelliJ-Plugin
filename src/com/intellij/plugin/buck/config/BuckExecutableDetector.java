@@ -4,7 +4,10 @@ import com.intellij.openapi.util.SystemInfo;
 
 import java.io.File;
 
-public class BuckExecutableDetector {
+public final class BuckExecutableDetector {
+
+  private BuckExecutableDetector() {
+  }
 
   private static final String[] UNIX_PATHS = {
       "/usr/local/bin",
