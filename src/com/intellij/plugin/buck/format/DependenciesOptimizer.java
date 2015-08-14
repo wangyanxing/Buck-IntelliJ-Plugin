@@ -58,13 +58,10 @@ public class DependenciesOptimizer {
   private static void sortArray(BuckValueArray array) {
     BuckArrayElements arrayElements = array.getArrayElements();
     PsiElement[] arrayValues = arrayElements.getChildren();
-    // 'deps' should be sorted with local referenes ':' preceding any cross-repo references '@'
-    // e.g :inner, //world:empty, //world/asia:jp, //world/eruope:uk, @mars, @moon
-    // the ascii code '!'(33), ':'(58), '/'(47), '@'(64). Replace ':' by '!' make the rule works.
     Arrays.sort(arrayValues, new Comparator<PsiElement>() {
           @Override
           public int compare(PsiElement e1, PsiElement e2) {
-            return e1.getText().replace(':', '!').compareTo(e2.getText().replace(':', '!'));
+            return compareDependencyStrings(e1.getText(), e2.getText());
           }
         }
     );
@@ -77,4 +74,26 @@ public class DependenciesOptimizer {
       arrayElements.getChildren()[i].replace(oldValues[i]);
     }
   }
+
+  /**
+   * Use our own method to compare 'deps' stings.
+   * 'deps' should be sorted with local references ':' preceding any cross-repo references '@'
+   * e.g :inner, //world:empty, //world/asia:jp, //world/europe:uk, @mars, @moon
+   */
+  private static int compareDependencyStrings(String baseString, String anotherString) {
+    for (int i = 0; i < Math.min(baseString.length(), anotherString.length()); ++i) {
+      char c1 = baseString.charAt(i);
+      char c2 = anotherString.charAt(i);
+      if (c1 != c2) {
+        // ':' should go first when compare ':' with '/' for Buck dependencies.
+        if ((c1 == ':' && c2 == '/') || (c1 == '/' && c2 == ':')) {
+          return c2 - c1;
+        } else {
+          return c1 - c2;
+        }
+      }
+    }
+    return baseString.length() - anotherString.length();
+  }
+
 }
