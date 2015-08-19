@@ -6,6 +6,9 @@ import com.intellij.plugin.buck.lang.psi.BuckTypes;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 
+/**
+ * Defines the brace matching support for Buck files.
+ */
 public class BuckBraceMatcher implements PairedBraceMatcher {
 
   private static BracePair[] PAIRS = {

@@ -6,14 +6,14 @@ public class BuckCompletionTest extends BuckTestCase {
   private static final String[] NOTHING = ArrayUtil.EMPTY_STRING_ARRAY;
 
   private void doTest(String... variants) {
-    myFixture.testCompletionVariants("completion/" + getTestName(false) + "/BUCK", variants);
+    myFixture.testCompletionVariants("completion/" + getTestName(false) + "/before.BUCK", variants);
   }
 
   private void doTestSingleVariant() {
-    myFixture.configureByFile("completion/" + getTestName(false) + "/BUCK");
+    myFixture.configureByFile("completion/" + getTestName(false) + "/before.BUCK");
     final LookupElement[] variants = myFixture.completeBasic();
     assertNull(variants);
-    myFixture.checkResultByFile("completion/" + getTestName(false) + "/after.BUCK" );
+    myFixture.checkResultByFile("completion/" + getTestName(false) + "/after.BUCK");
   }
 
   public void testKeywords1() {

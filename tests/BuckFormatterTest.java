@@ -24,10 +24,6 @@ public class BuckFormatterTest extends BuckTestCase {
     doTest();
   }
 
-  public void testSimple6(){
-    doTest();
-  }
-
   public void testBlankLine1(){
     doTest();
   }
@@ -106,9 +102,10 @@ public class BuckFormatterTest extends BuckTestCase {
 
   public void doTest(@Nullable Character c) {
     String testName = getTestName(true);
-    myFixture.configureByFile("formatter/" + getTestName(false) + "/BUCK");
+    myFixture.configureByFile("formatter/" + getTestName(false) + "/before.BUCK");
     doTest(c, testName);
-    assertSameLinesWithFile(getTestDataPath() + "/formatter/" + getTestName(true) + "/after.BUCK", myFixture.getFile().getText());
+    assertSameLinesWithFile(getTestDataPath() + "/formatter/" + getTestName(true) +
+        "/after.BUCK", myFixture.getFile().getText());
   }
 
   private String doTest(@Nullable Character c, String testName) {

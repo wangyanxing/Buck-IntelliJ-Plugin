@@ -18,7 +18,7 @@
         <li>Go to Buck Dependencies</li>
         <li>Reformat Buck Files</li>
         <li>Sort Buck Dependencies Alphabetically</li>
-        <li>Automatically Convert to Buck Dependencies after Paste</li>
+        <li>Smart Paste</li>
         <li>Error Annotation</li>
         <li>Commenting and Uncommenting</li>
       </ul>

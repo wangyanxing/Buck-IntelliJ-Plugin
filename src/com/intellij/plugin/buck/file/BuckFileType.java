@@ -12,7 +12,7 @@ import javax.swing.Icon;
 public class BuckFileType extends LanguageFileType {
 
   public static final BuckFileType INSTANCE = new BuckFileType();
-  private static final String[] DEFAULT_EXTENSIONS = {"BUCK", ""};
+  private static final String DEFAULT_EXTENSIONS = "BUCK";
 
   private BuckFileType() {
     super(BuckLanguage.INSTANCE);
@@ -27,7 +27,7 @@ public class BuckFileType extends LanguageFileType {
   }
 
   public String getDefaultExtension() {
-    return DEFAULT_EXTENSIONS[0];
+    return DEFAULT_EXTENSIONS;
   }
 
   public Icon getIcon() {

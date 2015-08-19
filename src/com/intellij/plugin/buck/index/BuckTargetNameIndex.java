@@ -79,7 +79,7 @@ public class BuckTargetNameIndex extends ScalarIndexExtension<String> {
     for (Iterator<String> iterator = files.iterator(); iterator.hasNext(); ) {
       final String fileName = iterator.next();
       VirtualFile file = VfsUtil.findFileByIoFile(new File(fileName), true);
-      if (searchScope.contains(file)) {
+      if (file != null && searchScope.contains(file)) {
         result.add(file);
       }
     }

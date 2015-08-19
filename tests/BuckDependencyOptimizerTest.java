@@ -11,8 +11,9 @@ public class BuckDependencyOptimizerTest extends BuckTestCase {
   }
 
   private void doTest() {
-    myFixture.configureByFile("dependencyOptimizer/" + getTestName(false) + "/BUCK");
-    OptimizeImportsAction.actionPerformedImpl(DataManager.getInstance().getDataContext(myFixture.getEditor().getContentComponent()));
+    myFixture.configureByFile("dependencyOptimizer/" + getTestName(false) + "/before.BUCK");
+    OptimizeImportsAction.actionPerformedImpl(DataManager.getInstance().getDataContext(
+        myFixture.getEditor().getContentComponent()));
     myFixture.checkResultByFile("dependencyOptimizer/" + getTestName(true) + "/after.BUCK");
   }
 }
