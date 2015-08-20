@@ -26,17 +26,13 @@
 
   <change-notes><![CDATA[
       <h3>Features:</h3>
-      <li>Customized install command added.</li>
-      <li>C++ compiler error highlighting added.</li>
-      <li>Target chooser can manually type any target, not only alias.</li>
-      <li>Smart paste supports full file path.</li>
+      <li>Smart paste can accept full file path of a BUCK file.</li>
+      <li>C++ compiler error message highlighting added.</li>
+      <li>Better brace and quote matcher.</li>
       <h3>Bug fixes:</h3>
-      <li>Dependencies sorting issue fixed.</li>
-      <li>Error annotation issue fixed.</li>
-      <li>Some formatter bugs fixed.</li>
-      <li>File with line number in compiler errors now can be navigated correctly.</li>
-      <h3>Others:</h3>
-      <li>File icon changed to Buck's official logo.</li>
+      <li>Sort dependencies bug fixed.</li>
+      <li>Some tool window bugs fixed.</li>
+      <li>Better syntax parser.</li>
     ]]>
   </change-notes>
 
