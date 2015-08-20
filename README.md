@@ -50,7 +50,7 @@ An IntelliJ plugin for Buck build system (http://buckbuild.com/).
 - Using IDE built-in plugin system
   - <kbd>Preferences</kbd> > <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>Browse repositories...</kbd> > <kbd>Search for "Buck"</kbd> > <kbd>Install Plugin</kbd>
 - Manually
-  - Download the [Buck.zip](https://github.com/wangyanxing/buck_idea_plugin/releases/download/2.01/Buck.zip) and install it via <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
+  - Download the [Buck.zip](https://github.com/wangyanxing/buck_idea_plugin/releases/download/v2.03/Buck.zip) and install it via <kbd>Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Install plugin from disk...</kbd>
   - Or you can also download it from [IntelliJ Plugin Repository](https://plugins.jetbrains.com/plugin/7826).
 
 ## Contributors
