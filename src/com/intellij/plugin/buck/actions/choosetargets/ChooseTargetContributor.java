@@ -4,13 +4,9 @@ import com.google.common.base.Joiner;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.plugin.buck.build.BuckBuildTargetAliasParser;
-import com.intellij.plugin.buck.build.BuckBuildUtil;
-import com.intellij.plugin.buck.index.BuckTargetNameIndex;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,15 +19,6 @@ public class ChooseTargetContributor implements ChooseByNameContributor {
   public String[] getNames(Project project, boolean includeNonProjectItems) {
     BuckBuildTargetAliasParser.parseAlias(project.getBasePath());
     List<String> names = new ArrayList<String>();
-
-    Collection<VirtualFile> buckKeys = BuckTargetNameIndex.getAllFiles(project);
-    for(VirtualFile file : buckKeys) {
-      String target = BuckBuildUtil.getFullBuckTarget(project, file);
-      Set<String> alias = BuckBuildTargetAliasParser.sTargetAlias.get(target);
-      if (alias == null) {
-        names.add(target);
-      }
-    }
 
     for (Map.Entry<String, Set<String>> entry :
         BuckBuildTargetAliasParser.sTargetAlias.entrySet()) {

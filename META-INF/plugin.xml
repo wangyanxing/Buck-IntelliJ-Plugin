@@ -96,7 +96,6 @@
         displayName="Buck"
         id="buck.settings"
         instance="com.intellij.plugin.buck.config.BuckSettingsConfigurable"/>
-    <fileBasedIndex implementation="com.intellij.plugin.buck.index.BuckTargetNameIndex"/>
 
     <projectService
         serviceImplementation="com.intellij.plugin.buck.build.BuckBuildManager"/>
