@@ -84,16 +84,23 @@ public class DependenciesOptimizer {
     for (int i = 0; i < Math.min(baseString.length(), anotherString.length()); ++i) {
       char c1 = baseString.charAt(i);
       char c2 = anotherString.charAt(i);
-      if (c1 != c2) {
-        // ':' should go first when compare ':' with '/' for Buck dependencies.
-        if ((c1 == ':' && c2 == '/') || (c1 == '/' && c2 == ':')) {
-          return c2 - c1;
-        } else {
-          return c1 - c2;
-        }
+      if (c1 == c2) {
+        continue;
+      } else if (c1 == ':') {
+        return -1;
+      } else if (c2 == ':') {
+        return 1;
+      } else if (c1 == '@') {
+        return 1;
+      } else if (c2 == '@') {
+        return -1;
+      } else if (c1 < c2) {
+        return -1;
+      } else {
+        return 1;
       }
     }
-    return baseString.length() - anotherString.length();
+    return baseString.compareTo(anotherString);
   }
 
 }
