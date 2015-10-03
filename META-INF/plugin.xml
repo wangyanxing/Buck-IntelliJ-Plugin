@@ -128,6 +128,9 @@
       <action class="com.intellij.plugin.buck.actions.BuckUninstallAction" id="buck.Uninstall">
         <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift M"/>
       </action>
+      <action class="com.intellij.plugin.buck.actions.BuckProjectAction" id="buck.Project">
+          <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift P"/>
+      </action>
     </group>
 
     <group id="BuckToolsGroup" popup="true" text="Buck" icon="BuckIcons.BUCK_TOOL_WINDOW_ICON"

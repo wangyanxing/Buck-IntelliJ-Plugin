@@ -9,6 +9,7 @@ public class BuckCommand {
   public static final BuckCommand INSTALL = create("install");
   public static final BuckCommand UNINSTALL = create("uninstall");
   public static final BuckCommand KILL = create("kill");
+  public static final BuckCommand PROJECT = create("project");
 
   /**
    * Command name passed to buck.
